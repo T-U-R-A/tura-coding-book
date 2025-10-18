@@ -1,12 +1,24 @@
 #set text(
   font: "New Computer Modern Math"
 )
+#set page(
+  numbering: "1"
+)
+#set heading(
+  numbering: "1."
+)
+#show link: underline
+
+#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
+
+#outline()
+#pagebreak()
 
 = Concepts
 
 == Basic `c++` syntax
 
-=== Questions
+=== Question
 Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage.
 
 Solution:
@@ -76,3 +88,20 @@ In this program we made a `struct` because their easier to use than a `class`. T
 An array is a list of many of the same datatype. In this program we made an array of `Students` which is our own datatype. We also made a vector, which unlike an array, has a dynamic size.
 === functions
 A function is something that accepts parameters and returns a value. This includes our `calcPercent` function and the 2 constructors used to make `Student`.
+
+More about `c++` syntax can be learned #link("https://www.w3schools.com/cpp/")[here].
+
+== Time Complexity
+Whenever we're trying to solve a question, we need to come up with an approach that is efficient enough to solve the question within a reasonable amount of time. This can be measured using Big-O notation.
+
+Let's say we have some code that accepts $n$ numbers of numbers from the user and stores them in an array. The amount of time this code will take can be represent as some function $f(n) = m dot n+c$. The exact values of $m$ and $c$ depend on what the compiler does, how long it takes c++ to accepts and store. The main idea however is that it's a linear function. The simpler way to state this is to say that this code has a time complexity of $O(n)$. 
+
+The formal definition of Big-O is:
+
+$
+f(n) = O(g(n)) "if:"
+\
+lim_(n -> infinity) f(n)/g(n) <= A  " For some contant" A
+$
+
+In simple English, this means that $f(n)$ and $g(n)$ grow at the same rate. Big-O notion is very important to note because it tells us how quickly the time it takes for our program to run grows as our input size grows. Generally you know your algorithm should run in under a second is if $O(f(n)) < 10^10$ where $O(f(n))$ is the time complexity of your function and you plug in the max value of $n$. For example, if you have a code which runs in $O(n)$, it will pass a program if the max value of $n$ is less than $10^10$. If your algorithm is $O(n^2)$, then the max value of $n$ has to be less than $10^5$.
