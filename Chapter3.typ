@@ -37,36 +37,61 @@ At the end, the number of DFS calls equals the number of rooms.
 *Code :*
   
 ```cpp 
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
  
-const int MOD = 1e9 + 7; // modulus to avoid large numbers
+int n, m, rooms = 0;
+vector<string> grid;
+vector<vector<bool>> visited; 
+ 
+/*  Directions for exploring neighbors (right, left, down, up).
+    These vectors just store the change in x & y values as we move up, down, left, right
+    Example : an increase in y by 1 represents a move to the square toward the right
+*/ 
+int dx[] = {0, 0, 1, -1};
+int dy[] = {1, -1, 0, 0};
+ 
+// return true is square is inside the grid, is not visited and is a floor 
+bool isValid(ll x, ll y) {
+    return x >= 0 && x < n && y >= 0 && y < m && !visited[x][y] && grid[x][y] == '.';
+}
+ 
+// Depth-First Search to explore a room
+void dfs(int x, int y) {
+    visited[x][y] = true;
+    for (int d = 0; d < 4; ++d) {
+        int nx = x + dx[d]; 
+        int ny = y + dy[d];
+ 
+        if (isValid(nx, ny))
+            dfs(nx, ny);
+    }
+}
  
 int main() {
-    int n;
-    cin >> n;
+    cin >> n >> m;
+    grid.resize(n);
+    visited.resize(n, vector<bool>(m, false));
  
-    // dp[i] = number of ways to get sum i using dice
-    vector<int> dp(n + 1, 0);
-    dp[0] = 1; // base case: one way to form sum 0 (choose nothing)
+    for (int i = 0; i < n; ++i)
+        cin >> grid[i]; 
  
-    // Fill dp for all sums from 1 to n
-    for (int i = 1; i <= n; ++i) {
-        // Consider the last dice roll (values 1 to 6)
-        for (int j = 1; j <= 6; ++j) {
-            if (i - j >= 0) {
-                // Add ways of forming (i - j) since we can extend with roll j
-                dp[i] = (dp[i] + dp[i - j]) % MOD;
+    // Traverse each cell of the grid
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+ 
+            // If the cell is an unvisited empty floor, it's part of a new room
+            if (!visited[i][j] && grid[i][j] == '.') {
+                dfs(i, j);     // Explore the entire room
+                rooms++;       // Increment room count
             }
         }
     }
  
-    // Output number of ways to form sum n
-    cout << dp[n] << endl;
+    cout << rooms << "\n";
     return 0;
 }
-
 
 ```
 #pagebreak()
