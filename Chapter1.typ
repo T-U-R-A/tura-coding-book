@@ -228,3 +228,60 @@ int main() {
 ```
 
 \
+
+#pagebreak()
+
+== Trailing Zeros
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+The problem asks for the number of trailing zeros in n factorial (n!). Zeros come from pairs of 2s and 5s, and since 5s are scarcer, the number of 5s limit the number of zeroes, hence they determine the number of zeros.
+
+Each multiple of 5 (5, 10, 15, …) contributes one 5, multiples of 25 contribute 2 5s, multiples of 125 contribute 3 5s, and so on. The code loops through powers of 5 (5, 25, 125...), summing $floor(n/i)$, until $floor(n/i)$ = 0. The result is the number of trailing zeros.
+
+Here the int variable helps us find the floor of $(n/i)$ easily without any other function.
+
+Eg : n = 27
+- $floor(27/5)$ = 5  (5s from 5, 10, 15, 20, 25).
+
+- $floor(27/25)$ = 1 (extra 5 from 25).
+
+- $floor(27/125)$ = 0 (stop).
+
+- Total: 5 + 1 + 0 = 6 zeros.
+\
+
+Note : want to add reference as to what the meaning of the floor function is...
+
+*Code :*
+
+   
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, count = 0;
+    cin >> n; // Read input number n
+    
+    // Count factors of 5 in n! by summing n/5 + n/25 + n/125 + ...
+    // 
+    for (int i = 5; n / i >= 1; i *= 5) {
+        count += n / i; // Add number of multiples of i (powers of 5)
+    }
+    
+    cout << count << endl; // Output the number of trailing zeros
+    return 0;
+}
+
+```
+
+\
