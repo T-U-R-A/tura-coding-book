@@ -105,3 +105,13 @@ lim_(n -> infinity) f(n)/g(n) <= A  " For some contant" A
 $
 
 In simple English, this means that $f(n)$ and $g(n)$ grow at the same rate. Big-O notion is very important to note because it tells us how quickly the time it takes for our program to run grows as our input size grows. Generally you know your algorithm should run in under a second is if $O(f(n)) < 10^10$ where $O(f(n))$ is the time complexity of your function and you plug in the max value of $n$. For example, if you have a code which runs in $O(n)$, it will pass a program if the max value of $n$ is less than $10^10$. If your algorithm is $O(n^2)$, then the max value of $n$ has to be less than $10^5$.
+
+== Vectors in Depth
+
+We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as `arrays` except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
+
+The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
+
+Note that `vectors` constant factors are bigger than `arrays`, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of `arrays`.
+
+More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
