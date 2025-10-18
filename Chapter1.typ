@@ -1,7 +1,12 @@
 #set text(
   font: "New Computer Modern Math" 
 )
-#set heading(numbering: "1.")
+#set page(
+  numbering: "1"
+)
+#set heading(
+  numbering: "1."
+)
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
 #show link: underline
