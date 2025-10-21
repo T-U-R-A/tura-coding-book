@@ -115,3 +115,70 @@ The way `vectors` make this efficient time wise without wastes a lot of memory i
 Note that `vectors` constant factors are bigger than `arrays`, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of `arrays`.
 
 More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
+
+== Sets
+
+A `set` in a data structure in `c++`, which has the following properties:
+
++ A new element can be added to a `set` in $O(log n)$ time.
++ An element can be found in $O(log n)$ time.
++ An element can be removed in $O(log n)$ time.
++ All elements are sorted in ascending order.
++ All elements in a `set` are unique
+
+Here's a quick problem, whose solution will explain how to use sets:-
+
+#pagebreak()
+
+Accept numbers from a user. Then check if a number exists in the list, if it does, print `YES` followed by removing that number from the list, otherwise print `NO`. At the end print the new list in ascending order. 
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  
+  int n, q;
+  cin >> n >> q;
+  set<int> s;
+
+  for(int i = 0; i < n; i++){
+    int x;
+    cin >> x;
+    s.insert(x);//Inserts a value into the set.
+  }
+
+  for(int i = 0; i < q; i++){
+    int x;
+    cin >> x;
+    if(s.find(x) != s.end()){//s.find(x) returns the position of x in the set.
+      cout << "YES" << endl;
+      s.erase(x);//s.erase(x) removes x from the set
+    }
+    else 
+      cout << "NO" << endl; 
+  }
+
+  for(set<int>::iterator it = s.begin(); it != s.end(); it++){
+    cout << *it << " ";
+  }
+  return 0;
+}
+```
+
+In the solution, we can see that
+- `s.insert(x)` inserts `x` into the `set s`. This will ensure that `s` will remain sorted by inserting it into the correct place.
+- `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a *`pointer`* at one place past the position of the last element in the set.
+- `s.erase(x)` removes `x` from `s`. 
+
+Finally we end up printing all values that are currently in `s`. However you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. 
+
+/*
+TODO:
+* Write a separate section about pointers earlier.
+* Explain Sorting and Binary Search in a previous section as well.
+*/
+An *`iterator`* or *`pointer`* in a memory location. Because the values in a `set` don't have indexes due to their data structure, we must go through it via memory locations. Doing `*it` *dereferences* the pointer and gives us the value at that memory location.
+
