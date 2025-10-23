@@ -103,6 +103,7 @@ int main() {
 ```
 
 \
+#pagebreak()
 == Repetitions
 
 \
@@ -112,22 +113,16 @@ int main() {
 
 \
 *Intuitive Explanation* : 
+This program finds the longest stretch of the same character in a string.
 
-- Read the string from left to right and keep a *counter* for the block you are currently inside.
-- If the current character equals the previous one, increase counter by one. 
-- If it differs, *reset* the counter to `1` (the new character starts a fresh block).
-- Track the maximum value of the counter as you go.
+It goes through each character one by one:
 
-This is classic *run-length* reasoning: every position either continues the current run or starts a new one.
++ If it’s the same as the previous one, it extends the current streak.
++ If it’s different, it resets the count.
++  It keeps track of the maximum streak found.
 
-*Why it works?*
+Finally, it prints the length of that longest consecutive sequence.
 
-- *current* = length of the run that *ends at the current index*.
-- *maxLen* = maximum run length seen *anywhere up to now*.
-
-At each new character:
-- If it matches the previous one, `current += 1`; otherwise `current = 1`.
-- Update `maxLen = max(maxLen, current)` so it always reflects the best seen.
 
 \
 *Code :*
@@ -160,6 +155,7 @@ int main() {
 ```
 
 \
+#pagebreak()
 == Increasing Array
 
 \
@@ -289,5 +285,59 @@ int main() {
 }
 
 ```
+#pagebreak()
 
+== Coin Piles
+
+
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+There are two key observations in this question. 
+
+The first is that each time where you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles. the sum of coins in the two piles must be divisible by 3.
+
+The second key observation to solving this equation is that the number of coins in one pile cannot exceed twice the number of coins int the other pile.
+
+Using this we check if the above two conditions are met and accordingly output the result.
+
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h> 
+using namespace std;
+ 
+int main() {
+    int t;
+    cin >> t;
+ 
+    while (t--) {
+        int a, b;
+        cin >> a >> b;
+
+        bool cond_1 = (a + b) % 3 != 0;
+        bool cond_2 = max(a, b) <= 2 * min(a, b);
+ 
+        if(cond_1 && cond_2) {
+          cout<<"YES"<<endl;
+        }
+        else {
+          cout<<"NO";
+        }
+    }
+  
+    return 0;
+}
+
+
+```
 \
