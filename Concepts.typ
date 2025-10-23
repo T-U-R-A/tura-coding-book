@@ -169,6 +169,26 @@ To summarize the new syntax of pointers:
 + `int &x` allows you to pass another variable by reference, i.e. Both variables share the same memory location.
 + `&x` gives the memory location of the variable `x`.
 
+== Sorting
+
+To sort a data structure like an array of vector, `c++` has it's own sort function for this:
+
+```cpp
+int main(){
+  
+  int arr[] = {3,4,6,2,5,1};
+  vector<int> v = {6,2,4,5,1,3};
+  sort(arr, arr+6);//Sorts the array {1,2,3,4,5,6}
+  sort(v.begin(), v.end());//Sorts the vector {1,2,3,4,5,6}
+  return 0;
+}
+```
+
+As you can see, the sort function accepts 2 pointers, the start position of the sort and one position after the end of where you want the elements sorted. `arr` is a pointer to the start of the array. You can add a number to this pointer to jump ahead that many places. `arr + 6` is one position past the end of the array because we want to sort the entire array in this case although you don't always have to. `v.begin()` is a pointer to the start of the vector and `v.end()` points one place after the last element of the vector. You can also add a value to `v.begin()` to jump to other positions in the vector to sort only a part of it.
+
+/*
+* TODO: Explain Quick sort and it's implementation.
+*/
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
