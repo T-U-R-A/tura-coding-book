@@ -233,6 +233,108 @@ int main() {
 
 #pagebreak()
 
+== Permutations
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    int n;
+    cin >> n;
+ 
+    // Special case: if n = 2 or 3, it is impossible to arrange
+    // numbers from 1...n so that no two consecutive numbers
+    // differ by 1. Hence, print "NO SOLUTION".
+    if (n > 1 && n < 4) 
+        cout << "NO SOLUTION";
+ 
+    // Base case: if n = 1, the only permutation is "1".
+    else if (n == 1)
+        cout << "1";
+ 
+    // Edge case: if n = 4, the general logic won't directly
+    // give a valid solution, so hardcode one valid answer.
+    else if (n == 4) 
+        cout << "2 4 1 3";
+ 
+    // General case: n >= 5
+    else {
+        // First print all even numbers in descending order
+        // This ensures that consecutive numbers differ by >= 2
+        for (int i = n; i >= 1; i -= 2)
+            cout << i << " ";
+ 
+        // Then print all odd numbers in descending order
+        // This also ensures no two adjacent numbers differ by 1
+        for (int i = n - 1; i >= 1; i -= 2)
+            cout << i << " ";
+    }
+}
+
+```
+#pagebreak()
+
+== Two Sets
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+
+*Code :*
+
+```cpp  
+// code goes here
+
+
+```
+\
+#pagebreak()
+
+
+== Bit Strings
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+
+*Code :*
+
+```cpp  
+// code goes here
+
+
+```
+\
+#pagebreak()
+
 == Trailing Zeros
 
 \
@@ -301,9 +403,9 @@ int main() {
 
 *Intuitive Explanation* : 
 
-There are two key observations in this question. 
+There are two key observations in this question :-
 
-The first is that each time where you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles. the sum of coins in the two piles must be divisible by 3.
+The first key observation  is that each time where you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
 
 The second key observation to solving this equation is that the number of coins in one pile cannot exceed twice the number of coins int the other pile.
 
@@ -324,7 +426,7 @@ int main() {
         int a, b;
         cin >> a >> b;
 
-        bool cond_1 = (a + b) % 3 != 0;
+        bool cond_1 = (a + b) % 3 == 0;
         bool cond_2 = max(a, b) <= 2 * min(a, b);
  
         if(cond_1 && cond_2) {
@@ -341,3 +443,56 @@ int main() {
 
 ```
 \
+#pagebreak()
+
+
+== Creating Strings
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexiograpical sequence for a string or a vector.
+
+It returns false when no other gretaer permutations exists, otherwise it rearranges the string or the vector.
+
+Note : Apurva add your explanation to the next permutation question...
+
+Note : explain meaning of lexiographical down below
+
+\
+*Code :*
+
+```cpp  
+
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    string s;
+    cin >> s;
+
+    //sort the string to get the lowest possible lexiographical sequence
+    sort(s.begin(), s.end());
+
+    vector<string> v;
+
+    do {
+        v.push_back(s);
+    } while (next_permutation(s.begin(), s.end()));
+    // returns false if no other permutation exists
+    // otherwise it rearranges the string
+ 
+    cout<<v.size()<<"\n";
+    for (int i = 0; i < v.size(); i++) {
+        cout << v[i] << endl;
+    }
+}
+
+```
