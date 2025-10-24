@@ -347,11 +347,9 @@ int main() {
 
 *Intuitive Explanation* : 
 
-The problem asks for the number of trailing zeros in n factorial (n!). Zeros come from pairs of 2s and 5s, and since 5s are scarcer, the number of 5s limit the number of zeroes, hence they determine the number of zeros.
+The problem asks for the number of trailing zeros in n factorial. Zeros come from factor pairs of 2s and 5s. There will be excess 2s. Therefore the number of 5s alone determine the number of zeros.
 
-Each multiple of 5 (5, 10, 15, …) contributes one 5, multiples of 25 contribute 2 5s, multiples of 125 contribute 3 5s, and so on. The code loops through powers of 5 (5, 25, 125...), summing $floor(n/i)$, until $floor(n/i)$ = 0. The result is the number of trailing zeros.
-
-Here the int variable helps us find the floor of $(n/i)$ easily without any other function.
+Each multiple of 5 (5, 10, 15, 20, 25…) contributes one 5. Each multiple of 25 (25, 50, 75, 100, 125...) contributes an additional 5.  Each multiple of 125 contributes another 5, and so on. The code loops through powers of 5 and counts the total number of the factor 5 present in n factorial.
 
 Eg : n = 27
 - $floor(27/5)$ = 5  (5s from 5, 10, 15, 20, 25).
@@ -405,9 +403,9 @@ int main() {
 
 There are two key observations in this question :-
 
-The first key observation  is that each time where you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
+The first key observation  is that each time you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
 
-The second key observation to solving this equation is that the number of coins in one pile cannot exceed twice the number of coins int the other pile.
+The second key observation is that the number of coins in one pile cannot exceed twice the number of coins in the other pile. Because in that case you cannot empty the bigger pile even if you remove 2 coins from the bigger pile for each time you remove 1 coin from the smaller pile.
 
 Using this we check if the above two conditions are met and accordingly output the result.
 
