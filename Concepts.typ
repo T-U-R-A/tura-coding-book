@@ -116,6 +116,79 @@ Note that `vectors` constant factors are bigger than `arrays`, which means for q
 
 More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
 
+#pagebreak()
+
+== Pointers
+Unlike in other higher level programs languages which you may be familiar with, `c++` allows you to have full control over how to allocate memory. This is achieved by using `pointers`.
+
+A pointer is a variable that stores a memory location instead of the value. Here's an example of a code which uses pointers and we'll explain what it does:-
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  
+  int a = 5; //made an int variable with value 5.
+  int *b = new int(7);//made an integer pointer with value 7 at that memory location.
+  int &c = a;//made an int variable which refers to the same memory location as a.
+  int *d = &a;//made an int pointer which points to the same memory location as a.
+
+  cout << a << " " << *b << " " << c << " " <<  *d << endl;
+  c = 9;//also changes a and d
+  cout << a << endl;//9 
+  *d = 15;// also changes a and c
+  cout << a << endl;//15
+
+  delete b;//every time you use "new" you must always "delete" the pointer to prevent memory leaks
+  return 0;
+}
+```
+
+While we have written comments, we'll still go deeper to explain the most important lines:
+
+- `int a = 5` creates a variable `a` which has a value 5.
+- `int *b = new int(7)` makes a pointer `b`, which at its memory location has the value 7. 
+- `int &c = a` makes a variable `c` which has the same value that `a` has. This means that modifying one of them will modify the other. They are the same value with 2 different names.
+- `int *d = &a` makes a pointer `d` which stores the memory location of `a`. This also makes `d` the same as `a` and `c` however `d` is a memory location which at the location has the same value as `a` and `c`.
+- `cout << a << " " << *b << " " << c << " " <<  *d << endl` outputs `a`, `*b` which is the value at memory location `b`, `c` and `*d` which is the value at memory location `d`.
+- `c = 9` changes the values of `a` and the value at memory location `d` to 9.
+- `*d = 15` changes the value at memory location `d` to 15 which also changes `a` and `c`.
+- `delete b` is the most important line. *Every time you use the keyword new, you must use delete to free up the memory*. Otherwise that memory will remain allocated to nobody after your program has ended. This is called a memory leak and the only way to free up such "leaked" memory is my restarting your computer.
+
+#pagebreak()
+
+To summarize the new syntax of pointers:
+
++ `int *x` creates a pointer which stores a memory location.
++ `*x` *dereferences* the pointer allowed you to see the value
++ `int &x` allows you to pass another variable by reference, i.e. Both variables share the same memory location.
++ `&x` gives the memory location of the variable `x`.
+
+== Sorting
+
+To sort a data structure like an array of vector, `c++` has it's own sort function for this:
+
+```cpp
+int main(){
+  
+  int arr[] = {3,4,6,2,5,1};
+  vector<int> v = {6,2,4,5,1,3};
+  sort(arr, arr+6);//Sorts the array {1,2,3,4,5,6}
+  sort(v.begin(), v.end());//Sorts the vector {1,2,3,4,5,6}
+  return 0;
+}
+```
+
+As you can see, the sort function accepts 2 pointers, the start position of the sort and one position after the end of where you want the elements sorted. `arr` is a pointer to the start of the array. You can add a number to this pointer to jump ahead that many places. `arr + 6` is one position past the end of the array because we want to sort the entire array in this case although you don't always have to. `v.begin()` is a pointer to the start of the vector and `v.end()` points one place after the last element of the vector. You can also add a value to `v.begin()` to jump to other positions in the vector to sort only a part of it.
+
+/*
+* TODO: Explain Quick sort and it's implementation.
+*/
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
@@ -128,7 +201,6 @@ A `set` in a data structure in `c++`, which has the following properties:
 
 Here's a quick problem, whose solution will explain how to use sets:-
 
-#pagebreak()
 
 Accept numbers from a user. Then check if a number exists in the list, if it does, print `YES` followed by removing that number from the list, otherwise print `NO`. At the end print the new list in ascending order. 
 
@@ -170,15 +242,13 @@ int main(){
 
 In the solution, we can see that
 - `s.insert(x)` inserts `x` into the `set s`. This will ensure that `s` will remain sorted by inserting it into the correct place.
-- `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a *`pointer`* at one place past the position of the last element in the set.
+- `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a pointer at one place past the position of the last element in the set.
 - `s.erase(x)` removes `x` from `s`. 
 
-Finally we end up printing all values that are currently in `s`. However you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. 
+Finally we end up printing all values that are currently in `s`. However you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary. 
 
 /*
 TODO:
-* Write a separate section about pointers earlier.
 * Explain Sorting and Binary Search in a previous section as well.
 */
-An *`iterator`* or *`pointer`* in a memory location. Because the values in a `set` don't have indexes due to their data structure, we must go through it via memory locations. Doing `*it` *dereferences* the pointer and gives us the value at that memory location.
 
