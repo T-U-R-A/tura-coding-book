@@ -24,7 +24,7 @@
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1068")[Backup Link]
 
 \
-*Intuitive Explanation* : 
+*Explanation* : 
 
 + Modulus Function (%): Used to check the parity of n
    - If (n % 2 == 0), n is even, so divide n by 2 
@@ -72,7 +72,7 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1083")[Backup Link]
 
 \
-*Intuitive Explanation* : 
+*Explanation* : 
 
 We use a simple mathematical trick: calculate the expected sum of numbers from 1 to n using the arithmetic progression formula $ n(n+1)/2 $
 
@@ -112,7 +112,7 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1069")[Backup Link]
 
 \
-*Intuitive Explanation* : 
+*Explanation* : 
 This program finds the longest stretch of the same character in a string.
 
 It goes through each character one by one:
@@ -164,7 +164,7 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1094")[Backup Link]
 
 \
-*Intuitive Explanation* :  
+*Explanation* :  
 
 Imagine walking along a staircase. Each step should take you higher or keep you level, but never lower.  
 If suddenly one step is carved too deep, you must *fill it up with blocks* until it matches the height of the step before.  
@@ -243,7 +243,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 
 *Code :*
@@ -298,7 +298,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 
 *Code :*
@@ -322,7 +322,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 
 *Code :*
@@ -345,7 +345,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 The problem asks for the number of trailing zeros in n factorial (n!). Zeros come from pairs of 2s and 5s, and since 5s are scarcer, the number of 5s limit the number of zeroes, hence they determine the number of zeros.
 
@@ -401,7 +401,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 There are two key observations in this question :-
 
@@ -456,7 +456,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexiograpical sequence for a string or a vector.
 

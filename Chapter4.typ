@@ -19,7 +19,7 @@
 ]
 
 \
-*Intuitive Explanation* : 
+*Explanation* : 
 
 A room is just a group of floor squares that are connected—you can move between them up, down, left, or right. Our goal is to count how many separate rooms exist. Here’s the algorithm:
 
