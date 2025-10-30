@@ -166,30 +166,22 @@ int main() {
 \
 *Explanation* :  
 
-Imagine walking along a staircase. Each step should take you higher or keep you level, but never lower.  
-If suddenly one step is carved too deep, you must *fill it up with blocks* until it matches the height of the step before.  
-This problem is nothing more than counting the total number of blocks you need to pour in to make the staircase climb smoothly.
+Intuitive Explanation
 
+We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this. 
 \
-
-*Key Idea:*  
-
-- A non-decreasing array is like a staircase that never dips:  
-  `a[i] >= a[i-1]`.  
-- Whenever `a[i] < a[i-1]`, the gap `(a[i-1] - a[i])` tells you how much you must “fill in” to raise it.  
-- Add all these gaps together → that’s the answer.
 
 \
 
 *Algorithm (Step by Step Flow):*  
 
-1. Take the first element as your *baseline height*.  
-2. Start walking through the array, element by element.  
-3. At each step:  
-   - If the current number is tall enough (≥ previous), move on.  
-   - If not, *pour in increments* until it matches the previous height.  
-   - Count how much you poured.  
-4. By the end, your total poured blocks = minimum operations required.
++ Read the first element and store it as prev.
++ Iterate through the rest of the array:
++ If current ≥ prev, move on — the order is fine.
++ If current < prev, we need to increase it by (prev − current).
++ Add this difference to the total count and update current = prev.
++ Continue until all elements are processed.
++ Output the total count of increments. required.
 
 \
 
@@ -245,6 +237,7 @@ int main() {
 
 *Explanation* : 
 
+The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity.
 
 *Code :*
 
@@ -273,12 +266,12 @@ int main() {
  
     // General case: n >= 5
     else {
-        // First print all even numbers in descending order
+        // First print all odd numbers in descending order
         // This ensures that consecutive numbers differ by >= 2
         for (int i = n; i >= 1; i -= 2)
             cout << i << " ";
  
-        // Then print all odd numbers in descending order
+        // Then print all even numbers in descending order
         // This also ensures no two adjacent numbers differ by 1
         for (int i = n - 1; i >= 1; i -= 2)
             cout << i << " ";
@@ -347,11 +340,9 @@ int main() {
 
 *Explanation* : 
 
-The problem asks for the number of trailing zeros in n factorial (n!). Zeros come from pairs of 2s and 5s, and since 5s are scarcer, the number of 5s limit the number of zeroes, hence they determine the number of zeros.
+The problem asks for the number of trailing zeros in n factorial. Zeros come from factor pairs of 2s and 5s. There will be excess 2s. Therefore the number of 5s alone determine the number of zeros.
 
-Each multiple of 5 (5, 10, 15, …) contributes one 5, multiples of 25 contribute 2 5s, multiples of 125 contribute 3 5s, and so on. The code loops through powers of 5 (5, 25, 125...), summing $floor(n/i)$, until $floor(n/i)$ = 0. The result is the number of trailing zeros.
-
-Here the int variable helps us find the floor of $(n/i)$ easily without any other function.
+Each multiple of 5 (5, 10, 15, 20, 25…) contributes one 5. Each multiple of 25 (25, 50, 75, 100, 125...) contributes an additional 5.  Each multiple of 125 contributes another 5, and so on. The code loops through powers of 5 and counts the total number of the factor 5 present in n factorial.
 
 Eg : n = 27
 - $floor(27/5)$ = 5  (5s from 5, 10, 15, 20, 25).
@@ -405,9 +396,9 @@ int main() {
 
 There are two key observations in this question :-
 
-The first key observation  is that each time where you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
+The first key observation  is that each time you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
 
-The second key observation to solving this equation is that the number of coins in one pile cannot exceed twice the number of coins int the other pile.
+The second key observation is that the number of coins in one pile cannot exceed twice the number of coins in the other pile. Because in that case you cannot empty the bigger pile even if you remove 2 coins from the bigger pile for each time you remove 1 coin from the smaller pile.
 
 Using this we check if the above two conditions are met and accordingly output the result.
 
