@@ -166,30 +166,22 @@ int main() {
 \
 *Intuitive Explanation* :  
 
-Imagine walking along a staircase. Each step should take you higher or keep you level, but never lower.  
-If suddenly one step is carved too deep, you must *fill it up with blocks* until it matches the height of the step before.  
-This problem is nothing more than counting the total number of blocks you need to pour in to make the staircase climb smoothly.
+Intuitive Explanation
 
+We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this. 
 \
-
-*Key Idea:*  
-
-- A non-decreasing array is like a staircase that never dips:  
-  `a[i] >= a[i-1]`.  
-- Whenever `a[i] < a[i-1]`, the gap `(a[i-1] - a[i])` tells you how much you must “fill in” to raise it.  
-- Add all these gaps together → that’s the answer.
 
 \
 
 *Algorithm (Step by Step Flow):*  
 
-1. Take the first element as your *baseline height*.  
-2. Start walking through the array, element by element.  
-3. At each step:  
-   - If the current number is tall enough (≥ previous), move on.  
-   - If not, *pour in increments* until it matches the previous height.  
-   - Count how much you poured.  
-4. By the end, your total poured blocks = minimum operations required.
++ Read the first element and store it as prev.
++ Iterate through the rest of the array:
++ If current ≥ prev, move on — the order is fine.
++ If current < prev, we need to increase it by (prev − current).
++ Add this difference to the total count and update current = prev.
++ Continue until all elements are processed.
++ Output the total count of increments. required.
 
 \
 
@@ -245,6 +237,7 @@ int main() {
 
 *Intuitive Explanation* : 
 
+The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity.
 
 *Code :*
 
@@ -273,12 +266,12 @@ int main() {
  
     // General case: n >= 5
     else {
-        // First print all even numbers in descending order
+        // First print all odd numbers in descending order
         // This ensures that consecutive numbers differ by >= 2
         for (int i = n; i >= 1; i -= 2)
             cout << i << " ";
  
-        // Then print all odd numbers in descending order
+        // Then print all even numbers in descending order
         // This also ensures no two adjacent numbers differ by 1
         for (int i = n - 1; i >= 1; i -= 2)
             cout << i << " ";
