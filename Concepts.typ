@@ -19,7 +19,7 @@
 == Basic `c++` syntax
 
 === Question
-Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage.
+Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage. We deliberately use C++ features useful for programming contests.
 
 Solution:
 ```cpp 
@@ -28,44 +28,64 @@ Solution:
 using namespace std;
 
 double calcPercent(int numerator, int denominator){
-  return numerator * 100.0 / denominator;
+  return numerator * 100.0 / denominator; 
+  // An example of a single line comment
+  /* An example of a multiline comment 
+     numerator / denominator * 100.0 will first do integer division. 
+     That's why we multiply by 100.0 first and then divide by the denominator. */
 }
 
 struct Student{
   string name;
   pair<int, int> marks;
   double percent;
-  Student();
-  Student(string name, pair<int, int> marks){
+  Student(); // this is a default constructor
+
+  // this is a parameterized constructor
+  Student(string name, pair<int, int> marks) { 
     this->name = name;
     this->marks = marks;
     percent = calcPercent(marks.first, marks.second);
   }
 };
 
-int main(){
-
+// Program execution begins from here
+int main() { 
   int n;
   cin >> n;
-  Student arr[n];
-  double maxPercentage = 0;
+
+  // to create an array of n Students the default constructor was neccesary
+  Student arr[n]; 
+  double maxPercentage = 0.0;
+
   for(int i = 0; i < n; i++){
     string name;
     pair<int, int> marks;
     cin >> name >> marks.first >> marks.second; 
+
+    // calling parameterized constructor
     arr[i] = Student(name, marks);
     maxPercentage = max(arr[i].percent, maxPercentage);
   }
   
+  // a vector is a resizeable array with some useful functions
+  // memory is automatically allocated in a vector
   vector<Student> best;
+
   for(int i = 0; i < n; i++)
-    if(arr[i].percent == maxPercentage)
+    if(arr[i].percent == maxPercentage) {
+      // push_back() adds the student to the end of the vector
       best.push_back(arr[i]);
+    }
   
   cout << "Names, Marks and Percentages of top scorers!" << endl;
-  for(int i = 0; i < best.size(); i++)
-    cout << "Name: " << best[i].name << ", Marks: " << best[i].marks.first << "/" << best[i].marks.second << ", Percentage: " << best[i].percent << endl;
-  return 0;
+  for(int i = 0; i < best.size(); i++) {
+    cout << "Name: " << best[i].name;
+    cout << ", Marks: " << best[i].marks.first << "/" << best[i].marks.second;
+    cout << ", Percentage: " << best[i].percent << endl;
+  }
+
+  return 0; // end code
 }
 ```
 
