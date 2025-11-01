@@ -112,7 +112,11 @@ A function is something that accepts parameters and returns a value. This includ
 More about `c++` syntax can be learned #link("https://www.w3schools.com/cpp/")[here].
 
 == Time Complexity
-Whenever we're trying to solve a question, we need to come up with an approach that is efficient enough to solve the question within a reasonable amount of time. This can be measured using Big-O notation.
+
+Time Complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent by using something called Big-O Notation. For instance, say we have a program that is $O(n)$, this means that the function is linear, i.e. if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size. 
+
+Whenever you are solving a question, always calculate the time complexity of your algorithm. When you plug in the maximum input sizes into your time complexity, the amount of time it should take should be less than $10^10$ because that's usually how many operations occur in one second.
+/*Whenever we're trying to solve a question, we need to come up with an approach that is efficient enough to solve the question within a reasonable amount of time. This can be measured using Big-O notation.
 
 Let's say we have some code that accepts $n$ numbers of numbers from the user and stores them in an array. The amount of time this code will take can be represent as some function $f(n) = m dot n+c$. The exact values of $m$ and $c$ depend on what the compiler does, how long it takes c++ to accepts and store. The main idea however is that it's a linear function. The simpler way to state this is to say that this code has a time complexity of $O(n)$. 
 
@@ -124,19 +128,8 @@ f(n) = O(g(n)) "if:"
 lim_(n -> infinity) f(n)/g(n) <= A  " For some contant" A
 $
 
-In simple English, this means that $f(n)$ and $g(n)$ grow at the same rate. Big-O notion is very important to note because it tells us how quickly the time it takes for our program to run grows as our input size grows. Generally you know your algorithm should run in under a second is if $O(f(n)) < 10^10$ where $O(f(n))$ is the time complexity of your function and you plug in the max value of $n$. For example, if you have a code which runs in $O(n)$, it will pass a program if the max value of $n$ is less than $10^10$. If your algorithm is $O(n^2)$, then the max value of $n$ has to be less than $10^5$.
+In simple English, this means that $f(n)$ and $g(n)$ grow at the same rate. Big-O notion is very important to note because it tells us how quickly the time it takes for our program to run grows as our input size grows. Generally you know your algorithm should run in under a second is if $O(f(n)) < 10^10$ where $O(f(n))$ is the time complexity of your function and you plug in the max value of $n$. For example, if you have a code which runs in $O(n)$, it will pass a program if the max value of $n$ is less than $10^10$. If your algorithm is $O(n^2)$, then the max value of $n$ has to be less than $10^5$.*/
 
-== Vectors in Depth
-
-We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as `arrays` except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
-
-The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
-
-Note that `vectors` constant factors are bigger than `arrays`, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of `arrays`.
-
-More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
-
-#pagebreak()
 
 == Pointers
 Unlike in other higher level programs languages which you may be familiar with, `c++` allows you to have full control over how to allocate memory. This is achieved by using `pointers`.
@@ -189,6 +182,18 @@ To summarize the new syntax of pointers:
 + `int &x` allows you to pass another variable by reference, i.e. Both variables share the same memory location.
 + `&x` gives the memory location of the variable `x`.
 
+== Vectors in Depth
+
+We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as `arrays` except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
+
+The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
+
+Note that `vectors` constant factors are bigger than `arrays`, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of `arrays`. The main reason being that:-
++ It's easier to initialize all values in a vector \ ```cpp vector<int> v(5,-1)//Initializes vector of size 5 filled with -1```
++ When passing an array to a function, it *always* passes by reference. Passing by reference simply means that the function can make changes to the original array. Sometimes however we wish to pass by value, meaning that a new copy is made. With vectors we have such freedom to choose.
+
+More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
+
 == Sorting
 
 To sort a data structure like an array of vector, `c++` has it's own sort function for this:
@@ -204,11 +209,11 @@ int main(){
 }
 ```
 
+
 As you can see, the sort function accepts 2 pointers, the start position of the sort and one position after the end of where you want the elements sorted. `arr` is a pointer to the start of the array. You can add a number to this pointer to jump ahead that many places. `arr + 6` is one position past the end of the array because we want to sort the entire array in this case although you don't always have to. `v.begin()` is a pointer to the start of the vector and `v.end()` points one place after the last element of the vector. You can also add a value to `v.begin()` to jump to other positions in the vector to sort only a part of it.
 
-/*
-* TODO: Explain Quick sort and it's implementation.
-*/
+#pagebreak()
+
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
@@ -269,6 +274,6 @@ Finally we end up printing all values that are currently in `s`. However you may
 
 /*
 TODO:
-* Explain Sorting and Binary Search in a previous section as well.
+* Binary Search in a previous section as well.
 */
 
