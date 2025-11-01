@@ -62,8 +62,8 @@ int main() {
 }
 ```
 
-\
-#pagebreak()
+
+
 == Missing Number
 
 \
@@ -102,8 +102,6 @@ int main() {
 }
 ```
 
-\
-#pagebreak()
 == Repetitions
 
 \
@@ -281,26 +279,141 @@ int main() {
 ```
 #pagebreak()
 
-== Two Sets
+== Number Spiral
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#link("https://cses.fi/problemset/task/1071")[Question - Number Spiral]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
-
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1071")[Backup Link]
 
 \
 
-*Explanation* : 
+*Intuitive Explanation* : 
 
+Every coordinate sits on a diagonal “layer” whose index is the maximum of the row and column. The square at the end of that layer has value layer², and depending on whether the layer index is even or odd we walk along the layer to the requested cell.
 
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
 
-
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t;
+    cin >> t;
+    while (t--) {
+        long long y, x;
+        cin >> y >> x;
+        long long layer = max(y, x);
+        long long base = (layer - 1) * (layer - 1);
+        long long value;
+        if (layer % 2 == 0) {
+            if (y == layer) value = base + x;
+            else value = layer * layer - (y - 1);
+        } else {
+            if (x == layer) value = base + y;
+            else value = layer * layer - (x - 1);
+        }
+        cout << value << "\n";
+    }
+    return 0;
+}
 ```
+
+\
+#pagebreak()
+
+== Two Knights
+
+\
+#link("https://cses.fi/problemset/task/1072")[Question - Two Knights]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1072")[Backup Link]
+
+\
+
+*Intuitive Explanation* : 
+
+Count all unordered pairs of squares, then subtract the placements where two knights attack each other. Those attacking positions live inside 2×3 or 3×2 rectangles, and there are 4 of each per rectangle.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    long long n;
+    cin >> n;
+    for (long long k = 1; k <= n; ++k) {
+        long long total = k * k;
+        long long ways = total * (total - 1) / 2;
+        if (k > 2) ways -= 4 * (k - 1) * (k - 2);
+        cout << ways << "\n";
+    }
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+== Two Sets
+
+\
+#link("https://cses.fi/problemset/task/1092")[Question - Two Sets]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1092")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+The total sum from 1 to n is n(n+1)/2. If that sum is odd we cannot split it evenly. Otherwise we keep taking the largest remaining number into the first set while we still stay under half of the sum; every other number goes into the second set.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    long long n;
+    cin >> n;
+    long long total = n * (n + 1) / 2;
+    if (total % 2) {
+        cout << "NO\n";
+        return 0;
+    }
+    cout << "YES\n";
+    long long target = total / 2;
+    vector<long long> first, second;
+    for (long long x = n; x >= 1; --x) {
+        if (x <= target) {
+            first.push_back(x);
+            target -= x;
+        } else {
+            second.push_back(x);
+        }
+    }
+    cout << first.size() << "\n";
+    for (size_t i = 0; i < first.size(); ++i) {
+        if (i) cout << " ";
+        cout << first[i];
+    }
+    cout << "\n" << second.size() << "\n";
+    for (size_t i = 0; i < second.size(); ++i) {
+        if (i) cout << " ";
+        cout << second[i];
+    }
+    cout << "\n";
+    return 0;
+}
+```
+
 \
 #pagebreak()
 
@@ -308,22 +421,34 @@ int main() {
 == Bit Strings
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#link("https://cses.fi/problemset/task/1617")[Question - Bit Strings]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1617")[Backup Link]
 
 
 \
 
-*Explanation* : 
+*Intuitive Explanation* : 
 
+Each of the n positions can be either 0 or 1, so the answer is simply 2^n. We compute the power iteratively while taking remainders modulo 1e9+7 to avoid overflow.
 
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
 
-
+int main() {
+    const long long MOD = 1'000'000'007;
+    long long n;
+    cin >> n;
+    long long answer = 1;
+    for (long long i = 0; i < n; ++i) {
+        answer = (answer * 2) % MOD;
+    }
+    cout << answer << "\n";
+    return 0;
+}
 ```
 \
 #pagebreak()
@@ -436,6 +561,144 @@ int main() {
 \
 #pagebreak()
 
+== Palindrome Reorder
+
+\
+#link("https://cses.fi/problemset/task/1755")[Question - Palindrome Reorder]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1755")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Count the frequency of every letter. A palindrome can have at most one character with an odd count; if more exist the task is impossible. Otherwise we build the left half using half of each frequency, keep the optional odd character for the middle, and mirror the left half to complete the string.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    string s;
+    cin >> s;
+    vector<int> freq(26, 0);
+    for (char c : s) freq[c - 'A']++;
+    int odd = 0;
+    int oddIndex = -1;
+    for (int i = 0; i < 26; ++i) {
+        if (freq[i] % 2) {
+            odd++;
+            oddIndex = i;
+        }
+    }
+    if (odd > 1) {
+        cout << "NO SOLUTION\n";
+        return 0;
+    }
+    string half;
+    for (int i = 0; i < 26; ++i) {
+        half.append(freq[i] / 2, char('A' + i));
+    }
+    string result = half;
+    if (oddIndex != -1) result += char('A' + oddIndex);
+    reverse(half.begin(), half.end());
+    result += half;
+    cout << result << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Gray Code
+
+\
+#link("https://cses.fi/problemset/task/2205")[Question - Gray Code]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/2205")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Start with the 1-bit codes 0 and 1. To create the next length, prepend 0 to the current list and 1 to its reverse. This reflection guarantees that consecutive strings differ by exactly one bit.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<string> codes = {"0", "1"};
+    if (n == 1) {
+        for (const string& code : codes) cout << code << "\n";
+        return 0;
+    }
+    for (int len = 2; len <= n; ++len) {
+        vector<string> rev = codes;
+        reverse(rev.begin(), rev.end());
+        for (string& code : codes) code = "0" + code;
+        for (string& code : rev) code = "1" + code;
+        codes.insert(codes.end(), rev.begin(), rev.end());
+    }
+    for (const string& code : codes) cout << code << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Tower of Hanoi
+
+\
+#link("https://cses.fi/problemset/task/2165")[Question - Tower of Hanoi]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/2165")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+To move n disks, first move the top n−1 disks to the helper peg, then move the largest disk to the destination, and finally move the stack from the helper to the destination. This recursion yields 2^n − 1 moves and provides the lexicographically simple solution.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve(int n, int from, int to, int aux) {
+    if (n == 0) return;
+    solve(n - 1, from, aux, to);
+    cout << from << " " << to << "\n";
+    solve(n - 1, aux, to, from);
+}
+
+int main() {
+    int n;
+    cin >> n;
+    long long moves = (1LL << n) - 1;
+    cout << moves << "\n";
+    solve(n, 1, 3, 2);
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
 
 == Creating Strings
 
@@ -487,3 +750,543 @@ int main() {
 }
 
 ```
+\
+#pagebreak()
+== Apple Division
+
+\
+#link("https://cses.fi/problemset/task/1623")[Question - Apple Division]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1623")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Try every subset by recursively deciding for each apple whether it goes to the first pile. Track the running weight and update the best difference compared to the total sum. With n ≤ 20 this brute-force with pruning easily fits in time.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+long long bestDiff;
+vector<long long> weight;
+long long total;
+
+void dfs(int idx, long long current) {
+    if (idx == (int)weight.size()) {
+        long long other = total - current;
+        bestDiff = min(bestDiff, llabs(current - other));
+        return;
+    }
+    dfs(idx + 1, current + weight[idx]);
+    dfs(idx + 1, current);
+}
+
+int main() {
+    int n;
+    cin >> n;
+    weight.resize(n);
+    total = 0;
+    for (int i = 0; i < n; ++i) {
+        cin >> weight[i];
+        total += weight[i];
+    }
+    bestDiff = LLONG_MAX;
+    dfs(0, 0);
+    cout << bestDiff << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Chessboard and Queens
+
+\
+#link("https://cses.fi/problemset/task/1624")[Question - Chessboard and Queens]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1624")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Place queens row by row. At each row we try every column that is not blocked and whose column and diagonals are still free. Bitmasks help track used columns and diagonals in O(1), and recursion counts all valid configurations.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<string> board(8);
+long long solutions = 0;
+
+void search(int row, int cols, int diag1, int diag2) {
+    if (row == 8) {
+        solutions++;
+        return;
+    }
+    for (int col = 0; col < 8; ++col) {
+        if (board[row][col] == '*') continue;
+        int colMask = 1 << col;
+        int d1Mask = 1 << (row + col);
+        int d2Mask = 1 << (row - col + 7);
+        if (cols & colMask) continue;
+        if (diag1 & d1Mask) continue;
+        if (diag2 & d2Mask) continue;
+        search(row + 1, cols | colMask, diag1 | d1Mask, diag2 | d2Mask);
+    }
+}
+
+int main() {
+    for (int i = 0; i < 8; ++i) cin >> board[i];
+    search(0, 0, 0, 0);
+    cout << solutions << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Raab Game I
+
+\
+#link("https://cses.fi/problemset/task/3399")[Question - Raab Game I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3399")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+We can fix the order of the first player as 1…n and seek a permutation of the second player’s cards that yields exactly a wins, b losses, and the remaining draws. Treat each position as needing “greater than”, “equal”, or “less than” relations and build a bipartite graph between positions and card values. A standard augmenting-path matching either finds a valid assignment or proves it impossible.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, a, b;
+        cin >> n >> a >> b;
+        if (a + b > n) {
+            cout << "NO\n";
+            continue;
+        }
+        int draws = n - (a + b);
+        vector<char> category;
+        category.insert(category.end(), b, 'B');
+        category.insert(category.end(), draws, 'D');
+        category.insert(category.end(), a, 'A');
+        vector<vector<int>> adj(n);
+        for (int i = 0; i < n; ++i) {
+            int pos = i + 1;
+            if (category[i] == 'B') {
+                for (int val = pos + 1; val <= n; ++val) adj[i].push_back(val);
+            } else if (category[i] == 'D') {
+                adj[i].push_back(pos);
+            } else {
+                for (int val = 1; val < pos; ++val) adj[i].push_back(val);
+            }
+            if (adj[i].empty()) {
+                adj.clear();
+                break;
+            }
+        }
+        if (adj.empty()) {
+            cout << "NO\n";
+            continue;
+        }
+        vector<int> match(n + 1, -1);
+        function<bool(int, vector<int>&)> dfs = [&](int u, vector<int>& seen) {
+            for (int v : adj[u]) {
+                if (seen[v]) continue;
+                seen[v] = 1;
+                if (match[v] == -1 || dfs(match[v], seen)) {
+                    match[v] = u;
+                    return true;
+                }
+            }
+            return false;
+        };
+        bool ok = true;
+        for (int i = 0; i < n && ok; ++i) {
+            vector<int> seen(n + 1, 0);
+            if (!dfs(i, seen)) ok = false;
+        }
+        if (!ok) {
+            cout << "NO\n";
+            continue;
+        }
+        vector<int> order(n);
+        for (int val = 1; val <= n; ++val) {
+            int pos = match[val];
+            order[pos] = val;
+        }
+        cout << "YES\n";
+        for (int i = 1; i <= n; ++i) {
+            if (i > 1) cout << ' ';
+            cout << i;
+        }
+        cout << "\n";
+        for (int i = 0; i < n; ++i) {
+            if (i) cout << ' ';
+            cout << order[i];
+        }
+        cout << "\n";
+    }
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Mex Grid Construction
+
+\
+#link("https://cses.fi/problemset/task/3419")[Question - Mex Grid Construction]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3419")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Fill the grid row by row. For each cell collect the numbers already appearing to its left and above, then choose the smallest nonnegative integer missing from that set. With n ≤ 100 the straightforward O(n³) implementation is perfectly fast.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<vector<int>> grid(n, vector<int>(n, 0));
+    int limit = 2 * n + 5;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            vector<int> seen(limit, 0);
+            for (int c = 0; c < j; ++c) seen[grid[i][c]] = 1;
+            for (int r = 0; r < i; ++r) seen[grid[r][j]] = 1;
+            int mex = 0;
+            while (seen[mex]) ++mex;
+            grid[i][j] = mex;
+        }
+    }
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (j) cout << ' ';
+            cout << grid[i][j];
+        }
+        cout << "\n";
+    }
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Knight Moves Grid
+
+\
+#link("https://cses.fi/problemset/task/3217")[Question - Knight Moves Grid]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3217")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Run a breadth-first search from the top-left corner. Each BFS layer corresponds to knight moves; the first time we reach any cell gives its minimum distance.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin >> n;
+    vector<vector<int>> dist(n, vector<int>(n, -1));
+    queue<pair<int,int>> q;
+    dist[0][0] = 0;
+    q.push({0, 0});
+    const int dr[8] = {-2, -2, -1, -1, 1, 1, 2, 2};
+    const int dc[8] = {-1, 1, -2, 2, -2, 2, -1, 1};
+    while (!q.empty()) {
+        auto [r, c] = q.front();
+        q.pop();
+        for (int k = 0; k < 8; ++k) {
+            int nr = r + dr[k];
+            int nc = c + dc[k];
+            if (nr < 0 || nr >= n || nc < 0 || nc >= n) continue;
+            if (dist[nr][nc] != -1) continue;
+            dist[nr][nc] = dist[r][c] + 1;
+            q.push({nr, nc});
+        }
+    }
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            if (j) cout << ' ';
+            cout << dist[i][j];
+        }
+        cout << "\n";
+    }
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Grid Coloring I
+
+\
+#link("https://cses.fi/problemset/task/3311")[Question - Grid Coloring I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3311")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+A chessboard coloring works: assign two letters to black squares and two letters to white squares. Because adjacent cells have opposite parity, they automatically differ. Each cell then chooses the letter from its parity pair that is different from its original character.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m;
+    cin >> n >> m;
+    vector<string> grid(n);
+    for (int i = 0; i < n; ++i) cin >> grid[i];
+    const string even = "AB";
+    const string odd = "CD";
+    vector<string> ans = grid;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            const string& options = ((i + j) % 2 == 0) ? even : odd;
+            ans[i][j] = (options[0] != grid[i][j]) ? options[0] : options[1];
+        }
+    }
+    for (int i = 0; i < n; ++i) cout << ans[i] << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Digit Queries
+
+\
+#link("https://cses.fi/problemset/task/2431")[Question - Digit Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/2431")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+Numbers are grouped by digit length. We subtract whole blocks (1-digit numbers, 2-digit numbers, …) until we locate the block containing the k-th digit. Then we identify the exact number in that block and index into its string form.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int q;
+    cin >> q;
+    while (q--) {
+        long long k;
+        cin >> k;
+        long long digits = 1;
+        long long count = 9;
+        long long start = 1;
+        while (k > (__int128)digits * count) {
+            k -= digits * count;
+            digits++;
+            count *= 10;
+            start *= 10;
+        }
+        long long number = start + (k - 1) / digits;
+        string s = to_string(number);
+        cout << s[(k - 1) % digits] << "\n";
+    }
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== String Reorder
+
+\
+#link("https://cses.fi/problemset/task/1743")[Question - String Reorder]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1743")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+We count character frequencies and greedily append the smallest possible letter that differs from the previous character and still allows a valid completion. Feasibility is checked by ensuring no letter dominates the remaining length and that not all remaining characters match the one we just placed.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    string s;
+    cin >> s;
+    vector<long long> freq(26, 0);
+    for (char c : s) freq[c - 'A']++;
+    long long n = s.size();
+    if (*max_element(freq.begin(), freq.end()) > (n + 1) / 2) {
+        cout << -1 << "\n";
+        return 0;
+    }
+    string ans;
+    int prev = -1;
+    for (long long placed = 0; placed < n; ++placed) {
+        bool okPick = false;
+        for (int ch = 0; ch < 26; ++ch) {
+            if (freq[ch] == 0 || ch == prev) continue;
+            freq[ch]--;
+            long long remain = n - placed - 1;
+            long long most = *max_element(freq.begin(), freq.end());
+            if (most <= (remain + 1) / 2 && !(remain > 0 && freq[ch] == remain)) {
+                ans.push_back(char('A' + ch));
+                prev = ch;
+                okPick = true;
+                break;
+            }
+            freq[ch]++;
+        }
+        if (!okPick) {
+            cout << -1 << "\n";
+            return 0;
+        }
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
+
+
+== Grid Path Description
+
+\
+#link("https://cses.fi/problemset/task/1625")[Question - Grid Path Description]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1625")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+We explore all possible paths consistent with the string by recursive backtracking. Pruning is essential: whenever the path hits a cell where it would split the grid into two disconnected regions, we can stop exploring that branch immediately. The classic CSES pruning checks for forced turns by verifying whether moving vertically or horizontally would trap us.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+string pattern;
+bool visited[7][7];
+int answer = 0;
+const int dr[4] = {0, 0, -1, 1};
+const int dc[4] = {1, -1, 0, 0};
+const char moves[4] = {'R', 'L', 'U', 'D'};
+
+bool blocked(int r, int c) {
+    return r < 0 || r >= 7 || c < 0 || c >= 7 || visited[r][c];
+}
+
+void dfs(int step, int r, int c) {
+    if (r == 6 && c == 0) {
+        if (step == 48) answer++;
+        return;
+    }
+    if (step == 48) return;
+    bool up = blocked(r - 1, c);
+    bool down = blocked(r + 1, c);
+    bool left = blocked(r, c - 1);
+    bool right = blocked(r, c + 1);
+    if ((up && down && !left && !right) || (left && right && !up && !down)) return;
+    char want = pattern[step];
+    for (int dir = 0; dir < 4; ++dir) {
+        if (want != '?' && want != moves[dir]) continue;
+        int nr = r + dr[dir];
+        int nc = c + dc[dir];
+        if (blocked(nr, nc)) continue;
+        visited[nr][nc] = true;
+        dfs(step + 1, nr, nc);
+        visited[nr][nc] = false;
+    }
+}
+
+int main() {
+    cin >> pattern;
+    visited[0][0] = true;
+    dfs(0, 0, 0);
+    cout << answer << "\n";
+    return 0;
+}
+```
+
+\
+#pagebreak()
