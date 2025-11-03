@@ -61,8 +61,7 @@ int main() {
     return 0;
 }
 ```
-
-
+#pagebreak()
 
 == Missing Number
 
@@ -101,6 +100,7 @@ int main() {
     return 0;
 }
 ```
+#pagebreak()
 
 == Repetitions
 
@@ -164,13 +164,9 @@ int main() {
 \
 *Explanation* :  
 
-Intuitive Explanation
-
 We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this. 
-\
 
 \
-
 *Algorithm (Step by Step Flow):*  
 
 + Read the first element and store it as prev.
@@ -190,10 +186,9 @@ We need to make the given array non-decreasing — that is, every element must b
 using namespace std; 
  
 int main() {
-    int n;            // n = number of elements
-    int prev;         // prev = previous element
+    int n, prev;
     long long operations = 0; // total number of increments needed
-    cin >> n >> prev;    // take first element as 'prev'
+    cin >> n >> prev;
     
     // process the rest of the array
     for (int i = 1; i < n; ++i) {
@@ -211,15 +206,13 @@ int main() {
 
         prev = current; // update 'prev' for the next iteration
     }
- 
-    // output the total number of operations
+
     cout << operations << '\n';
     return 0;
 }
 
 ```
 
-\
 
 #pagebreak()
 
@@ -235,7 +228,7 @@ int main() {
 
 *Explanation* : 
 
-The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity.
+The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity. This is because the difference between consecutive odd numbers is always greater than 1.
 
 *Code :*
 
