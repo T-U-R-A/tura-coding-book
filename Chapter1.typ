@@ -28,7 +28,7 @@
 
 + Modulus Function (%): Used to check the parity of n
    - If (n % 2 == 0), n is even, so divide n by 2 
-   - If (n % 2 == 1),  n is odd, so multiply n by 3 and add 1
+   - If (n % 2 == 1), n is odd, so multiply n by 3 and add 1
 
 + While Loop: Continues the process until n becomes 1.
    - The loop runs as long as n is not 1 (n != 1), applying the above rules in each iteration.
@@ -423,7 +423,9 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Each of the n positions can be either 0 or 1, so the answer is simply 2^n. We compute the power iteratively while taking remainders modulo 1e9+7 to avoid overflow.
+Each of the n positions can be either 0 or 1, so the answer is simply $2^n$. We compute the power iteratively while taking remainders modulo 1e9+7 to avoid overflow.
+
+\
 
 *Code :*
 
@@ -432,13 +434,15 @@ Each of the n positions can be either 0 or 1, so the answer is simply 2^n. We co
 using namespace std;
 
 int main() {
-    const long long MOD = 1'000'000'007;
+    const long long MOD = 1e9 + 7;
     long long n;
     cin >> n;
+
     long long answer = 1;
     for (long long i = 0; i < n; ++i) {
         answer = (answer * 2) % MOD;
     }
+
     cout << answer << "\n";
     return 0;
 }
@@ -1013,7 +1017,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Explanation* : 
 
 Run a breadth-first search from the top-left corner. Each BFS layer corresponds to knight moves; the first time we reach any cell gives its minimum distance.
 

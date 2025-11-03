@@ -66,13 +66,61 @@ int main(){
 
 \
 
-*Intuitive Explanation* : 
+*Explanation : * 
 
+The algorithm sorts both applicants and apartments, then uses a *two-pointer approach* to match each applicant with the smallest available apartment whose size differs by at most `k`.
+If an apartment is too small, move to the next apartment; if it’s too large, move to the next applicant.
+This greedy method ensures the maximum number of matches efficiently.
+
+\
 
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    int n, m, k;
+    cin >> n >> m >> k;
+    
+    vector<int> applicants(n), apartments(m);
+    
+    // Read applicant preferences
+    for (int i = 0; i < n; i++)
+        cin >> applicants[i];
+
+    // Read apartment sizes
+    for (int i = 0; i < m; i++)
+        cin >> apartments[i];
+    
+    // Sort both arrays
+    sort(applicants.begin(), applicants.end());
+    sort(apartments.begin(), apartments.end());
+    
+    int count = 0;
+    int i = 0, j = 0;
+    
+    // Two-pointer approach to match applicants to apartments
+    while (i < n && j < m) {
+        // Check if current apartment fits current applicant's preference
+        if (abs(applicants[i] - apartments[j]) <= k) {
+            count++;
+            i++;
+            j++;
+        } 
+        // If apartment is too small, try next apartment
+        else if (applicants[i] - apartments[j] > k) {
+            j++;
+        }
+        // If apartment is too big, try next applicant
+        else {
+            i++;
+        }
+    }
+    
+    cout << count << endl;
+    return 0;
 }
 
 ```
@@ -88,14 +136,51 @@ int main(){
 
 \
 
-*Intuitive Explanation* : 
+*Explanation : *
 
+The algorithm sorts all weights, then uses two pointers—one at the lightest and one at the heaviest person—to form pairs without exceeding the limit. If they can share a gondola, both are removed; otherwise, the heavier one goes alone. This greedy pairing minimizes the total number of gondolas.
+
+\
 
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/.stdc++.h>
+using namespace std;
+ 
+int main() {
+    int n, x;
+    cin >> n >> x;
+    
+    vector<int> weights(n);
+    for (int i = 0; i < n; i++) {
+        cin >> weights[i];
+    }
+    
+    // Sort the weights
+    sort(weights.begin(), weights.end());
+    
+    int gondolas = 0;
+    int left = 0, right = n - 1;
+    
+    while (left <= right) {
+        // If heaviest and lightest can share a gondola
+        if (weights[left] + weights[right] <= x) {
+            left++;
+            right--;
+        }
+        // Otherwise, heaviest gets their own gondola
+        else {
+            right--;
+        }
+        gondolas++;
+    }
+    
+    cout << gondolas << endl;
+    
+    return 0;
 }
+
 
 ```
 #pagebreak()
