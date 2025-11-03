@@ -5,7 +5,7 @@ Bit Strings
 Coin Piles
 Palindrome Reorder
 Gray Code
-Tower of Hanoi
+Tower of Hanoi - Apurva
 Creating Strings - Apurva
 Apple Division
 Chessboard and Queens
