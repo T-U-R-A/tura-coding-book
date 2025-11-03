@@ -212,17 +212,51 @@ int main() {
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810190946/https://cses.fi/problemset/task/1619/")[Backup Link]
 
+\
+*Explanation* : 
+
+The algorithm sorts all arrival and departure times, then uses two pointers to simulate guests entering and leaving. Each arrival increases the current count, and each departure decreases it. The maximum value reached during this sweep gives the peak number of guests present simultaneously.
 
 \
-
-*Intuitive Explanation* : 
-
 
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+ 
+    int n;
+    cin >> n;
+    vector<int> arrivals(n), departures(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> arrivals[i] >> departures[i];
+    }
+
+    // Sort arrival and departure times
+    sort(arrivals.begin(), arrivals.end());
+    sort(departures.begin(), departures.end());
+
+    int i = 0, j = 0, curr = 0, ans = 0;
+    // Sweep through both arrays to find maximum overlap
+    while (i < n && j < n) {
+        if (arrivals[i] < departures[j]) {
+            curr++;      // new guest arrives
+            ans = max(ans, curr);
+            i++;
+        } else {
+            curr--;      // a guest departs
+            j++;
+        }
+    }
+
+    cout << ans << '\n'; // maximum guests present at once
+    return 0;
 }
+
 
 ```
 #pagebreak()

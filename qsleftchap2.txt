@@ -1,5 +1,4 @@
 Concert Tickets
-Restaurant Customers
 Movie Festival
 Sum of Two Values
 Maximum Subarray Sum
