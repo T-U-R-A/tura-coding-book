@@ -245,11 +245,59 @@ $
 {#text(fill:blue)[1], 4, 4, 5, 6, 6, #text(fill:green)[7], 9, 13, 15, 16, 18, 21, #text(fill:red)[30]}
 $
 
-Now we can compare the value of #text(fill:green)[middle] with our target 18. As you can see, #text(fill:green)[middle] < 18. This tells us that our target value lies to the right of #text(fill:green)[middle]. We can now update #text(fill:green)[middle] by first making #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 7, then make $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (7 + 13)/2 = 10$.
+Now we can compare the value of #text(fill:green)[middle] with our target 18. As you can see, #text(fill:green)[middle] < 18. This tells us that our target value lies to the right of #text(fill:green)[middle]. We can now update #text(fill:green)[middle] by first making #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 6 + 1 = 7, then make $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (7 + 13)/2 = 10$.
 
 $
-{1, 4, 4, 5, 6, 6, #text(fill:blue)[7], 9, 13, 15, #text(fill:green)[16], 18, 21, #text(fill:red)[30]}
+{1, 4, 4, 5, 6, 6, 7, #text(fill:blue)[9], 13, 15, #text(fill:green)[16], 18, 21, #text(fill:red)[30]}
 $
+
+Once again we are to low, so we set #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (11 + 13)/2 = 12$. 
+
+$
+{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill:blue)[18], #text(fill:green)[21], #text(fill:red)[30]}
+$
+
+This time we're to high, so now we set #text(fill:red)[right] = #text(fill:green)[middle] - 1 = 12 - 1 = 11 and then $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (11 + 11)/2 = 11$
+
+$
+{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: green)[18], 21, 30}
+$
+
+Now #text(fill:green)[middle] is equal to 18 our target! And it only took us 4 steps. If we had iterated normally it would've taken 12.
+
+Here the implementation of this, where the user will supply us a sorted list of numbers and a target value for us to find. We output whether the value exists and then it's position in the list:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  
+  int n, t;
+  cin >> n;
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+  
+  int l = 0, r = n - 1, m ;
+  while(l <= r){
+    m = (l + r)/2;
+    if(v[m] == t){
+      cout << "YES" << endl;
+      cout << m << endl;
+      return 0;
+    }
+    else if(v[m] < t)
+      l = m + 1;
+    else if(v[m] > t)
+      r = m - 1;
+  }
+  cout << "NO" << endl;
+```
 
 == Sets
 
