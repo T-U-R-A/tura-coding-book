@@ -1,5 +1,4 @@
 Concert Tickets
-Movie Festival
 Maximum Subarray Sum
 Stick Lengths
 Missing Coin Sum

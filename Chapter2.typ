@@ -68,7 +68,7 @@ int main(){
 
 *Explanation : * 
 
-The algorithm sorts both applicants and apartments, then uses a *two-pointer approach* to match each applicant with the smallest available apartment whose size differs by at most `k`.
+The algorithm sorts both applicants and apartments, then uses a two pointer approach to match each applicant with the smallest available apartment whose size differs by at most `k`.
 If an apartment is too small, move to the next apartment; if it’s too large, move to the next applicant.
 This greedy method ensures the maximum number of matches efficiently.
 
@@ -138,7 +138,7 @@ int main() {
 
 *Explanation : *
 
-The algorithm sorts all weights, then uses two pointers—one at the lightest and one at the heaviest person—to form pairs without exceeding the limit. If they can share a gondola, both are removed; otherwise, the heavier one goes alone. This greedy pairing minimizes the total number of gondolas.
+The algorithm sorts all weights, then uses two pointer, one at the lightest and one at the heaviest person, to form pairs without exceeding the limit. If they can share a gondola, both are removed; otherwise, the heavier one goes alone. This greedy pairing minimizes the total number of gondolas.
 
 \
 
@@ -272,39 +272,48 @@ int main() {
 
 *Intuitive Explanation* : 
 
+We store each movie as a pair of (end_time, start_time) and sort by end_time so we can always consider the earliest finishing movie first. The greedy approach works because picking the movie that ends earliest leaves maximum time for future movies.
+
+We iterate through all movies, watching one only if it starts after the previous one ends. Each time we do, we increment our count and update the latest end time, ensuring the optimal number of movies are chosen.
+
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
-    int n;
+    int n; 
     cin >> n;
-    vector<pair<int, int>> m(n);
+
+    // Store each movie as a pair (end_time, start_time)
+    vector<pair<int, int>> movies(n);
     for (int i = 0; i < n; ++i) {
-				// store as (end, start)
-        cin >> m[i].second >> m[i].first; 
+        int start, end;
+        cin >> start >> end;
+        movies[i] = {end, start};
     }
 
-		// sort by end time
-    sort(m.begin(), m.end()); 
+    // Sort movies by their ending time (greedy choice)
+    sort(movies.begin(), movies.end());
 
-    int count = 0, end = 0;
-    // select maximum non-overlapping intervals
-    for (auto [e, s] : m) {
-        if (end <= s) {
-            count++;
-            end = e;
+    int maxMovies = 0;
+    int currentEnd = 0;  // The end time of the last watched movie
+
+    // Iterate through all movies
+    for (auto [end, start] : movies) {
+        // If the current movie starts after or exactly when the previous one ended
+        if (start >= currentEnd) {
+            maxMovies++;       // Watch this movie
+            currentEnd = end;  // Update the end time to this movie's end
         }
     }
 
-		// maximum number of meetings
-    cout << count << endl; 
+    cout << maxMovies << endl; // Output the result
+    return 0;
 }
 
-}
 
 ```
 #pagebreak()
@@ -358,10 +367,8 @@ int main() {
             return 0;
         }
         // Move pointers based on comparison with target
-        else if (sum < target)
-            left++;
-        else
-            right--;
+        else if (sum < target) left++;
+        else right--;
     }
 
     // If no valid pair found
