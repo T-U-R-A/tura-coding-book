@@ -31,7 +31,7 @@
    - If (n % 2 == 1), n is odd, so multiply n by 3 and add 1
 
 + While Loop: Continues the process until n becomes 1.
-   - The loop runs as long as n is not 1 (n != 1), applying the above rules in each iteration.
+   - The loop runs as long as n is not 1, applying the above rules in each iteration.
    - Print each value of n to track the sequence.
 
 \
@@ -110,7 +110,7 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1069")[Backup Link]
 
 \
-*Explanation* : 
+*Explanation : *
 This program finds the longest stretch of the same character in a string.
 
 It goes through each character one by one:
@@ -466,7 +466,7 @@ The problem asks for the number of trailing zeros in n factorial. Zeros come fro
 
 Each multiple of 5 (5, 10, 15, 20, 25…) contributes one 5. Each multiple of 25 (25, 50, 75, 100, 125...) contributes an additional 5.  Each multiple of 125 contributes another 5, and so on. The code loops through powers of 5 and counts the total number of the factor 5 present in n factorial.
 
-Eg : n = 27
+`Eg` : n = 27
 - $floor(27/5)$ = 5  (5s from 5, 10, 15, 20, 25).
 
 - $floor(27/25)$ = 1 (extra 5 from 25).
@@ -668,7 +668,7 @@ int main() {
 
 *Intuitive Explanation* : 
 
-To move n disks, first move the top n−1 disks to the helper peg, then move the largest disk to the destination, and finally move the stack from the helper to the destination. This recursion yields 2^n − 1 moves and provides the lexicographically simple solution.
+To move n disks, first move the top n−1 disks to the helper peg, then move the largest disk to the destination, and finally move the stack from the helper to the destination. This recursion yields 2^n − 1 moves and provides the lexicographical simple solution.
 
 *Code :*
 
@@ -709,13 +709,13 @@ int main() {
 
 *Explanation* : 
 
-In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexiograpical sequence for a string or a vector.
+In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexicographical sequence for a string or a vector.
 
-It returns false when no other gretaer permutations exists, otherwise it rearranges the string or the vector.
+It returns false when no other greater permutations exists, otherwise it rearranges the string or the vector.
 
 Note : Apurva add your explanation to the next permutation question...
 
-Note : explain meaning of lexiographical down below
+Note : explain meaning of lexicographical down below
 
 \
 *Code :*

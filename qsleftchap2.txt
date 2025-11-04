@@ -1,6 +1,5 @@
 Concert Tickets
 Movie Festival
-Sum of Two Values
 Maximum Subarray Sum
 Stick Lengths
 Missing Coin Sum
