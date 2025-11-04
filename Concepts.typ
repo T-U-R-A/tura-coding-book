@@ -91,22 +91,22 @@ int main() {
 
 While this isn't the only way to solve the question, the code should cover the most basic `c++ syntax`
 
-=== data types
+=== Data Types
 
 This code contained the data types `int`(Integer which is a non decimal number) , `double` (Decimal Number), `string` (Text) and `pair<int,int>`. A `pair` is a datatype that can be a combination of 2 other data types and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`'s but it could be a pair of `int` and `string` and much more. 
-=== variables
-Variables are strongly typed in `c++` which means you must specify their datatype and then their name;
-=== input/output 
+=== Variables
+Variables are strongly typed in `c++` which means you must specify their datatype and then their name.
+=== Input/Output 
 Input and output is does with `cin` and `cout` and angle brackets `>>` for input and `<<` for output. 
-=== conditional statements
+=== Conditional Statements
 Conditions Statements are represented with `if`. The part inside the `if` block runs if the condition is true. You can also use `else` which triggers if the `if` block above is `false` and create if else ladders with `else if` which triggers if the above `if` and `else if` blocks were `false`.
-=== loops
+=== Loops
 A loop in the example is a `for` loop, which has 3 parts, the first part initializes a variable. The second part is the condition to determine if the loop should continue and the 3 part is what happens at the end of the loop block which is usually to update the variable initialized in the first part. 
-=== classes/structs
+=== Classes/Structs
 In this program we made a `struct` because their easier to use than a `class`. They work in nearly the same way though and the only difference really is that members in a `struct` are `public` by default but members in a `class` are `private` by default. 
-=== arrays/vectors
+=== Arrays/Vectors
 An array is a list of many of the same datatype. In this program we made an array of `Students` which is our own datatype. We also made a vector, which unlike an array, has a dynamic size.
-=== functions
+=== Functions
 A function is something that accepts parameters and returns a value. This includes our `calcPercent` function and the 2 constructors used to make `Student`.
 
 More about `c++` syntax can be learned #link("https://www.w3schools.com/cpp/")[here].
@@ -171,9 +171,7 @@ While we have written comments, we'll still go deeper to explain the most import
 - `cout << a << " " << *b << " " << c << " " <<  *d << endl` outputs `a`, `*b` which is the value at memory location `b`, `c` and `*d` which is the value at memory location `d`.
 - `c = 9` changes the values of `a` and the value at memory location `d` to 9.
 - `*d = 15` changes the value at memory location `d` to 15 which also changes `a` and `c`.
-- `delete b` is the most important line. *Every time you use the keyword new, you must use delete to free up the memory*. Otherwise that memory will remain allocated to nobody after your program has ended. This is called a memory leak and the only way to free up such "leaked" memory is my restarting your computer.
-
-#pagebreak()
+- `delete b` is the most important line. *Every time you use the keyword new, you must use delete to free up the memory*. Otherwise, that memory will remain allocated to nobody after your program has ended. This is called a memory leak and the only way to free up such "leaked" memory is my restarting your computer.
 
 To summarize the new syntax of pointers:
 
@@ -184,15 +182,18 @@ To summarize the new syntax of pointers:
 
 == Vectors in Depth
 
-We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as `arrays` except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
+We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as arrays except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
 
 The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
 
-Note that `vectors` constant factors are bigger than `arrays`, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of `arrays`. The main reason being that:-
+#pagebreak()
+
+Note that `vectors` constant factors are bigger than arrays, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of arrays. The main reason being that:-
 + It's easier to initialize all values in a vector \ ```cpp vector<int> v(5,-1)//Initializes vector of size 5 filled with -1```
 + When passing an array to a function, it *always* passes by reference. Passing by reference simply means that the function can make changes to the original array. Sometimes however we wish to pass by value, meaning that a new copy is made. With vectors we have such freedom to choose.
 
 More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
+
 
 == Sorting
 
@@ -209,10 +210,46 @@ int main(){
 }
 ```
 
-
 As you can see, the sort function accepts 2 pointers, the start position of the sort and one position after the end of where you want the elements sorted. `arr` is a pointer to the start of the array. You can add a number to this pointer to jump ahead that many places. `arr + 6` is one position past the end of the array because we want to sort the entire array in this case although you don't always have to. `v.begin()` is a pointer to the start of the vector and `v.end()` points one place after the last element of the vector. You can also add a value to `v.begin()` to jump to other positions in the vector to sort only a part of it.
 
+The time complexity of `std::sort` is $O(n log n)$.
+
+//todo: Write about merge sort.
+
 #pagebreak()
+
+== Binary Search
+
+Let's say you want to find a certain number in a list of numbers to see if it exists. Normally the way you would do this is by iterating over each element in the array and checking if it matches the element you're looking for. The time complexity of this is $O(n)$. However, if we were to first sort the array, we can find a number in $O(log n)$!
+
+You may not have realized it, but you have probably already used binary search in your life at least once! When ever you use a dictionary, you don't search word by word to see if it matches the word you are looking for, you instead apply something similar to binary search. Say you're looking for the word "computers", you find open to the middle of the dictionary. You'll probably be in the m-n section which is too far ahead, so you jump back half way. You repeat this until you get to the c section. However, you may be in the ca section which is now behind, so you jump forward by half way forward until you reach "computers". While you may not be doing exactly this, we can use this method to find things really quickly.
+
+The main steps are as follows:
+
++ Starting in the middle
++ If you are equal to the target you have found the value! Otherwise, go to 3.
++ If you are less than the target, eliminate the left and then jump to the middle of the right half then go back up to 2. If not, go to 4
++ If you are more than the target, eliminate the right half and jump to the middle of the left, then go to 2.
+
+Let's see the algorithm in action:- 
+
+Let's say we have the following sorted array:
+
+$
+{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, 18, 21, 30}
+$
+
+And let that the target number we are looking for be 18. Let the be the variables $#text(fill:blue)[left] = 0$, $#text(fill:red)[right] = 13$, and $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (0 + 13)/2 = 6$ which is the average of #text(fill:blue)[left] and #text(fill:red)[right].
+
+$
+{#text(fill:blue)[1], 4, 4, 5, 6, 6, #text(fill:green)[7], 9, 13, 15, 16, 18, 21, #text(fill:red)[30]}
+$
+
+Now we can compare the value of #text(fill:green)[middle] with our target 18. As you can see, #text(fill:green)[middle] < 18. This tells us that our target value lies to the right of #text(fill:green)[middle]. We can now update #text(fill:green)[middle] by first making #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 7, then make $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (7 + 13)/2 = 10$.
+
+$
+{1, 4, 4, 5, 6, 6, #text(fill:blue)[7], 9, 13, 15, #text(fill:green)[16], 18, 21, #text(fill:red)[30]}
+$
 
 == Sets
 
@@ -270,10 +307,10 @@ In the solution, we can see that
 - `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a pointer at one place past the position of the last element in the set.
 - `s.erase(x)` removes `x` from `s`. 
 
-Finally we end up printing all values that are currently in `s`. However you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary. 
+Finally we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary. 
 
 /*
-TODO:
-* Binary Search in a previous section as well.
+* TODO: 
+* Explain about unordered_set, multiset, unordered_multiset and why you should sued unordered variants.
+* Explain next permutation
 */
-

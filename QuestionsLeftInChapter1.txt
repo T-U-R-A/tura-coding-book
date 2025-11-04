@@ -4,7 +4,7 @@ Two Sets
 Palindrome Reorder
 Gray code
 Tower of Hanoi - Apurva
-Creating Strings - Apurva
+Creating Strings
 Apple Division
 Chessboard and Queens
 Raab Game I
