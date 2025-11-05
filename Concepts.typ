@@ -286,19 +286,99 @@ int main(){
   int l = 0, r = n - 1, m ;
   while(l <= r){
     m = (l + r)/2;
-    if(v[m] == t){
+    if(v[m] == t){//if the number at m meets the target
       cout << "YES" << endl;
       cout << m << endl;
       return 0;
     }
     else if(v[m] < t)
-      l = m + 1;
+      l = m + 1;//eliminate the left(lesser) half
     else if(v[m] > t)
-      r = m - 1;
+      r = m - 1;//eliminate the right(greater) half
   }
   cout << "NO" << endl;
+  return 0;
+}
 ```
 
+=== Lower Bound and Upper Bound
+
+Usually whenever we do binary search, we rarely ever want to know if a value is actually there or not, rather we'd like to know 2 things:-
+
++ The first number in the list greater than or equal to the number. This is called finding the *lower bound*.
++ The first number in the list *strictly* greater than the number. This is called finding the *upper bound*.
+
+To be able to compute the *lower bound* and *upper bound* of some number $t$, we only need to modify the while loop of our earlier binary search algorithm:
+
+#pagebreak()
+
+Lower Bound:
+
+```cpp
+int l = 0, r = n - 1, m, lb = -1;
+while(l <= r){
+  m = (l + r)/2;
+  if(v[m] < t)
+    l = m + 1;
+  else if(v[m] >= t){// >= instead of > because it lower bound.
+    lb = m;//we set the lower bound to the middle
+    r = m - 1;// and then eliminate the right half.
+  }
+}
+
+cout << lb << endl;
+```
+
+Upper Bound:
+
+```cpp
+int l = 0, r = n - 1, m, ub = -1;
+while(l <= r){
+  m = (l + r)/2;
+  if(v[m] <= t)//< to <= the equal condition isn't missed.
+    l = m + 1;
+  else if(v[m] > t){
+    ub = m;//we set the upper bound to the middle
+    r = m - 1;//and then eliminate the right half.
+  }
+}
+
+cout << ub << endl;
+```
+
+You can try the algorithm of lower bound and upper bound on an array and with a target value and see how this works.
+
+Now lucky for you, `c++` comes with it's own upper bound and lower bound functions! Here's their use cases:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+  
+  int n, t;
+  cin >> n;
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+  
+  vector<int>::iterator lb = lower_bound(v.begin(),v.end(),t);//lower_bound() returns an iterator to the position of the lower bound of t.
+  vector<int>::iterator ub = upper_bound(v.begin(),v.end(),t);//upper_bound() returns an iterator to the position of the upper bound of t.
+
+  cout << lb - v.begin() << endl;//difference between lb and v.begin() tell you the index of the lower bound.
+  cout << ub - v.begin() << endl;//difference between ub and v.begin() tell you the index of the upper bound.
+  return 0;
+}
+```
+
+As you can see from the code above:-
+- `lower(v.begin(),v.end(),t)` returns an `iterator` to the lower bound of `t`.
+- `upper(v.begin(),v.end(),t)` returns an `iterator` to the upper bound of `t`.
+
+To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because that takes the difference in memory location. 
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
