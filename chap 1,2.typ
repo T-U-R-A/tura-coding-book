@@ -1718,6 +1718,11 @@ int main() {
 
 *Intuitive Explanation* : 
 
+The program minimizes the total adjustment cost to make all sticks equal in length. It sorts the stick lengths and picks the median as the target length since the median minimizes the sum of absolute differences. Unlike the mean, which minimizes squared differences, the median ensures minimal total movement for all sticks.
+
+That might sound abstract and complicated, so here’s an easier way to picture it:
+
+Intuitively, the median balances the values — half the sticks are shorter and half are longer — so moving everything toward it requires the least total effort. If you chose the mean, extreme stick lengths would pull the target toward them, increasing the total distance everyone else has to move, whereas the median stays steady and fair, unaffected by outliers.
 
 
 *Code :*
@@ -1750,7 +1755,6 @@ int main() {
     cout << ans;
 }
 
-
 ```
 #pagebreak()
 == Missing Coin Sum
@@ -1774,3 +1778,108 @@ int main() {
 
 ```
 #pagebreak()
+
+== Traffic Lights
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+\
+
+*Intuitive Explanation* : 
+
+The program simulates cutting a stick of length `a` at `b` given positions. It uses a multiset ms to store all cut points and another multiset lens to track segment lengths. After each cut, it removes the old segment and adds two new ones. Finally, it prints the length of the largest segment remaining after each cut.
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    int a, b, x;
+    cin >> a >> b;
+ 
+    multiset<int> ms, lens; // ms stores all cut positions, lens stores all segment lengths
+    ms.insert(a); // rightmost boundary
+    ms.insert(0); // leftmost boundary
+    lens.insert(a); // initially one segment of length 'a'
+    
+    for (int i = 0; i < b; i++) {
+        cin >> x;
+ 
+        // Insert the new cut position and find its neighbors
+        auto mid = ms.insert(x);
+        auto first = prev(mid);
+        auto last = next(mid);
+ 
+        // Remove the old segment and add the two new smaller segments
+        lens.erase(lens.find(*last - *first));
+        lens.insert(*last - *mid);
+        lens.insert(*mid - *first);
+ 
+        // Output the largest segment length after each cut
+        cout << *lens.rbegin() << " ";
+    }
+}
+
+
+```
+
+
+#pagebreak()
+
+== Nearest Smaller Values
+
+\
+#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+
+
+\
+
+*Intuitive Explanation* : 
+
+We use a set of pairs (value, index) to maintain a sorted collection of elements seen so far. The lower_bound function efficiently locates the first element not smaller than the current value, allowing quick access to the previous smaller element by moving one step back. After each iteration, larger or equal elements are erased to maintain order and correctness.
+
+*Code :*
+
+```cpp  
+
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ll n, a;
+    cin >> n;
+    set<pair<ll,ll>> s;  // Stores pairs of (value, index) in sorted order by value
+
+    for (int i = 0; i < n; i++) {
+        cin >> a;
+
+        // Find the first element in the set whose value >= current value 'a'
+        auto it = s.lower_bound({a, -1});
+
+        // If there's no smaller value, output 0
+        if (it == s.begin()) cout << "0 ";
+        else {
+            // Otherwise, go one step back to get the last smaller element
+            --it;
+            cout << it->second + 1 << " ";  // Output its index (1-based)
+        }
+
+        // Remove all elements with value >= 'a' (not needed anymore)
+        auto it2 = s.lower_bound({a, -1});
+        s.erase(it2, s.end());
+
+        // Insert current element (value, index)
+        s.insert({a, i});
+    }
+}
+
+
+```
