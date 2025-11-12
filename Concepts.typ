@@ -461,7 +461,10 @@ Notice how it almost identical to a set other than the fact that it faster with 
 
 === `unordered_multiset`
 Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
+
 /*
 * TODO: 
+* Backtracking
+* Permutations
 * Explain next permutation
 */
