@@ -437,8 +437,34 @@ In the solution, we can see that
 
 Finally we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary. 
 
+=== `lower_bound` and `upper_bound` 
+
+Unlike for vectors, if you try to use the `lower_bound()` and `upper_bound()` functions, it won't execute binary search and will instead search through them in linear time. The reason for this is that set iterators are not random access, i.e. you can't just say `it + 5` and get the element 5 places ahead of `it`. Instead, you must run a loop to do `it++` 5 times. Fortunately, `set's` have their own implementation of `lower_bound()` and `upper_bound()`. If you have a `set<int> s`, then s.lower_bound(t) will return an iterator to the lower bound of `t` and `s.upper_bound(t)` will return an iterator to the upper bound of `t`.
+
+=== `multiset`
+
+A `multiset` is exactly like a set except that it can store multiple of the same elements, whereas a `set` does not store duplicates. The syntax for using a `multiset` is identical to a `set`, just write `multiset` instead of set
+
+=== `unordered_set`
+
+An `unordered_set` works a bit different then a set. It supports the following operations
+
++ A new element can be added to a `unordered_set` in $O(1)$\* time.
++ An element can be found in $O(1)$\* time.
++ An element can be removed in $O(1)$\* time.
++ The order of elements are random.
++ All elements in a `unordered_set` are unique
+
+#pagebreak()
+
+Notice how it almost identical to a set other than the fact that it faster with the downside of no sorted order. This looks as if it would be useful to use an `unordered_set` instead of a `set` if you just want to check if elements exists or not due to their $O(1)$ vs the much slower $O(log n)$. However, this $O(1)$ is not guaranteed and for large test cases that you may expect during questions, it usualy ends being the much worse $O(n)$ which will lead to a Time Limit Exceeded(TLE). This is why you should always use a `set` over an `unordered_set` even if you don't care about the sorting order.
+
+=== `unordered_multiset`
+Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
+
 /*
 * TODO: 
-* Explain about unordered_set, multiset, unordered_multiset and why you should sued unordered variants.
+* Backtracking
+* Permutations
 * Explain next permutation
 */
