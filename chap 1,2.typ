@@ -283,33 +283,35 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Every coordinate sits on a diagonal “layer” whose index is the maximum of the row and column. The square at the end of that layer has value layer², and depending on whether the layer index is even or odd we walk along the layer to the requested cell.
+Imagine the grid as layered structure where each layer wraps around the previous one. The largest of (x, y) tells you which layer you’re standing on. The starting number in each layer is given by $max(x, y) * max(x, y)$. The number in the grid square is the starting number in the layer plus the distance from the starting square. 
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int t;
+    int t; // Number of test cases
     cin >> t;
     while (t--) {
-        long long y, x;
+        // Cell coordinates
+        long long y, x; 
         cin >> y >> x;
-        long long layer = max(y, x);
-        long long base = (layer - 1) * (layer - 1);
-        long long value;
-        if (layer % 2 == 0) {
-            if (y == layer) value = base + x;
-            else value = layer * layer - (y - 1);
-        } else {
-            if (x == layer) value = base + y;
-            else value = layer * layer - (x - 1);
-        }
-        cout << value << "\n";
+        long long layer = max(x, y); // Layer is max(x, y)
+        long long val = layer * layer - layer + 1; // Base value for layer's diagonal cell
+ 
+        if (layer % 2 == 0) // Even layer
+            if (x == layer) // Adjust for y
+                cout << val - (layer - y) << "\n"; 
+            else // Adjust for x
+                cout << val + (layer - x) << "\n";   
+                
+        else // Odd layer
+            if (y == layer) // Adjust for x
+                cout << val - (layer - x) << "\n";
+            else // Adjust for y
+                cout << val + (layer - y) << "\n";
     }
     return 0;
 }
@@ -365,45 +367,61 @@ int main() {
 
 *Intuitive Explanation* : 
 
-The total sum from 1 to n is n(n+1)/2. If that sum is odd we cannot split it evenly. Otherwise we keep taking the largest remaining number into the first set while we still stay under half of the sum; every other number goes into the second set.
+The sum of the first n integers is given by : $n(n+1)/2$
+
+Only when this sum is even can the set be split evenly, i.e. $n * (n-1)$ should be divisble by four. the possible values for n for which 
+
+Every time the numbers can be paired off symmetrically: {n, n−3} balancing {n−1, n−2}. Anything leftover (the magical trio 1,2,3) slots in with a final tidy arrangement. This pattern ensures the two sets always weigh the same, no matter how large n grows.
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 int main() {
-    long long n;
+    int n;
     cin >> n;
-    long long total = n * (n + 1) / 2;
-    if (total % 2) {
-        cout << "NO\n";
-        return 0;
-    }
-    cout << "YES\n";
-    long long target = total / 2;
-    vector<long long> first, second;
-    for (long long x = n; x >= 1; --x) {
-        if (x <= target) {
-            first.push_back(x);
-            target -= x;
-        } else {
-            second.push_back(x);
+    
+    // Check if the total sum n*(n+1)/2 is even (i.e., divisible by 2 after halving),
+    // which requires n*(n+1) to be divisible by 4. If not, impossible to split.
+    if (n*(n+1) % 4 != 0) cout<<"NO";
+    
+    else {
+        cout<<"YES"<<endl;
+        
+        // Vectors to store the two sets.
+        vector<int> a, b;
+        
+        // Process numbers in groups of 4 from largest to smallest,
+        // assigning to sets such that each group adds equal sum to both.
+        while (n > 3 && n > 0) {
+                a.push_back(n);
+                a.push_back(n-3);
+ 
+                b.push_back(n-1);
+                b.push_back(n-2);
+                
+                n = n - 4;
         }
+        
+        // Handle the remaining 3 numbers if n % 4 == 3 (balanced assignment).
+        if (n == 3) {
+            a.push_back(3);
+            
+            b.push_back(2);
+            b.push_back(1);
+        }
+        
+        // Output size and elements 
+        cout << a.size()<<endl;
+        for (int num : a)
+            cout << num << " ";
+ 
+        cout << b.size()<<endl;
+        for (int num : b)
+            cout << num << " ";
     }
-    cout << first.size() << "\n";
-    for (size_t i = 0; i < first.size(); ++i) {
-        if (i) cout << " ";
-        cout << first[i];
-    }
-    cout << "\n" << second.size() << "\n";
-    for (size_t i = 0; i < second.size(); ++i) {
-        if (i) cout << " ";
-        cout << second[i];
-    }
-    cout << "\n";
-    return 0;
 }
 ```
 
