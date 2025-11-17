@@ -142,10 +142,6 @@ A pointer is a variable that stores a memory location instead of the value. Here
 using namespace std;
 
 int main(){
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
-  
   int a = 5; //made an int variable with value 5.
   int *b = new int(7);//made an integer pointer with value 7 at that memory location.
   int &c = a;//made an int variable which refers to the same memory location as a.
@@ -194,6 +190,35 @@ Note that `vectors` constant factors are bigger than arrays, which means for que
 
 More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
 
+== Recursion
+
+Recursion is the concept of calling some function inside of itself. Say we want to compute the factorial of a number $n$. We can do:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int fact(int n){
+  if(n == 1)//base case
+    return 1;
+  return n * fact(n-1);//recursion
+}
+
+int main(){
+  int n;
+  cin >> n;
+  cout << fact(n) << endl;
+
+  return 0;
+}
+```
+
+Every recursive algorithm has 2 main things:
++ A base case. Some failure point at which you must return a known value. In this code it was $n = 1$ and we returned $1$ for that base case. You can always have multiple base cases if necessary.
++ Recursion. This is the part where you call the original function on a smaller problem than the original. In this case we call `fact(n-1)` and then multiply it by `n` to get `fact(n)`.
+
+Fun fact: It's proven that any recursion function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop you should. However, some programs are too hard to convert to loops so you should stick to recursion.
 
 == Sorting
 
@@ -201,11 +226,12 @@ To sort a data structure like an array of vector, `c++` has it's own sort functi
 
 ```cpp
 int main(){
-  
   int arr[] = {3,4,6,2,5,1};
   vector<int> v = {6,2,4,5,1,3};
+
   sort(arr, arr+6);//Sorts the array {1,2,3,4,5,6}
   sort(v.begin(), v.end());//Sorts the vector {1,2,3,4,5,6}
+
   return 0;
 }
 ```
@@ -457,7 +483,7 @@ An `unordered_set` works a bit different then a set. It supports the following o
 
 #pagebreak()
 
-Notice how it almost identical to a set other than the fact that it faster with the downside of no sorted order. This looks as if it would be useful to use an `unordered_set` instead of a `set` if you just want to check if elements exists or not due to their $O(1)$ vs the much slower $O(log n)$. However, this $O(1)$ is not guaranteed and for large test cases that you may expect during questions, it usualy ends being the much worse $O(n)$ which will lead to a Time Limit Exceeded(TLE). This is why you should always use a `set` over an `unordered_set` even if you don't care about the sorting order.
+Notice how it almost identical to a set other than the fact that it faster with the downside of no sorted order. This looks as if it would be useful to use an `unordered_set` instead of a `set` if you just want to check if elements exists or not due to their $O(1)$ vs the much slower $O(log n)$. However, this $O(1)$ is not guaranteed and for large test cases that you may expect during questions, it usually ends being the much worse $O(n)$ which will lead to a Time Limit Exceeded(TLE). This is why you should always use a `set` over an `unordered_set` even if you don't care about the sorting order.
 
 === `unordered_multiset`
 Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
@@ -466,5 +492,4 @@ Again, it's the same as an `unordered_set` except that it can store multiple of 
 * TODO: 
 * Backtracking
 * Permutations
-* Explain next permutation
 */
