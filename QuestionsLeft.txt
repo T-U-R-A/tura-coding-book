@@ -1,20 +1,20 @@
 chap 1 
 
 Number Spiral
-Two Knights - apurva
 Palindrome Reorder                        
 Gray code
-Tower of Hanoi - Apurva
 Creating Strings
-Apple Division --almost done
 Chessboard and Queens
 Raab Game I
-Mex Grid Construction - Apurva
 Knight Moves Grid
 Grid Coloring I
 Digit Queries
 String Reorder
 Grid Path Description
+
+Two Knights - apurva
+Tower of Hanoi - Apurva
+Mex Grid Construction - Apurva
 
 chap 2
 

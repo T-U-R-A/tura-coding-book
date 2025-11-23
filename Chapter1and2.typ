@@ -777,7 +777,7 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Try every subset by recursively deciding for each apple whether it goes to the first pile. Track the running weight and update the best difference compared to the total sum. With n ≤ 20 this brute-force with pruning easily fits in time.
+The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks, you compute the sum of one group and compare it with the other using `abs(total − 2*sum)`. The smallest such difference across all subsets is the optimal answer.
 
 *Code :*
 
