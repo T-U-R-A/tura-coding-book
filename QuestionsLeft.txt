@@ -6,7 +6,7 @@ Palindrome Reorder
 Gray code
 Tower of Hanoi - Apurva
 Creating Strings
-Apple Division
+Apple Division --almost done
 Chessboard and Queens
 Raab Game I
 Mex Grid Construction - Apurva
@@ -21,7 +21,6 @@ chap 2
 Concert Tickets
 Collecting Numbers
 Collecting Numbers II
-Playlist
 Towers
 Distinct Values Subarrays
 Distinct Values Subsequences
