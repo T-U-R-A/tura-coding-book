@@ -573,9 +573,7 @@ int main() {
 
 
 ```
-\
 #pagebreak()
-
 == Palindrome Reorder
 
 \
@@ -779,7 +777,7 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Try every subset by recursively deciding for each apple whether it goes to the first pile. Track the running weight and update the best difference compared to the total sum. With n ≤ 20 this brute-force with pruning easily fits in time.
+The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks, you compute the sum of one group and compare it with the other using `abs(total − 2*sum)`. The smallest such difference across all subsets is the optimal answer.
 
 *Code :*
 
@@ -787,34 +785,44 @@ Try every subset by recursively deciding for each apple whether it goes to the f
 #include <bits/stdc++.h>
 using namespace std;
 
-long long bestDiff;
-vector<long long> weight;
-long long total;
-
-void dfs(int idx, long long current) {
-    if (idx == (int)weight.size()) {
-        long long other = total - current;
-        bestDiff = min(bestDiff, llabs(current - other));
-        return;
-    }
-    dfs(idx + 1, current + weight[idx]);
-    dfs(idx + 1, current);
-}
-
 int main() {
     int n;
     cin >> n;
-    weight.resize(n);
-    total = 0;
-    for (int i = 0; i < n; ++i) {
-        cin >> weight[i];
-        total += weight[i];
+
+    vector<int> v(n);
+    long long total = 0;
+
+    // Read weights and compute total sum.
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+        total += v[i];
     }
-    bestDiff = LLONG_MAX;
-    dfs(0, 0);
-    cout << bestDiff << "\n";
-    return 0;
+
+    // ans = minimum possible difference between the two groups.
+    long long ans = total;
+
+    // Enumerate all subsets using bitmasks from 0 to (2^n - 1).
+    // Each mask chooses some apples for the first group;
+    // the rest naturally fall into the second group.
+    for (int mask = 0; mask < (1 << n); mask++) {
+
+        long long sum = 0;
+
+        // Compute sum of elements included in this subset.
+        for (int i = 0; i < n; i++) {
+            if (mask & (1 << i)) {
+                sum += v[i];
+            }
+        }
+
+        // If subset sum is S, the other group's sum is total - S.
+        // Difference is |(total - S) - S| = |total - 2S|.
+        ans = min(ans, llabs(total - 2 * sum));
+    }
+
+    cout << ans;
 }
+
 ```
 
 \
@@ -1140,37 +1148,48 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Numbers are grouped by digit length. We subtract whole blocks (1-digit numbers, 2-digit numbers, …) until we locate the block containing the k-th digit. Then we identify the exact number in that block and index into its string form.
+The trick is to notice that numbers form blocks by digit-length: 1–9 (1-digit), 10–99 (2-digit), 100–999 (3-digit), and so on. Each block contributes a predictable number of digits, so the code keeps subtracting whole blocks until the target digit falls inside one specific block. Once the block is located, it directly computes which exact number contains the digit, converts that number to a string, and extracts the correct character. This avoids generating any sequence and keeps the solution fast even for huge positions.
+
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
+
     int q;
     cin >> q;
+
     while (q--) {
-        long long k;
-        cin >> k;
-        long long digits = 1;
-        long long count = 9;
-        long long start = 1;
-        while (k > (__int128)digits * count) {
-            k -= digits * count;
-            digits++;
-            count *= 10;
-            start *= 10;
+        ll n;
+        cin >> n;
+
+        ll count = 9;     // how many numbers exist with current digit-length
+        ll len = 1;       // current digit-length
+        ll start = 1;     // first number of current digit-length
+
+        // skip full digit-blocks (e.g., 1–9, then 10–99, then 100–999...)
+        while (n > count * len) {
+            n -= count * len;  // remove whole block worth of digits
+            start *= 10;       // move to next block's starting number
+            count *= 10;       // next block has 10× more numbers
+            len++;             // numbers now have one more digit
         }
-        long long number = start + (k - 1) / digits;
-        string s = to_string(number);
-        cout << s[(k - 1) % digits] << "\n";
+
+        // find the exact number containing the nth digit
+        ll num = start + (n - 1) / len;
+
+        // pick the specific digit inside that number
+        string s = to_string(num);
+        cout << s[(n - 1) % len] << "\n";
     }
-    return 0;
 }
+
 ```
 
 \
@@ -1488,11 +1507,43 @@ int main() {
 
 *Intuitive Explanation* : 
 
+Store all ticket prices in a multiset to keep them sorted and allow duplicates. For each customer budget, find the first ticket strictly greater than their offer using `upper_bound`; the valid choice is the previous ticket (largest price not exceeding the budget). If no such ticket exists, print -1, otherwise sell it and remove it from the multiset to avoid reuse.
 
+\
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+    multiset<int> tickets;
+    for (int i = 0; i < n; i++) {
+        int price;
+        cin >> price;
+        tickets.insert(price);
+    }
+
+    for (int i = 0; i < m; i++) {
+        int offer;
+        cin >> offer;
+
+        // First element strictly greater than offer
+        auto it = tickets.upper_bound(offer);
+        if (it == tickets.begin()) {
+            cout << -1 << "\n"; // no ticket affordable
+        } else {
+            --it;                // best affordable ticket
+            cout << *it << "\n";
+            tickets.erase(it);   // remove sold ticket
+        }
+    }
+    return 0;
 }
 
 ```
@@ -1842,6 +1893,217 @@ int main() {
 ```
 #pagebreak()
 
+== Collecting Numbers
+
+\
+#link("https://cses.fi/problemset/task/2216")[Question - Collecting Numbers]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2216")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+The array is a permutation of 1…n. Reading the numbers in increasing order takes one pass, but every time the position of i+1 appears before the position of i we need an extra round. Counting such inversions between consecutive numbers and adding one gives the total number of passes required.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    vector<int> pos(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        int x;
+        cin >> x;
+        pos[x] = i;
+    }
+    int rounds = 1;
+    for (int v = 1; v < n; ++v) {
+        if (pos[v] > pos[v + 1]) rounds++;
+    }
+    cout << rounds << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Collecting Numbers II
+
+\
+#link("https://cses.fi/problemset/task/2217")[Question - Collecting Numbers II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2217")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+The answer depends only on the order of consecutive values: each pair (v, v+1) adds one round if position[v] > position[v+1]. Swapping two elements changes only the pairs around those values, so we adjust the count locally before and after the swap instead of recomputing from scratch.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n >> m;
+    vector<int> p(n + 1), pos(n + 1);
+    for (int i = 1; i <= n; ++i) {
+        cin >> p[i];
+        pos[p[i]] = i;
+    }
+
+    auto contributes = [&](int v) -> int {
+        if (v < 1 || v >= n) return 0;
+        return pos[v] > pos[v + 1];
+    };
+
+    int rounds = 1;
+    for (int v = 1; v < n; ++v) rounds += contributes(v);
+
+    while (m--) {
+        int a, b;
+        cin >> a >> b;
+        int x = p[a], y = p[b];
+
+        vector<int> vals = {x - 1, x, y - 1, y};
+        for (int v : vals) rounds -= contributes(v);
+
+        swap(p[a], p[b]);
+        pos[x] = b;
+        pos[y] = a;
+
+        for (int v : vals) rounds += contributes(v);
+
+        cout << rounds << "\n";
+    }
+    return 0;
+}
+```
+#pagebreak()
+
+== Playlist
+
+\
+#link("https://cses.fi/problemset/task/1141")[Question - Playlist]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1141")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+The trick is to slide a window across the array while keeping all its elements distinct. A set tracks which songs are currently inside the window: if the next song is already present, we shrink the window from the left until the duplicate disappears. Otherwise we extend the window to include it. As the window grows and shrinks, we keep updating the maximum length, which becomes the length of the longest playlist with all unique songs.
+
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+
+    // Read the array
+    vector<int> v(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+    }
+
+    // Sliding window to find the longest subarray with all distinct elements.
+    set<int> window;     // stores current distinct elements inside the window
+    int left = 0;        // left pointer of the window
+    int right = 0;       // right pointer of the window
+    int bestLen = 0;     // maximum size found
+
+    // Expand the window using 'right'
+    while (right < n) {
+        // If v[right] already exists, shrink the window from the left
+        // until v[right] can be inserted without duplicates.
+        if (window.count(v[right])) {
+            window.erase(v[left]);
+            left++;
+        } 
+        else {
+            // Element is unique in the window — include it
+            window.insert(v[right]);
+
+            // Update max length
+            bestLen = max(bestLen, right - left + 1);
+
+            // Move right pointer forward
+            right++;
+        }
+    }
+
+    cout << bestLen;
+    return 0;
+}
+
+```
+#pagebreak()
+
+== Towers
+
+\
+#link("https://cses.fi/problemset/task/1073")[Question - Towers]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1073")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Keep the top block of every tower in a multiset. For each block, place it on the tower with the smallest top strictly greater than the block (found via `upper_bound`); if none exists, start a new tower. The multiset size after all placements is the answer.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    multiset<int> tops;
+    for (int i = 0; i < n; ++i) {
+        int x;
+        cin >> x;
+        auto it = tops.upper_bound(x);
+        if (it != tops.end()) tops.erase(it);
+        tops.insert(x);
+    }
+    cout << tops.size() << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
 == Traffic Lights
 
 \
@@ -1892,6 +2154,330 @@ int main() {
 ```
 
 
+#pagebreak()
+
+== Room Allocation
+
+\
+#link("https://cses.fi/problemset/task/1164")[Question - Room Allocation]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1164")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Sort all bookings by start time. Use a priority queue of (end_time, room_id) to free the earliest-finished room that is available when a new booking starts; otherwise assign a new room. Track assignments for each original booking and the maximum rooms used.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    int n, rooms = 0;
+    cin >> n;
+
+    // Store (start, end, original_index)
+    vector<pair<pair<int,int>, int>> v;
+    vector<int> ans(n);
+
+    // multiset stores (current_room_end_time, room_number)
+    // always sorted by end_time
+    multiset<pair<int,int>> ms;
+
+    for (int i = 0; i < n; i++) {
+        int start, end;
+        cin >> start >> end;
+        v.push_back({{start, end}, i});
+    }
+
+    // Sort intervals by start time
+    sort(v.begin(), v.end());
+
+    for (int i = 0; i < n; i++) {
+        int start = v[i].first.first;
+        int end   = v[i].first.second;
+        int idx   = v[i].second;
+
+        // Find first room whose end time is > start
+        auto it = ms.upper_bound({start, 0});
+        int assigned_room;
+
+        // No existing room free → create a new one
+        if (it == ms.begin()) {
+            assigned_room = ++rooms;
+        }
+        else {
+            // Use the room that ends right before start
+            --it;
+            assigned_room = it->second;
+            ms.erase(it);
+        }
+
+        // Insert updated end time for this room
+        ms.insert({end, assigned_room});
+
+        // Store answer in original order
+        ans[idx] = assigned_room;
+    }
+
+    cout << rooms << "\n";
+    for (int x : ans) cout << x << " ";
+    cout << "\n";
+}
+
+```
+#pagebreak()
+
+== Factory Machines
+
+\
+#link("https://cses.fi/problemset/task/1620")[Question - Factory Machines]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1620")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Binary search the smallest time `t` such that the sum of `t / time[i]` across all machines is at least the required product count. The predicate is monotonic, so doubling the upper bound until it works and then searching between bounds yields the minimal feasible time.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    long long target;
+    cin >> n >> target;
+    vector<long long> m(n);
+    for (int i = 0; i < n; ++i) cin >> m[i];
+
+    auto can = [&](long long time) {
+        long long made = 0;
+        for (long long t : m) {
+            made += time / t;
+            if (made >= target) return true;
+        }
+        return false;
+    };
+
+    long long lo = 0, hi = 1;
+    while (!can(hi)) hi <<= 1;
+    while (lo < hi) {
+        long long mid = lo + (hi - lo) / 2;
+        if (can(mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    cout << lo << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Tasks and Deadlines
+
+\
+#link("https://cses.fi/problemset/task/1630")[Question - Tasks and Deadlines]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1630")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+The total reward is `sum(deadline) - sum(completion_time)`, so maximizing reward is minimizing the sum of completion times. Sorting tasks by duration and processing in that order keeps the running finish time as small as possible and thus maximizes the final reward.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    vector<pair<long long,long long>> tasks(n);
+    for (int i = 0; i < n; ++i) cin >> tasks[i].first >> tasks[i].second;
+
+    sort(tasks.begin(), tasks.end());
+
+    long long time = 0, reward = 0;
+    for (auto [duration, deadline] : tasks) {
+        time += duration;
+        reward += deadline - time;
+    }
+    cout << reward << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Reading Books
+
+\
+#link("https://cses.fi/problemset/task/1631")[Question - Reading Books]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1631")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Two readers can work in parallel, so the minimal finishing time is the larger of the total sum of pages and twice the size of the longest book. If the biggest book dominates, the other reader waits for it; otherwise the total workload dictates the time.
+
+\
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    long long sum = 0, mx = 0;
+    for (int i = 0; i < n; ++i) {
+        long long x;
+        cin >> x;
+        sum += x;
+        mx = max(mx, x);
+    }
+    cout << max(sum, 2 * mx) << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Sum of Three Values
+
+\
+#link("https://cses.fi/problemset/task/1641")[Question - Sum of Three Values]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1641")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Sort all numbers with their original indices. For each first element, use the two-pointer technique on the remaining range to find two more elements that complete the target sum. If found, print their original 1-based indices; otherwise the task is impossible.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    long long target;
+    cin >> n >> target;
+    vector<pair<long long,int>> a(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i].first;
+        a[i].second = i + 1;
+    }
+    sort(a.begin(), a.end());
+
+    for (int i = 0; i < n; ++i) {
+        long long need = target - a[i].first;
+        int l = i + 1, r = n - 1;
+        while (l < r) {
+            long long sum = a[l].first + a[r].first;
+            if (sum == need) {
+                cout << a[i].second << " " << a[l].second << " " << a[r].second << "\n";
+                return 0;
+            } else if (sum < need) l++;
+            else r--;
+        }
+    }
+    cout << "IMPOSSIBLE\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Sum of Four Values
+
+\
+#link("https://cses.fi/problemset/task/1642")[Question - Sum of Four Values]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1642")[Backup Link]
+
+
+\
+
+*Explanation* : 
+
+Store all pair sums formed entirely before the current index. When considering a new pair (i, j), look for a previously stored pair whose sum completes the target and whose indices are all distinct. Using a map from sum to list of earlier pairs ensures we find a valid quadruple if one exists.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    long long target;
+    cin >> n >> target;
+    vector<long long> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+
+    unordered_map<long long, vector<pair<int,int>>> sums;
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            long long need = target - (a[i] + a[j]);
+            if (sums.count(need)) {
+                for (auto [p, q] : sums[need]) {
+                    if (p != i && p != j && q != i && q != j) {
+                        cout << p + 1 << " " << q + 1 << " " << i + 1 << " " << j + 1 << "\n";
+                        return 0;
+                    }
+                }
+            }
+        }
+        for (int j = 0; j < i; ++j) {
+            sums[a[i] + a[j]].push_back({j, i});
+        }
+    }
+    cout << "IMPOSSIBLE\n";
+    return 0;
+}
+```
 #pagebreak()
 
 == Nearest Smaller Values
