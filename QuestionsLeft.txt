@@ -1,14 +1,12 @@
 chap 1 
 
 Number Spiral
-Palindrome Reorder                        
+Palindrome Reorder                
 Gray code
-Creating Strings
 Chessboard and Queens
 Raab Game I
 Knight Moves Grid
 Grid Coloring I
-Digit Queries
 String Reorder
 Grid Path Description
 

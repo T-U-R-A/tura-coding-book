@@ -1148,37 +1148,48 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Numbers are grouped by digit length. We subtract whole blocks (1-digit numbers, 2-digit numbers, …) until we locate the block containing the k-th digit. Then we identify the exact number in that block and index into its string form.
+The trick is to notice that numbers form blocks by digit-length: 1–9 (1-digit), 10–99 (2-digit), 100–999 (3-digit), and so on. Each block contributes a predictable number of digits, so the code keeps subtracting whole blocks until the target digit falls inside one specific block. Once the block is located, it directly computes which exact number contains the digit, converts that number to a string, and extracts the correct character. This avoids generating any sequence and keeps the solution fast even for huge positions.
+
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
+
     int q;
     cin >> q;
+
     while (q--) {
-        long long k;
-        cin >> k;
-        long long digits = 1;
-        long long count = 9;
-        long long start = 1;
-        while (k > (__int128)digits * count) {
-            k -= digits * count;
-            digits++;
-            count *= 10;
-            start *= 10;
+        ll n;
+        cin >> n;
+
+        ll count = 9;     // how many numbers exist with current digit-length
+        ll len = 1;       // current digit-length
+        ll start = 1;     // first number of current digit-length
+
+        // skip full digit-blocks (e.g., 1–9, then 10–99, then 100–999...)
+        while (n > count * len) {
+            n -= count * len;  // remove whole block worth of digits
+            start *= 10;       // move to next block's starting number
+            count *= 10;       // next block has 10× more numbers
+            len++;             // numbers now have one more digit
         }
-        long long number = start + (k - 1) / digits;
-        string s = to_string(number);
-        cout << s[(k - 1) % digits] << "\n";
+
+        // find the exact number containing the nth digit
+        ll num = start + (n - 1) / len;
+
+        // pick the specific digit inside that number
+        string s = to_string(num);
+        cout << s[(n - 1) % len] << "\n";
     }
-    return 0;
 }
+
 ```
 
 \
@@ -2165,44 +2176,61 @@ Sort all bookings by start time. Use a priority queue of (end_time, room_id) to 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
+    int n, rooms = 0;
     cin >> n;
-    vector<tuple<int,int,int>> intervals(n);
-    for (int i = 0; i < n; ++i) {
-        int s, e;
-        cin >> s >> e;
-        intervals[i] = {s, e, i};
+
+    // Store (start, end, original_index)
+    vector<pair<pair<int,int>, int>> v;
+    vector<int> ans(n);
+
+    // multiset stores (current_room_end_time, room_number)
+    // always sorted by end_time
+    multiset<pair<int,int>> ms;
+
+    for (int i = 0; i < n; i++) {
+        int start, end;
+        cin >> start >> end;
+        v.push_back({{start, end}, i});
     }
-    sort(intervals.begin(), intervals.end());
 
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    vector<int> room(n);
-    int roomsUsed = 0;
+    // Sort intervals by start time
+    sort(v.begin(), v.end());
 
-    for (auto [s, e, idx] : intervals) {
-        if (!pq.empty() && pq.top().first < s + 1) {
-            auto [endTime, id] = pq.top();
-            pq.pop();
-            room[idx] = id;
-            pq.push({e, id});
-        } else {
-            int id = ++roomsUsed;
-            room[idx] = id;
-            pq.push({e, id});
+    for (int i = 0; i < n; i++) {
+        int start = v[i].first.first;
+        int end   = v[i].first.second;
+        int idx   = v[i].second;
+
+        // Find first room whose end time is > start
+        auto it = ms.upper_bound({start, 0});
+        int assigned_room;
+
+        // No existing room free → create a new one
+        if (it == ms.begin()) {
+            assigned_room = ++rooms;
         }
+        else {
+            // Use the room that ends right before start
+            --it;
+            assigned_room = it->second;
+            ms.erase(it);
+        }
+
+        // Insert updated end time for this room
+        ms.insert({end, assigned_room});
+
+        // Store answer in original order
+        ans[idx] = assigned_room;
     }
 
-    cout << roomsUsed << "\n";
-    for (int i = 0; i < n; ++i) {
-        cout << room[i] << (i + 1 == n ? '\n' : ' ');
-    }
-    return 0;
+    cout << rooms << "\n";
+    for (int x : ans) cout << x << " ";
+    cout << "\n";
 }
+
 ```
 #pagebreak()
 
