@@ -1,8 +1,8 @@
 chap 1 
 
 Number Spiral
-Two Knights
-Palindrome Reorder
+Two Knights - Apurva
+Palindrome Reorder                        
 Gray code
 Tower of Hanoi - Apurva
 Creating Strings
@@ -19,8 +19,6 @@ Grid Path Description
 chap 2
 
 Concert Tickets
-Stick Lengths // improvement in analogy needed
-Missing Coin Sum
 Collecting Numbers
 Collecting Numbers II
 Playlist

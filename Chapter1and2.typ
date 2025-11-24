@@ -283,7 +283,7 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Imagine the grid as layered structure where each layer wraps around the previous one. The largest of (x, y) tells you which layer you’re standing on. The starting number in each layer is given by $max(x, y) * max(x, y)$. The number in the grid square is the starting number in the layer plus the distance from the starting square. 
+Imagine the grid as a layered structure where each layer wraps around the previous one. The largest of (x, y) tells you which layer you’re standing on. The starting number in the layer is given by $max(x, y) * max(x, y)$. The number in the grid square is the starting number in the layer plus the distance from the starting square. 
 
 *Code :*
 
@@ -369,7 +369,7 @@ int main() {
 
 The sum of the first n integers is given by : $n(n+1)/2$
 
-Only when this sum is even can the set be split evenly, i.e. $n * (n-1)$ should be divisble by four. the possible values for n for which 
+Only when this sum is even can the set be split evenly, i.e. $n * (n-1)$ should be divisble by four. Notice the the values of n which satisy the above condition are of the form 4n or 4n - 1 (eg : 3, 4, 7, 8, 11, 12 ....).
 
 Every time the numbers can be paired off symmetrically: {n, n−3} balancing {n−1, n−2}. Anything leftover (the magical trio 1,2,3) slots in with a final tidy arrangement. This pattern ensures the two sets always weigh the same, no matter how large n grows.
 
@@ -1738,9 +1738,9 @@ int main() {
 
 The program minimizes the total adjustment cost to make all sticks equal in length. It sorts the stick lengths and picks the median as the target length since the median minimizes the sum of absolute differences. Unlike the mean, which minimizes squared differences, the median ensures minimal total movement for all sticks.
 
-That might sound abstract and complicated, so here’s an easier way to picture it:
+That might sound technical and complicated, so here’s an easier way to picture it:
 
-Intuitively, the median balances the values — half the sticks are shorter and half are longer — so moving everything toward it requires the least total effort. If you chose the mean, extreme stick lengths would pull the target toward them, increasing the total distance everyone else has to move, whereas the median stays steady and fair, unaffected by outliers.
+Intuitively, the median balances the values — half the sticks are shorter and half are longer — so adjusting everything toward it requires the least total effort. If you chose the mean, extreme stick lengths would pull the target toward them, increasing the total distance everyone else has to adjust, whereas the median stays steady and fair, unaffected by outliers.
 
 
 *Code :*
@@ -1788,11 +1788,56 @@ int main() {
 *Intuitive Explanation* : 
 
 
+Sorting the Coins: By sorting the coins in non-decreasing order, we can process them greedily. 
+
+Greedy Approach:
+Initialize a variable `sumSoFar` to 0, representing the maximum sum we can create with the coins processed so far.
+
+For each coin value `currCoin` :
+If `currCoin` is greater than `sumSoFar + 1`, it means we cannot create the sum `sumSoFar + 1` (since all remaining coins are too large). Thus, `sumSoFar` + 1 is the answer. Otherwise, add `currCoin to sumSoFar`, as we can now create all sums up to `sumSoFar + currCoin` by including or excluding `currCoin` in subsets.
+
+If we process all coins without finding a gap, the smallest sum we cannot create is current_max + 1.
+
+Why This Works:
+If we can create all sums from 0 to `sumSoFar`, and the next coin `currCoin` is at most `sumSoFar + 1`, we can extend the range of creatable sums to `sumSoFar + currCoin`. 
+A gap occurs when a coin is too large to fill the next sum (`sumSoFar + 1`), making that sum impossible to form.
+
+\
 *Code :*
 
 ```cpp  
-// code goes here
+#include <bits/stdc++.h>
+using namespace std;
 
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+
+    vector<long long> coins(n);
+    for (int i = 0; i < n; i++) cin >> coins[i];
+    sort(coins.begin(), coins.end());
+
+    long long sumSoFar = 0;  
+    // We can currently form all sums from 1 to sumSoFar.
+
+    for (long long currCoin : coins) {
+
+        // If the next needed sum is sumSoFar + 1 and currCoin is bigger,
+        // we cannot fill that gap.
+        if (currCoin > sumSoFar + 1) {
+            cout << sumSoFar + 1 << "\n";
+            return 0;
+        }
+
+        // Otherwise, currCoin helps us extend reachable sums.
+        sumSoFar += currCoin;
+    }
+
+    // If all coins processed and no gap found, next unreachable sum is sumSoFar + 1.
+    cout << sumS
 
 ```
 #pagebreak()
