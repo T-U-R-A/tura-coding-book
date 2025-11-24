@@ -2,7 +2,6 @@ chap 1
 
 Number Spiral
 Two Knights
-Two Sets
 Palindrome Reorder
 Gray code
 Tower of Hanoi - Apurva

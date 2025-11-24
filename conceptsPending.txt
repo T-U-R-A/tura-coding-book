@@ -1,7 +1,6 @@
 general 
 
 chap1
-recursion
 backtracking
 next_permutation
 

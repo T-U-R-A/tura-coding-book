@@ -327,7 +327,7 @@ int main(){
 }
 ```
 
-=== Lower Bound and Upper Bound
+=== Lower Bound and Upper Bound <lbub>
 
 Usually whenever we do binary search, we rarely ever want to know if a value is actually there or not, rather we'd like to know 2 things:-
 
@@ -376,6 +376,8 @@ You can try the algorithm of lower bound and upper bound on an array and with a 
 
 Now lucky for you, `c++` comes with it's own upper bound and lower bound functions! Here's their use cases:
 
+* Note: `upper_bound()` and `lower_bound()` only work properly on sorted lists in ascending order. They will output the wrong value otherwise*
+
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
@@ -404,7 +406,11 @@ As you can see from the code above:-
 - `lower(v.begin(),v.end(),t)` returns an `iterator` to the lower bound of `t`.
 - `upper(v.begin(),v.end(),t)` returns an `iterator` to the upper bound of `t`.
 
+
 To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because that takes the difference in memory location. 
+
+You now might wonder, how do you get the largest element lesser than or the largest element less than or equal to. This can be achieved by subtracting 1 to the lower bound and upper bound respectively.
+
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
@@ -488,8 +494,70 @@ Notice how it almost identical to a set other than the fact that it faster with 
 === `unordered_multiset`
 Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
 
+== Permutations
+
+Let's say you are given a string, and you wish to list out all possible permutations of the string. For instance `"abcde"`. You could probably write out all 5! = 120 possibilities on your own but what rule could you do to make a computer do it? Try listing the permutations yourself and see if you come up with sometime before reading onwards.
+
+Alright, here's the method:
+
+Let's first list out the permutations of a string of length 3 `"abc"`:
+
++ `"abc"`
++ `"acb"`
++ `"bac"`
++ `"bca"`
++ `"cab"`
++ `"cba"`
+
+As you can see, we went through all permutations starting from the string sorted in ascending order and then in descending order. To then go from one permutation to the next, there are 3 steps:
+
++ Scan from right to left. The first position where you find the current element less than the next one (`str[i] < str[i+1]`). This position is the pivot.
++ Swap the element at the pivot with its upper bound to the left of it (See @lbub)
++ Reverse all elements after the pivot.
+
+Try this out with your letter sequence and you'll see that this is probably what you do intuitively without realizing it.
+
+#pagebreak()
+
+Here's the code for that algorithm:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+bool permute(string &str){
+  for(int i = str.length() - 2; i >= 0; i--){
+    if(str[i] < str[i + 1]){//pivot finding
+      
+      int ub_idx = lower_bound(str.begin() + (i + 1), str.end(), str[i], greater<int>()) - 1 - str.begin();//finds the upper bound of element at pivot.
+      swap(str[i], str[ub_idx]);//swaps the ub and the element at the pivot
+      reverse(str.begin() + (i + 1), str.end());//reverses the elements after the pivot
+
+      return true;//succesfully produced the next permutation
+
+    }
+  }
+
+  return false;//failed to produce the next permutation. This happens when the string is in descending order because that the last permuatation.
+}
+
+int main(){
+  
+  string str = "abcd";
+  
+  do {
+    cout << str << endl;
+  } while(permute(str));
+
+  return 0;
+}
+```
+
 /*
 * TODO: 
 * Backtracking
 * Permutations
+* Greedy
+* Fenwick Tree
 */
