@@ -526,6 +526,29 @@ Here's the code for that algorithm:
 #include <bits/stdc++.h>
 using namespace std;
 
+
+int main(){
+  
+  string str = "abcd";
+  
+  do {
+    cout << str << endl;
+  } while(next_permutation(str.begin(),str.end());
+
+  return 0;
+}
+```
+#pagebreak()
+
+=== `next_permutation()`
+
+Fortunately for you, `c++` already has a function for you that generates the next permutation! Here's the same code we wrote above but using `next_permutation()`:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
 bool permute(string &str){
   for(int i = str.length() - 2; i >= 0; i--){
     if(str[i] < str[i + 1]){//pivot finding
@@ -557,7 +580,7 @@ int main(){
 /*
 * TODO: 
 * Backtracking
-* Permutations
 * Greedy
+* BFS
 * Fenwick Tree
 */
