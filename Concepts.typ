@@ -12,7 +12,6 @@
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
 #outline()
-#pagebreak()
 
 = Concepts
 
@@ -182,8 +181,6 @@ We're going to go into `vectors` in a little more depth. As stated before `vecto
 
 The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
 
-#pagebreak()
-
 Note that `vectors` constant factors are bigger than arrays, which means for questions where every little efficiency matters to solve the question, if you don't need a `vector`, don't use one. However in every other case, it's much safer and more convenient to use `vectors` instead of arrays. The main reason being that:-
 + It's easier to initialize all values in a vector \ ```cpp vector<int> v(5,-1)//Initializes vector of size 5 filled with -1```
 + When passing an array to a function, it *always* passes by reference. Passing by reference simply means that the function can make changes to the original array. Sometimes however we wish to pass by value, meaning that a new copy is made. With vectors we have such freedom to choose.
@@ -241,8 +238,6 @@ As you can see, the sort function accepts 2 pointers, the start position of the 
 The time complexity of `std::sort` is $O(n log n)$.
 
 //todo: Write about merge sort.
-
-#pagebreak()
 
 == Binary Search
 
@@ -327,7 +322,7 @@ int main(){
 }
 ```
 
-=== Lower Bound and Upper Bound <lbub>
+== Lower Bound and Upper Bound <lbub>
 
 Usually whenever we do binary search, we rarely ever want to know if a value is actually there or not, rather we'd like to know 2 things:-
 
@@ -335,8 +330,6 @@ Usually whenever we do binary search, we rarely ever want to know if a value is 
 + The first number in the list *strictly* greater than the number. This is called finding the *upper bound*.
 
 To be able to compute the *lower bound* and *upper bound* of some number $t$, we only need to modify the while loop of our earlier binary search algorithm:
-
-#pagebreak()
 
 Lower Bound:
 
@@ -411,6 +404,16 @@ To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because tha
 
 You now might wonder, how do you get the largest element lesser than or the largest element less than or equal to. This can be achieved by subtracting 1 to the lower bound and upper bound respectively.
 
+
+=== `lower_bound()` & `upper_bound()` with custom sorting.
+
+Sometimes your `vector` may not be sorted in ascending order. Sometimes it might be descending, sometimes it could be some custom ordering. In these cases it's important to understand what `lower_bound()` and `upper_bound()` are actually doing. 
+
+`lower_bound(first, last, val, comp())` returns an iterator of the first value where `comp(*it,val)` is `false`
+
+`upper_bound(first, last, val, comp())` returns an iterator of the first value where `comp(val,*it)` is `true`
+
+//TODO: Finish this explanation tomorrow
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
@@ -487,8 +490,6 @@ An `unordered_set` works a bit different then a set. It supports the following o
 + The order of elements are random.
 + All elements in a `unordered_set` are unique
 
-#pagebreak()
-
 Notice how it almost identical to a set other than the fact that it faster with the downside of no sorted order. This looks as if it would be useful to use an `unordered_set` instead of a `set` if you just want to check if elements exists or not due to their $O(1)$ vs the much slower $O(log n)$. However, this $O(1)$ is not guaranteed and for large test cases that you may expect during questions, it usually ends being the much worse $O(n)$ which will lead to a Time Limit Exceeded(TLE). This is why you should always use a `set` over an `unordered_set` even if you don't care about the sorting order.
 
 === `unordered_multiset`
@@ -517,8 +518,6 @@ As you can see, we went through all permutations starting from the string sorted
 
 Try this out with your letter sequence and you'll see that this is probably what you do intuitively without realizing it.
 
-#pagebreak()
-
 Here's the code for that algorithm:
 
 ```cpp
@@ -538,7 +537,6 @@ int main(){
   return 0;
 }
 ```
-#pagebreak()
 
 === `next_permutation()`
 
@@ -579,6 +577,8 @@ int main(){
 
 /*
 * TODO: 
+* Lambda Functions
+* CustomSorting
 * Backtracking
 * Greedy
 * BFS
