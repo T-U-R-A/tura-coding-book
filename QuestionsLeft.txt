@@ -19,7 +19,6 @@ chap 2
 Concert Tickets
 Collecting Numbers
 Collecting Numbers II
-Towers
 Distinct Values Subarrays
 Distinct Values Subsequences
 Josephus Problem I
@@ -27,8 +26,7 @@ Josephus Problem II
 Nested Ranges Check
 Nested Ranges Count
 Room Allocation
-Factory Machines
-Tasks and Deadlines
+Tasks and Deadlines -- sir's help needed
 Reading Books
 Sum of Three Values
 Sum of Four Values

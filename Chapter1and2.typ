@@ -2075,7 +2075,8 @@ int main() {
 
 *Explanation* : 
 
-Keep the top block of every tower in a multiset. For each block, place it on the tower with the smallest top strictly greater than the block (found via `upper_bound`); if none exists, start a new tower. The multiset size after all placements is the answer.
+The idea is to maintain the top blocks of all towers in a multiset. For each new block, place it on the leftmost tower whose top is strictly greater; if no such tower exists, you start a new one. This greedy strategy works because always using the smallest possible valid tower keeps future placements flexible. The number of towers equals the size of the multiset.
+
 
 \
 *Code :*
@@ -2083,6 +2084,7 @@ Keep the top block of every tower in a multiset. For each block, place it on the
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
     ios::sync_with_stdio(false);
@@ -2090,17 +2092,30 @@ int main() {
 
     int n;
     cin >> n;
-    multiset<int> tops;
-    for (int i = 0; i < n; ++i) {
+
+    multiset<int> tops; // stores the current top element of each tower
+
+    for (int i = 0; i < n; i++) {
         int x;
         cin >> x;
+
+        // Find first tower whose top > x (we can place x on that tower)
         auto it = tops.upper_bound(x);
-        if (it != tops.end()) tops.erase(it);
+
+        if (it != tops.end()) {
+            // Reuse this tower: remove old top and replace with x
+            tops.erase(it);
+        }
+        // Start a new tower or update reused one with top = x
         tops.insert(x);
     }
-    cout << tops.size() << "\n";
+
+    // Number of towers equals the number of distinct tops
+    cout << tops.size() << '\n';
+
     return 0;
 }
+
 ```
 #pagebreak()
 
@@ -2246,7 +2261,8 @@ int main() {
 
 *Explanation* : 
 
-Binary search the smallest time `t` such that the sum of `t / time[i]` across all machines is at least the required product count. The predicate is monotonic, so doubling the upper bound until it works and then searching between bounds yields the minimal feasible time.
+The key idea is that the number of items produced increases monotonically with time, so we can binary-search the minimum time needed to make at least `t` items. For any guessed time `mid`, we compute how many items all machines together can produce by summing $mid / v[i]$. If the total is ≥ t, we try a smaller time; otherwise, we increase the time. This guarantees we find the earliest moment when production meets the target.
+
 
 \
 *Code :*
@@ -2254,34 +2270,49 @@ Binary search the smallest time `t` such that the sum of `t / time[i]` across al
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
-    int n;
-    long long target;
-    cin >> n >> target;
-    vector<long long> m(n);
-    for (int i = 0; i < n; ++i) cin >> m[i];
+    ll n, t;
+    cin >> n >> t;
 
-    auto can = [&](long long time) {
-        long long made = 0;
-        for (long long t : m) {
-            made += time / t;
-            if (made >= target) return true;
-        }
-        return false;
-    };
-
-    long long lo = 0, hi = 1;
-    while (!can(hi)) hi <<= 1;
-    while (lo < hi) {
-        long long mid = lo + (hi - lo) / 2;
-        if (can(mid)) hi = mid;
-        else lo = mid + 1;
+    // v[i] = time taken by machine i to produce ONE item
+    vector<ll> v(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
     }
-    cout << lo << "\n";
+
+    // Binary search on time.
+    // low  = minimum possible time
+    // high = a very large upper bound (1e18 works for all constraints)
+    ll low = 1, high = 1e18, ans = -1;
+
+    while (low <= high) {
+        ll mid = (low + high) / 2;
+
+        // Count how many items all machines can produce in 'mid' time
+        ll total = 0;
+        for (int i = 0; i < n; i++) {
+            total += mid / v[i];
+
+            // If already enough, stop early (avoid overflow + speedup)
+            if (total >= t) break;
+        }
+
+        // If we can produce at least t items in 'mid' time,
+        // try to find an even smaller valid time.
+        if (total >= t) {
+            ans = mid;
+            high = mid - 1;
+        }
+        else {
+            // Not enough items — need more time.
+            low = mid + 1;
+        }
+    }
+
+    cout << ans << "\n";
     return 0;
 }
 ```
@@ -2299,7 +2330,7 @@ int main() {
 
 *Explanation* : 
 
-The total reward is `sum(deadline) - sum(completion_time)`, so maximizing reward is minimizing the sum of completion times. Sorting tasks by duration and processing in that order keeps the running finish time as small as possible and thus maximizes the final reward.
+When we choose to complete a task, the rewards of all remaining tasks are “hurt” or negatively affected. The amount of this hurt is directly proportional to how long the chosen task takes, because its duration is added to the completion times of all future tasks. To maximize the total reward, we must minimize this hurt, which is achieved by completing the shortest tasks first and the longest tasks last. We accomplish this by sorting the array by duration and keeping track of the time elapsed.
 
 \
 *Code :*
@@ -2307,26 +2338,32 @@ The total reward is `sum(deadline) - sum(completion_time)`, so maximizing reward
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-    vector<pair<long long,long long>> tasks(n);
-    for (int i = 0; i < n; ++i) cin >> tasks[i].first >> tasks[i].second;
 
-    sort(tasks.begin(), tasks.end());
-
-    long long time = 0, reward = 0;
-    for (auto [duration, deadline] : tasks) {
-        time += duration;
-        reward += deadline - time;
+    // jobs[i] = {duration, deadline}
+    vector<pair<int, int>> jobs(n);
+    for (int i = 0; i < n; i++) {
+        cin >> jobs[i].first >> jobs[i].second;
     }
-    cout << reward << "\n";
-    return 0;
+
+    // Sort by duration (or by first element), ensures earliest finishing attempts first
+    sort(jobs.begin(), jobs.end());
+
+    ll time_elapsed = 0;   // running sum of durations
+    ll total_reward = 0;   // accumulated reward
+
+    for (int i = 0; i < n; i++) {
+        time_elapsed += jobs[i].first;              // finish this job at this time
+        total_reward += jobs[i].second - time_elapsed;  // reward = deadline - completion time
+    }
+
+    cout << total_reward;
 }
+
 ```
 #pagebreak()
 
@@ -2352,21 +2389,30 @@ Two readers can work in parallel, so the minimal finishing time is the larger of
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-    long long sum = 0, mx = 0;
-    for (int i = 0; i < n; ++i) {
-        long long x;
-        cin >> x;
-        sum += x;
-        mx = max(mx, x);
+
+    vector<long long> books(n);
+    long long total = 0, max_book = 0;
+
+    // Read book times, track:
+    // 1) total time of all books
+    // 2) the longest single book
+    for (int i = 0; i < n; i++) {
+        cin >> books[i];
+        total += books[i];
+        max_book = max(max_book, books[i]);
     }
-    cout << max(sum, 2 * mx) << "\n";
+
+    // Minimum total time is governed by:
+    // - total (one person reading sequentially)
+    // - OR twice the largest book (two-person parallel reading constraint)
+    // The answer is the max of these two.
+    cout << max(total, 2 * max_book) << "\n";
+
     return 0;
 }
+
 ```
 #pagebreak()
 
