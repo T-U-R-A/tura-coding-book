@@ -413,7 +413,7 @@ Sometimes your `vector` may not be sorted in ascending order. Sometimes it might
 
 `upper_bound(first, last, val, comp())` returns an iterator of the first value where `comp(val,*it)` is `true`
 
-//TODO: Finish this explanation tomorrow
+By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed. 
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
