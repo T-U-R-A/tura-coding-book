@@ -219,9 +219,9 @@ int main() {
 == Permutations
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#link("https://cses.fi/problemset/task/1163")[Question - Traffic Lights]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1163")[Backup Link]
 
 
 \
@@ -1456,7 +1456,7 @@ The algorithm sorts all weights, then uses two pointer, one at the lightest and 
 *Code :*
 
 ```cpp  
-#include <bits/.stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
  
 int main() {
@@ -1875,7 +1875,6 @@ int main() {
     // We can currently form all sums from 1 to sumSoFar.
 
     for (long long currCoin : coins) {
-
         // If the next needed sum is sumSoFar + 1 and currCoin is bigger,
         // we cannot fill that gap.
         if (currCoin > sumSoFar + 1) {
@@ -1888,7 +1887,9 @@ int main() {
     }
 
     // If all coins processed and no gap found, next unreachable sum is sumSoFar + 1.
-    cout << sumS
+    cout << sumSoFar + 1 << "\n";
+    return 0;
+}
 
 ```
 #pagebreak()
@@ -2122,9 +2123,9 @@ int main() {
 == Traffic Lights
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#link("https://cses.fi/problemset/task/1163")[Question - Traffic Lights]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1163")[Backup Link]
 
 \
 
@@ -2167,8 +2168,6 @@ int main() {
 
 
 ```
-
-
 #pagebreak()
 
 == Room Allocation
@@ -2529,9 +2528,9 @@ int main() {
 == Nearest Smaller Values
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
+#link("https://cses.fi/problemset/task/1645")[Question - Nearest Smaller Values]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1645")[Backup Link]
 
 
 \
@@ -2577,4 +2576,526 @@ int main() {
 }
 
 
+```
+#pagebreak()
+
+== Subarray Sums I
+
+\
+#link("https://cses.fi/problemset/task/1660")[Question - Subarray Sums I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1660")[Backup Link]
+
+\
+
+*Explanation* : 
+
+All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray. Because both pointers move forward at most n times, the algorithm is linear.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    long long x;
+    cin >> n >> x;
+    vector<long long> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    long long ans = 0, sum = 0;
+    int left = 0;
+    for (int right = 0; right < n; right++) {
+        sum += a[right];
+        while (left <= right && sum > x) {
+            sum -= a[left];
+            left++;
+        }
+        if (sum == x) ans++;
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Subarray Sums II
+
+\
+#link("https://cses.fi/problemset/task/1661")[Question - Subarray Sums II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1661")[Backup Link]
+
+\
+
+*Explanation* : 
+
+With negative numbers allowed, we switch to prefix sums. For each position we store how many earlier prefixes have value `current − x`; each such prefix starts a subarray ending here that sums to x. An unordered_map keeps counts in O(1) expected time.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    long long x;
+    cin >> n >> x;
+    vector<long long> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    unordered_map<long long, long long> freq;
+    freq.reserve(2 * n);
+    freq.max_load_factor(0.7);
+    freq[0] = 1;
+
+    long long pref = 0, ans = 0;
+    for (long long v : a) {
+        pref += v;
+        if (freq.count(pref - x)) ans += freq[pref - x];
+        freq[pref]++;
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Subarray Divisibility
+
+\
+#link("https://cses.fi/problemset/task/1662")[Question - Subarray Divisibility]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1662")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Two prefixes with the same remainder modulo n define a subarray whose sum is divisible by n. We track counts of each remainder as we scan the array and add the current remainder’s frequency to the answer.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<ll> cnt(n, 0);
+    cnt[0] = 1;
+
+    ll prefix = 0, ans = 0;
+    for (int i = 0; i < n; i++) {
+        ll x;
+        cin >> x;
+        prefix = (prefix + x % n + n) % n;
+        ans += cnt[prefix];
+        cnt[prefix]++;
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Subarray Distinct Values
+
+\
+#link("https://cses.fi/problemset/task/2428")[Question - Subarray Distinct Values]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2428")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Use a sliding window with a frequency map. Expand the right end; if the number of distinct elements exceeds k, shrink from the left until it doesn’t. Every position contributes `window_length` new subarrays ending there, so we add that to the answer.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    unordered_map<int, int> freq;
+    freq.reserve(2 * n);
+    freq.max_load_factor(0.7);
+
+    int left = 0, distinct = 0;
+    long long ans = 0;
+    for (int right = 0; right < n; right++) {
+        if (freq[a[right]] == 0) distinct++;
+        freq[a[right]]++;
+
+        while (distinct > k) {
+            freq[a[left]]--;
+            if (freq[a[left]] == 0) distinct--;
+            left++;
+        }
+        ans += right - left + 1;
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Array Division
+
+\
+#link("https://cses.fi/problemset/task/1085")[Question - Array Division]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1085")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Binary search the smallest possible maximal subarray sum. For a guessed limit, greedily form segments; whenever adding the next element would exceed the limit we start a new segment. If we can stay within k segments, the limit is feasible and we search lower; otherwise we search higher.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+bool feasible(const vector<ll>& a, int k, ll limit) {
+    ll curr = 0;
+    int parts = 1;
+    for (ll x : a) {
+        if (x > limit) return false;
+        if (curr + x > limit) {
+            parts++;
+            curr = x;
+        } else {
+            curr += x;
+        }
+    }
+    return parts <= k;
+}
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+    vector<ll> a(n);
+    ll low = 0, high = 0;
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
+        low = max(low, a[i]);
+        high += a[i];
+    }
+
+    ll ans = high;
+    while (low <= high) {
+        ll mid = (low + high) / 2;
+        if (feasible(a, k, mid)) {
+            ans = mid;
+            high = mid - 1;
+        } else {
+            low = mid + 1;
+        }
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Sliding Median
+
+\
+#link("https://cses.fi/problemset/task/1076")[Question - Sliding Median]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1076")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Maintain two multisets: `low` holds the smaller half (including the median) and `high` holds the larger half. After each insert/remove we rebalance so that `low` is never smaller than `high` and differs by at most one element. The median is always the largest element of `low`.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+multiset<int> lowSet, highSet;
+
+void rebalance() {
+    if (lowSet.size() > highSet.size() + 1) {
+        highSet.insert(*lowSet.rbegin());
+        auto it = lowSet.end();
+        --it;
+        lowSet.erase(it);
+    } else if (lowSet.size() < highSet.size()) {
+        lowSet.insert(*highSet.begin());
+        highSet.erase(highSet.begin());
+    }
+}
+
+void add(int x) {
+    if (lowSet.empty() || x <= *lowSet.rbegin()) lowSet.insert(x);
+    else highSet.insert(x);
+    rebalance();
+}
+
+void remove_one(int x) {
+    auto it = lowSet.find(x);
+    if (it != lowSet.end()) lowSet.erase(it);
+    else {
+        it = highSet.find(x);
+        highSet.erase(it);
+    }
+    rebalance();
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    for (int i = 0; i < k; i++) add(a[i]);
+    cout << *lowSet.rbegin();
+
+    for (int i = k; i < n; i++) {
+        add(a[i]);
+        remove_one(a[i - k]);
+        cout << " " << *lowSet.rbegin();
+    }
+    cout << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Sliding Cost
+
+\
+#link("https://cses.fi/problemset/task/1077")[Question - Sliding Cost]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1077")[Backup Link]
+
+\
+
+*Explanation* : 
+
+As in Sliding Median, keep two multisets split around the median but also track their sums. The total cost is `median * |low| − sumLow + sumHigh − median * |high|`. After each insertion/removal we rebalance and recompute using the maintained sums in O(1).
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+multiset<int> lowSet, highSet;
+ll sumLow = 0, sumHigh = 0;
+
+void rebalance() {
+    if (lowSet.size() > highSet.size() + 1) {
+        int x = *lowSet.rbegin();
+        sumLow -= x;
+        lowSet.erase(prev(lowSet.end()));
+        highSet.insert(x);
+        sumHigh += x;
+    } else if (lowSet.size() < highSet.size()) {
+        int x = *highSet.begin();
+        sumHigh -= x;
+        highSet.erase(highSet.begin());
+        lowSet.insert(x);
+        sumLow += x;
+    }
+}
+
+void add(int x) {
+    if (lowSet.empty() || x <= *lowSet.rbegin()) {
+        lowSet.insert(x);
+        sumLow += x;
+    } else {
+        highSet.insert(x);
+        sumHigh += x;
+    }
+    rebalance();
+}
+
+void remove_one(int x) {
+    auto it = lowSet.find(x);
+    if (it != lowSet.end()) {
+        sumLow -= x;
+        lowSet.erase(it);
+    } else {
+        it = highSet.find(x);
+        sumHigh -= x;
+        highSet.erase(it);
+    }
+    rebalance();
+}
+
+ll cost() {
+    int med = *lowSet.rbegin();
+    return med * 1LL * lowSet.size() - sumLow + sumHigh - med * 1LL * highSet.size();
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    for (int i = 0; i < k; i++) add(a[i]);
+    cout << cost();
+    for (int i = k; i < n; i++) {
+        add(a[i]);
+        remove_one(a[i - k]);
+        cout << " " << cost();
+    }
+    cout << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Movie Festival II
+
+\
+#link("https://cses.fi/problemset/task/1632")[Question - Movie Festival II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1632")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Sort movies by ending time. Keep a multiset of viewers’ current end times. For each movie, try to find the viewer who becomes free latest but still not after the movie starts (largest end time ≤ start). Reassign that viewer to the current movie; if none exist and we still have spare viewers, start a new one. Each successful assignment increases the count.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, k;
+    cin >> n >> k;
+    vector<pair<int, int>> movies(n);
+    for (int i = 0; i < n; i++) {
+        int a, b;
+        cin >> a >> b;
+        movies[i] = {b, a}; // sort by end
+    }
+    sort(movies.begin(), movies.end());
+
+    multiset<int> endTimes;
+    int watched = 0;
+    for (auto [end, start] : movies) {
+        auto it = endTimes.upper_bound(start);
+        if (it == endTimes.begin()) {
+            if ((int)endTimes.size() < k) {
+                endTimes.insert(end);
+                watched++;
+            }
+        } else {
+            --it;
+            endTimes.erase(it);
+            endTimes.insert(end);
+            watched++;
+        }
+    }
+    cout << watched << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Maximum Subarray Sum II
+
+\
+#link("https://cses.fi/problemset/task/1644")[Question - Maximum Subarray Sum II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1644")[Backup Link]
+
+\
+
+*Explanation* : 
+
+Let `pref[i]` be the sum of the first i elements. For each end index i we need the smallest prefix value among starts that keep the subarray length in [a, b]; the answer candidate is `pref[i] − minPrefix`. A multiset over the valid prefix window supports O(log n) insert/erase as we slide i forward.
+
+\
+
+*Code :*
+
+```cpp  
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, a, b;
+    cin >> n >> a >> b;
+    vector<ll> pref(n + 1, 0);
+    for (int i = 1; i <= n; i++) {
+        ll x;
+        cin >> x;
+        pref[i] = pref[i - 1] + x;
+    }
+
+    multiset<ll> window;
+    ll ans = LLONG_MIN;
+    for (int i = a; i <= n; i++) {
+        window.insert(pref[i - a]);
+        if (i - b - 1 >= 0) {
+            window.erase(window.find(pref[i - b - 1]));
+        }
+        ans = max(ans, pref[i] - *window.begin());
+    }
+
+    cout << ans << "\n";
+    return 0;
+}
 ```
