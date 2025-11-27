@@ -1,7 +1,7 @@
 chap 1 
 
 Number Spiral
-Palindrome Reorder                
+Palindrome Reorder
 Gray code
 Chessboard and Queens
 Raab Game I
@@ -24,7 +24,6 @@ Distinct Values Subsequences
 Josephus Problem I
 Josephus Problem II
 Nested Ranges Check
-Nested Ranges Count
 Room Allocation
 Tasks and Deadlines -- sir's help needed
 Reading Books
@@ -37,3 +36,5 @@ Distinct Values Subarrays II
 Array Division
 Movie Festival II
 Maximum Subarray Sum II
+
+Nested Ranges Count -- apurva
