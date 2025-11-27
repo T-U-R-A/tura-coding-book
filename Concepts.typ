@@ -652,12 +652,24 @@ int main(){
 }
 ```
 
+== Greedy algorithms
+
+A greedy algorithm is a type of algorithm where the solution for a smaller sub-part of the question also applies to the whole question. A greedy algorithm never goes back and corrects it's previous decision. Let's take a look at a question that can be solve with a greedy algorithm:
+
+Question: You are given a list of events. Every event has a start time and an end time. You can only attend one event at a time. Your goal is to pick events in such a way so that you can attend the maximum number of events.
+
+The algorithm to solve this question is to pick an event which ends the earliest and then pick the next non overlapping event that ends the earliest and so on. This always ensures that you can pick the largest number of events.
+
+The reason for this is to think of the opposite. If you were to pick an event the ends later, at best case you can still pick the same number of new events. However at worst you will overlap some events that you could have picked. Let's look at the following example:
+
+//TODO: Figure out how to draw lines properly.
+
 /*
 * TODO: 
-* Lambda Functions
-* CustomSorting
 * Backtracking
 * Greedy
+* Graph Representations
 * BFS
+* Prefix Suff
 * Fenwick Tree
 */
