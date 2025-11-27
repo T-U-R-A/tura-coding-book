@@ -1,9 +1,7 @@
-general 
-
 chap1
+
 backtracking
 next_permutation
 
-chap2
 
-chap3
+

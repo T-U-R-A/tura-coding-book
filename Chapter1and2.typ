@@ -2711,25 +2711,34 @@ Two prefixes with the same remainder modulo n define a subarray whose sum is div
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 int main() {
-    int n;
+    long long n;
     cin >> n;
-    vector<ll> cnt(n, 0);
-    cnt[0] = 1;
 
-    ll prefix = 0, ans = 0;
+    vector<long long> v(n);
     for (int i = 0; i < n; i++) {
-        ll x;
-        cin >> x;
-        prefix = (prefix + x % n + n) % n;
-        ans += cnt[prefix];
-        cnt[prefix]++;
+        cin >> v[i];
+        v[i] %= n;                     // reduce each element mod n
     }
-    cout << ans << "\n";
-    return 0;
+
+    long long prefix = 0;             // running prefix sum mod n
+    long long ways   = 0;             // total valid subarrays
+    
+    map<long long, long long> freq;   // count of each prefix-sum value
+    freq[0] = 1;                      // empty prefix contributes once
+
+    for (int i = 0; i < n; i++) {
+        prefix = (prefix + v[i]) % n;
+        if (prefix < 0) prefix += n;  // keep it non-negative
+
+        ways += freq[prefix];         // all previous identical prefixes pair with this
+        freq[prefix]++;               // update frequency
+    }
+
+    cout << ways;
 }
+
 ```
 #pagebreak()
 
