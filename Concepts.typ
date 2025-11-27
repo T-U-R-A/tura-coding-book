@@ -197,9 +197,9 @@ Recursion is the concept of calling some function inside of itself. Say we want 
 using namespace std;
 
 int fact(int n){
-  if(n == 1)//base case
+  if(n == 1) //base case
     return 1;
-  return n * fact(n-1);//recursion
+  return n * fact(n - 1);//recursion
 }
 
 int main(){
@@ -230,9 +230,7 @@ int main(){
   
   int n; 
   cin >> n;
-
-  /
-  */
+  
   function<int (int)> fact = [&] (int num){ // defining the lambda expression
     if(num == 1)
       return 1; 
