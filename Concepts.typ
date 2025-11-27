@@ -213,16 +213,51 @@ int main(){
 
 Every recursive algorithm has 2 main things:
 + A base case. Some failure point at which you must return a known value. In this code it was $n = 1$ and we returned $1$ for that base case. You can always have multiple base cases if necessary.
-+ Recursion. This is the part where you call the original function on a smaller problem than the original. In this case we call `fact(n-1)` and then multiply it by `n` to get `fact(n)`.
 
++ Recursion. This is the part where you call the original function on a smaller problem than the original. In this case we call `fact(n-1)` and then multiply it by `n` to get `fact(n)`.
 Fun fact: It's proven that any recursion function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop you should. However, some programs are too hard to convert to loops so you should stick to recursion.
+
+== Lambda expressions
+
+Lambda expressions are a way to write functions in line without having to write them separately. For example: 
+
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  
+  int n; 
+  cin >> n;
+
+  /
+  */
+  function<int (int)> fact = [&] (int num){ // defining the lambda expression
+    if(num == 1)
+      return 1; 
+    return num * fact(num-1);
+  };
+
+  cout << fact(n) << endl;
+
+  return 0;
+}
+```
+As you can see we've defined a function within the main function. The first part `function<int (int)>` says that you're making a function with return type int and one int parameter. Then after the equal to the `[&]` part allows you to access variables in the scope of the outer function by reference. `[=]` would allow you to access them by value and `[]` wouldn't allow any access. Then you write the actual contents of the function inside the braces. 
+
+Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
 
 == Sorting
 
 To sort a data structure like an array of vector, `c++` has it's own sort function for this:
 
 ```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
 int main(){
+
   int arr[] = {3,4,6,2,5,1};
   vector<int> v = {6,2,4,5,1,3};
 
@@ -237,6 +272,49 @@ As you can see, the sort function accepts 2 pointers, the start position of the 
 
 The time complexity of `std::sort` is $O(n log n)$.
 
+=== Sorting with a custom sorting order.
+
+Say you with to sort a `vector` in descending order, or you have something more complicated in mind. Well the `sort()` function has an extra parameter to supply your own sorting order.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int arr[] = {3,4,6,2,5,1};
+  vector<int> v = {6,2,4,5,1,3};
+
+  sort(arr, arr+6, greater<int>());//Sorts the array {6,5,4,3,2,1}
+  sort(v.begin(), v.end(), greater<int>());//Sorts the vector {6,5,4,3,2,1}
+
+  return 0;
+}
+```
+
+The `greater<int>()` function returns true when for the 2 inputs `a` and `b`, `a > b`. Using sort this way ensure that all elements make your comparator function `true`.
+
+Let's say you want to sort a `vector<pair<int,int>>` such that the second element is sorted in ascending order and only if they are equal are the first elements sorted in descending order. Here's how you could go about it, this will also demonstrate how to use lambda expressions:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n; 
+  cin >> n;
+  vector<pair<int,int>> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  sort(v.begin(), v.end(), [](const pair<int,int> &a, const pair<int,int> &b){
+    return a.second < b.second || a.second == b.second && a.first > b.first)
+  });
+
+  return 0;
+}
+```
 //todo: Write about merge sort.
 
 == Binary Search
@@ -414,6 +492,7 @@ Sometimes your `vector` may not be sorted in ascending order. Sometimes it might
 `upper_bound(first, last, val, comp())` returns an iterator of the first value where `comp(val,*it)` is `true`
 
 By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed. 
+
 == Sets
 
 A `set` in a data structure in `c++`, which has the following properties:
