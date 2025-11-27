@@ -1,5 +1,3 @@
-chap 1 
-
 Number Spiral
 Palindrome Reorder
 Gray code
@@ -14,8 +12,6 @@ Two Knights - apurva
 Tower of Hanoi - Apurva
 Mex Grid Construction - Apurva
 
-chap 2
-
 Concert Tickets
 Collecting Numbers
 Collecting Numbers II
@@ -27,9 +23,7 @@ Nested Ranges Check
 Room Allocation
 Tasks and Deadlines -- sir's help needed
 Reading Books
-Sum of Three Values
 Sum of Four Values
-Subarray Sums I
 Subarray Sums II
 Subarray Divisibility
 Distinct Values Subarrays II
@@ -37,4 +31,4 @@ Array Division
 Movie Festival II
 Maximum Subarray Sum II
 
-Nested Ranges Count -- apurva
+Nested Ranges Count --apurva

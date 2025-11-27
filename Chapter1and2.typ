@@ -2427,7 +2427,7 @@ int main() {
 
 *Explanation* : 
 
-Sort all numbers with their original indices. For each first element, use the two-pointer technique on the remaining range to find two more elements that complete the target sum. If found, print their original 1-based indices; otherwise the task is impossible.
+This solution finds three numbers that sum to the target by first sorting the array and then fixing one element at a time. For each fixed element, it uses a two-pointer scan on the remaining range to efficiently search for a complementary pair. Sorting allows the sum to guide pointer movement, reducing the search from cubic to quadratic time. If no valid triple exists, the answer is declared impossible, keeping the logic clean and deterministic.
 
 \
 
@@ -2438,34 +2438,47 @@ Sort all numbers with their original indices. For each first element, use the tw
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    long long target;
+    int n, target;
     cin >> n >> target;
-    vector<pair<long long,int>> a(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> a[i].first;
-        a[i].second = i + 1;
-    }
-    sort(a.begin(), a.end());
 
-    for (int i = 0; i < n; ++i) {
-        long long need = target - a[i].first;
-        int l = i + 1, r = n - 1;
+    // Store {value, original_index}
+    vector<pair<int, int>> v(n);
+
+    for (int i = 0; i < n; i++) {
+        cin >> v[i].first;
+        v[i].second = i + 1;  // keep original 1-based index
+    }
+
+    // Sort by value so we can use the two-pointer trick
+    sort(v.begin(), v.end());
+
+    // Fix one element v[i], then find two others using two pointers
+    for (int i = 0; i < n - 2; i++) {
+        int l = i + 1;       // left pointer
+        int r = n - 1;       // right pointer
+
         while (l < r) {
-            long long sum = a[l].first + a[r].first;
-            if (sum == need) {
-                cout << a[i].second << " " << a[l].second << " " << a[r].second << "\n";
+            int sum = v[i].first + v[l].first + v[r].first;
+
+            if (sum == target) {
+                // Output original positions (not sorted ones)
+                cout << v[i].second << " " << v[l].second << " " << v[r].second;
                 return 0;
-            } else if (sum < need) l++;
-            else r--;
+            }
+            else if (sum < target) {
+                l++;         // need a larger sum → move left pointer right
+            }
+            else {
+                r--;         // need a smaller sum → move right pointer left
+            }
         }
     }
-    cout << "IMPOSSIBLE\n";
+
+    // If no triple found
+    cout << "IMPOSSIBLE";
     return 0;
 }
+
 ```
 #pagebreak()
 
@@ -2590,7 +2603,7 @@ int main() {
 
 *Explanation* : 
 
-All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray. Because both pointers move forward at most n times, the algorithm is linear.
+All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray. 
 
 \
 
@@ -2599,27 +2612,37 @@ All numbers are positive, so we keep a sliding window: expand the right end, and
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
 int main() {
-    int n;
-    long long x;
+    ll n, x;
     cin >> n >> x;
-    vector<long long> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
 
-    long long ans = 0, sum = 0;
-    int left = 0;
-    for (int right = 0; right < n; right++) {
-        sum += a[right];
-        while (left <= right && sum > x) {
-            sum -= a[left];
-            left++;
-        }
-        if (sum == x) ans++;
+    vector<int> v(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
     }
-    cout << ans << "\n";
-    return 0;
+
+    ll curr = 0;   // current window sum
+    ll count = 0;  // number of subarrays equal to x
+    ll l = 0;      // left pointer of sliding window
+
+    for (int r = 0; r < n; r++) {
+        curr += v[r];               // expand window to the right
+
+        // shrink window from the left while sum exceeds x
+        while (curr > x) {
+            curr -= v[l];
+            l++;
+        }
+
+        // if current window sum matches x, count it
+        if (curr == x) count++;
+    }
+
+    cout << count;
 }
+
 ```
 #pagebreak()
 
