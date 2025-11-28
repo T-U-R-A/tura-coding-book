@@ -1,3 +1,5 @@
+#import "@preview/cetz:0.4.2"
+
 #set text(
   font: "New Computer Modern Math"
 )
@@ -662,12 +664,50 @@ The algorithm to solve this question is to pick an event which ends the earliest
 
 The reason for this is to think of the opposite. If you were to pick an event the ends later, at best case you can still pick the same number of new events. However at worst you will overlap some events that you could have picked. Let's look at the following example:
 
-//TODO: Figure out how to draw lines properly.
+#align(center)[
+  #table(columns: 2,
+    [start],[end],
+    [1],[3],
+    [2],[5],
+    [4],[6],
+    [3],[8],
+    [7],[10]
+  )
+]
+
+Here's the visualization of all the events:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+    line((0,0),(10,0), name: "numline")
+    content((name: "numline", anchor: 0%),box(fill: white, $0$))
+    content((name: "numline", anchor: 10%),box(fill: white, $1$))
+    content((name: "numline", anchor: 20%),box(fill: white, $2$))
+    content((name: "numline", anchor: 30%),box(fill: white, $3$))
+    content((name: "numline", anchor: 40%),box(fill: white, $4$))
+    content((name: "numline", anchor: 50%),box(fill: white, $5$))
+    content((name: "numline", anchor: 60%),box(fill: white, $6$))
+    content((name: "numline", anchor: 70%),box(fill: white, $7$))
+    content((name: "numline", anchor: 80%),box(fill: white, $8$))
+    content((name: "numline", anchor: 90%),box(fill: white, $9$))
+    content((name: "numline", anchor: 100%),box(fill: white, $10$))
+  
+    rect((1,-0.5),(3,-1), fill: luma(240))
+    rect((2,-1.5),(5,-2), fill: luma(240))
+    rect((4,-2.5),(6,-3), fill: luma(240))
+    rect((3,-3.5),(8,-4), fill: luma(240))
+    rect((7,-4.5),(10,-5), fill: luma(240))
+  })
+]
+
+These events are currently sorted in ascending order of their end times. Let's say instead of following the strategy by picking the first event ${1,3}$, you were to pick the second event ${2,5}$ which has a later start time. The only new event you can also attend is ${7,10}$. If you were to pick ${1,3}$, you can pick ${7,10}$, but can also pick ${4,6}$. This is why it's always better to pick event's which end earlier because you have nothing to loose and everything to gain.
+
+There are many other questions where you can use a greedy approach and you'll understand how to use them by solving such questions.
 
 /*
 * TODO: 
 * Backtracking
-* Greedy
 * Graph Representations
 * BFS
 * Prefix Suff
