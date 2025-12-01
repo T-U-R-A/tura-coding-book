@@ -1,5 +1,4 @@
-Number Spiral
-Palindrome Reorder
+Number Spiral --small eg pending
 Gray code
 Chessboard and Queens
 Raab Game I
@@ -12,7 +11,7 @@ Two Knights - apurva
 Tower of Hanoi - Apurva
 Mex Grid Construction - Apurva
 
-Concert Tickets
+
 Collecting Numbers
 Collecting Numbers II
 Distinct Values Subarrays
@@ -21,7 +20,6 @@ Josephus Problem I
 Josephus Problem II
 Nested Ranges Check
 Room Allocation
-Tasks and Deadlines -- sir's help needed
 Reading Books
 Sum of Four Values
 Subarray Sums II
@@ -30,5 +28,7 @@ Distinct Values Subarrays II
 Array Division
 Movie Festival II
 Maximum Subarray Sum II
+
+Tasks and Deadlines -- sir's help needed
 
 Nested Ranges Count --apurva

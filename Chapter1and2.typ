@@ -284,8 +284,38 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Imagine the grid as a layered structure where each layer wraps around the previous one. The largest of (x, y) tells you which layer you’re standing on. The starting number in the layer is given by $max(x, y) * max(x, y)$. The number in the grid square is the starting number in the layer plus the distance from the starting square. 
+The spiral fills outward in square layers, where layer L contains all cells with $max(x,y) = L$. Each layer's diagonal cell (L, L) holds the value L²-L+1, serving as our anchor point. 
 
+
+
+*The key insight:* 
+
+- Even layers fill downward then leftward, while odd layers fill rightward then upward. So for even layers, if you're on the rightmost edge (x=L), you subtract how far down you are from the diagonal; otherwise you're on the top edge, so add how far left you are. 
+
+- Odd layers work inversely: if you're on the top edge (y=L), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance. 
+This directional pattern emerges because the spiral alternates its filling direction with each layer to maintain continuity.
+
+*Example:* y = 5, x = 3
+
+#table(
+  columns: 5,
+
+  fill: (x, y) => 
+  if (x == 2 and y == 4) {green.lighten(60%)} 
+  else if x == 4 or y == 4 {red.lighten(60%)},
+  
+  [1], [2], [9], [10], [25],
+  [4], [3], [8], [11], [24],
+  [5], [6], [7], [12], [23],
+  [16], [15], [14], [13], [22],
+  [17], [18], [19], [20], [21],
+)
+
+
+
+
+
+\
 *Code :*
 
 ```cpp  
@@ -1534,7 +1564,8 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Store all ticket prices in a multiset to keep them sorted and allow duplicates. For each customer budget, find the first ticket strictly greater than their offer using `upper_bound`; the valid choice is the previous ticket (largest price not exceeding the budget). If no such ticket exists, print -1, otherwise sell it and remove it from the multiset to avoid reuse.
+Store all ticket prices in a multiset to keep them sorted and allow duplicates. Each customer gives an offer, and you use `upper_bound` to find the first price strictly greater than that offer, then step one step back to get the best affordable ticket. If such a ticket exists, print it and remove it; otherwise print –1. This algorithm neatly handles each request without iterating through the whole list.
+
 
 \
 *Code :*
@@ -1544,35 +1575,47 @@ Store all ticket prices in a multiset to keep them sorted and allow duplicates. 
 using namespace std;
  
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, m;
+    int n, m, input;
     cin >> n >> m;
-    multiset<int> tickets;
+
+    // Multiset to store ticket prices in sorted order
+    multiset<int> prices;
+
+    // Store the m offers from customers
+    vector<int> offers(m);
+ 
+    // Insert the n ticket prices into the multiset
     for (int i = 0; i < n; i++) {
-        int price;
-        cin >> price;
-        tickets.insert(price);
+        cin >> input;
+        prices.insert(input);
     }
 
+    // Read all offers
+    for (int i = 0; i < m; i++) 
+        cin >> offers[i];
+ 
+    // For each offer, try to find the best possible ticket
     for (int i = 0; i < m; i++) {
-        int offer;
-        cin >> offer;
 
-        // First element strictly greater than offer
-        auto it = tickets.upper_bound(offer);
-        if (it == tickets.begin()) {
-            cout << -1 << "\n"; // no ticket affordable
-        } else {
-            --it;                // best affordable ticket
-            cout << *it << "\n";
-            tickets.erase(it);   // remove sold ticket
+        // Find the first price strictly greater than the offer
+        auto it = prices.upper_bound(offers[i]);
+
+        // If upper_bound points to begin(), no ticket <= offer exists
+        if (it == prices.begin()) {
+            cout << "-1" << endl;
+        } 
+        else {
+            // Move iterator to the largest price <= offer
+            --it;
+
+            // Output that price
+            cout << *it << endl;
+
+            // Remove that ticket so it can't be reused
+            prices.erase(it);
         }
     }
-    return 0;
 }
-
 ```
 #pagebreak()
 == Restaurant Customers
@@ -2740,30 +2783,39 @@ Two prefixes with the same remainder modulo n define a subarray whose sum is div
 using namespace std;
 
 int main() {
-    long long n;
+    int n;
     cin >> n;
 
-    vector<long long> v(n);
+    // Read array and reduce each element modulo n (helps avoid overflow)
+    vector<long long> arr(n);
     for (int i = 0; i < n; i++) {
-        cin >> v[i];
-        v[i] %= n;                     // reduce each element mod n
+        cin >> arr[i];
+        arr[i] %= n;
     }
 
-    long long prefix = 0;             // running prefix sum mod n
-    long long ways   = 0;             // total valid subarrays
-    
-    map<long long, long long> freq;   // count of each prefix-sum value
-    freq[0] = 1;                      // empty prefix contributes once
+    // freq[x] = how many prefix sums have remainder x mod n
+    map<long long, long long> freq;
+    freq[0] = 1;  // Empty prefix considered as remainder 0
 
+    long long sum = 0;
+    long long count = 0;
+
+    // Loop over all elements and compute prefix sums
     for (int i = 0; i < n; i++) {
-        prefix = (prefix + v[i]) % n;
-        if (prefix < 0) prefix += n;  // keep it non-negative
+        sum += arr[i];
 
-        ways += freq[prefix];         // all previous identical prefixes pair with this
-        freq[prefix]++;               // update frequency
+        // Compute positive modulo n (handles negative sums)
+        long long mod = ((sum % n) + n) % n;
+
+        // Any previous prefix with same modulo forms a valid subarray
+        count += freq[mod];
+
+        // Increase frequency for this remainder
+        freq[mod]++;
     }
 
-    cout << ways;
+    // Total count of subarrays whose sum is divisible by n
+    cout << count << endl;
 }
 
 ```
