@@ -10,6 +10,7 @@
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
 #show link: underline
+
 #outline()
 #pagebreak()
 
@@ -586,41 +587,67 @@ int main() {
 
 *Intuitive Explanation* : 
 
-Count the frequency of every letter. A palindrome can have at most one character with an odd count; if more exist the task is impossible. Otherwise we build the left half using half of each frequency, keep the optional odd character for the middle, and mirror the left half to complete the string.
+We start by counting the frequency of each letter. If there is an even number of characters, odd frequencies are not allowed, since a palindrome would be impossible. If there is an odd number of characters, only one letter with an odd frequency is allowed, as it can be placed in the center (for example, “aba”). Otherwise, the program builds the palindrome by placing characters symmetrically from both ends and putting any leftover odd-frequency character in the middle. The final constructed string is then printed, completing the rearrangement.
 
 *Code :*
 
 ```cpp  
 #include <bits/stdc++.h>
 using namespace std;
-
+ 
 int main() {
     string s;
-    cin >> s;
-    vector<int> freq(26, 0);
-    for (char c : s) freq[c - 'A']++;
-    int odd = 0;
-    int oddIndex = -1;
-    for (int i = 0; i < 26; ++i) {
-        if (freq[i] % 2) {
-            odd++;
-            oddIndex = i;
-        }
-    }
-    if (odd > 1) {
-        cout << "NO SOLUTION\n";
+    cin >> s; // Read input string
+ 
+    int arr[26] = {}; // frequency array for letters A–Z (all initialized to 0)
+ 
+    // Count how many times each character appears
+    for (char c : s) 
+        arr[c - 'A']++;
+ 
+    // Count how many characters have odd frequencies
+    int oddCount = 0;
+    for (int i = 0; i < 26; i++) 
+        if (arr[i] % 2 != 0) 
+            oddCount++;
+ 
+    // Palindrome rule:
+    // - If string length is even → no odd frequencies allowed
+    // - If string length is odd  → exactly one odd frequency allowed
+    if (oddCount > 1 && s.size() % 2 == 1) {
+        cout << "NO SOLUTION"; // too many odd-count letters
         return 0;
     }
-    string half;
-    for (int i = 0; i < 26; ++i) {
-        half.append(freq[i] / 2, char('A' + i));
+    else if (oddCount > 0 && s.size() % 2 == 0) {
+        cout << "NO SOLUTION"; // even-length string with odd-count letters
+        return 0;    
     }
-    string result = half;
-    if (oddIndex != -1) result += char('A' + oddIndex);
-    reverse(half.begin(), half.end());
-    result += half;
-    cout << result << "\n";
-    return 0;
+    else {
+        // Container to build the palindrome result
+        vector<char> str(s.length());
+        int left = 0, right = s.length() - 1;
+ 
+        // Fill symmetric pairs from both sides
+        for (int i = 0; i < 26; i++) {
+            while (arr[i] >= 2) {
+                str[left++] = (char)('A' + i);   // place letter on left side
+                str[right--] = (char)('A' + i);  // place same letter on right
+                arr[i] -= 2; // remove two occurrences
+            }
+        }
+ 
+        // If one odd-count character remains, put it in the middle
+        for (int i = 0; i < 26; i++)
+            if (arr[i] == 1)
+                str[left] = (char)('A' + i);
+ 
+        // Convert vector<char> back to a string
+        s = string(str.begin(), str.end());
+ 
+        // Print the final palindrome
+        cout << s << endl;
+        return 0;
+    }
 }
 ```
 
