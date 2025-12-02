@@ -1,4 +1,3 @@
-Number Spiral --small eg pending
 Gray code
 Chessboard and Queens
 Raab Game I

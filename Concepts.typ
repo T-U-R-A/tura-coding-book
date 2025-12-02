@@ -2,13 +2,13 @@
 #import "@preview/board-n-pieces:0.7.0": *
 
 #set text(
-  font: "New Computer Modern Math"
+  font: "New Computer Modern Math",
 )
 #set page(
-  numbering: "1"
+  numbering: "1",
 )
 #set heading(
-  numbering: "1."
+  numbering: "1.",
 )
 #show link: underline
 
@@ -24,16 +24,16 @@
 Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage. We deliberately use C++ features useful for programming contests.
 
 Solution:
-```cpp 
+```cpp
 
-#include <bits/stdc++.h> 
+#include <bits/stdc++.h>
 using namespace std;
 
 double calcPercent(int numerator, int denominator){
-  return numerator * 100.0 / denominator; 
+  return numerator * 100.0 / denominator;
   // An example of a single line comment
-  /* An example of a multiline comment 
-     numerator / denominator * 100.0 will first do integer division. 
+  /* An example of a multiline comment
+     numerator / denominator * 100.0 will first do integer division.
      That's why we multiply by 100.0 first and then divide by the denominator. */
 }
 
@@ -44,7 +44,7 @@ struct Student{
   Student(); // this is a default constructor
 
   // this is a parameterized constructor
-  Student(string name, pair<int, int> marks) { 
+  Student(string name, pair<int, int> marks) {
     this->name = name;
     this->marks = marks;
     percent = calcPercent(marks.first, marks.second);
@@ -52,24 +52,24 @@ struct Student{
 };
 
 // Program execution begins from here
-int main() { 
+int main() {
   int n;
   cin >> n;
 
   // to create an array of n Students the default constructor was neccesary
-  Student arr[n]; 
+  Student arr[n];
   double maxPercentage = 0.0;
 
   for(int i = 0; i < n; i++){
     string name;
     pair<int, int> marks;
-    cin >> name >> marks.first >> marks.second; 
+    cin >> name >> marks.first >> marks.second;
 
     // calling parameterized constructor
     arr[i] = Student(name, marks);
     maxPercentage = max(arr[i].percent, maxPercentage);
   }
-  
+
   // a vector is a resizeable array with some useful functions
   // memory is automatically allocated in a vector
   vector<Student> best;
@@ -79,7 +79,7 @@ int main() {
       // push_back() adds the student to the end of the vector
       best.push_back(arr[i]);
     }
-  
+
   cout << "Names, Marks and Percentages of top scorers!" << endl;
   for(int i = 0; i < best.size(); i++) {
     cout << "Name: " << best[i].name;
@@ -95,17 +95,17 @@ While this isn't the only way to solve the question, the code should cover the m
 
 === Data Types
 
-This code contained the data types `int`(Integer which is a non decimal number) , `double` (Decimal Number), `string` (Text) and `pair<int,int>`. A `pair` is a datatype that can be a combination of 2 other data types and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`'s but it could be a pair of `int` and `string` and much more. 
+This code contained the data types `int`(Integer which is a non decimal number) , `double` (Decimal Number), `string` (Text) and `pair<int,int>`. A `pair` is a datatype that can be a combination of 2 other data types and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`'s but it could be a pair of `int` and `string` and much more.
 === Variables
 Variables are strongly typed in `c++` which means you must specify their datatype and then their name.
-=== Input/Output 
-Input and output is does with `cin` and `cout` and angle brackets `>>` for input and `<<` for output. 
+=== Input/Output
+Input and output is does with `cin` and `cout` and angle brackets `>>` for input and `<<` for output.
 === Conditional Statements
 Conditions Statements are represented with `if`. The part inside the `if` block runs if the condition is true. You can also use `else` which triggers if the `if` block above is `false` and create if else ladders with `else if` which triggers if the above `if` and `else if` blocks were `false`.
 === Loops
-A loop in the example is a `for` loop, which has 3 parts, the first part initializes a variable. The second part is the condition to determine if the loop should continue and the 3 part is what happens at the end of the loop block which is usually to update the variable initialized in the first part. 
+A loop in the example is a `for` loop, which has 3 parts, the first part initializes a variable. The second part is the condition to determine if the loop should continue and the 3 part is what happens at the end of the loop block which is usually to update the variable initialized in the first part.
 === Classes/Structs
-In this program we made a `struct` because their easier to use than a `class`. They work in nearly the same way though and the only difference really is that members in a `struct` are `public` by default but members in a `class` are `private` by default. 
+In this program we made a `struct` because their easier to use than a `class`. They work in nearly the same way though and the only difference really is that members in a `struct` are `public` by default but members in a `class` are `private` by default.
 === Arrays/Vectors
 An array is a list of many of the same datatype. In this program we made an array of `Students` which is our own datatype. We also made a vector, which unlike an array, has a dynamic size.
 === Functions
@@ -115,12 +115,12 @@ More about `c++` syntax can be learned #link("https://www.w3schools.com/cpp/")[h
 
 == Time Complexity
 
-Time Complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent by using something called Big-O Notation. For instance, say we have a program that is $O(n)$, this means that the function is linear, i.e. if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size. 
+Time Complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent by using something called Big-O Notation. For instance, say we have a program that is $O(n)$, this means that the function is linear, i.e. if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
 
 Whenever you are solving a question, always calculate the time complexity of your algorithm. When you plug in the maximum input sizes into your time complexity, the amount of time it should take should be less than $10^10$ because that's usually how many operations occur in one second.
 /*Whenever we're trying to solve a question, we need to come up with an approach that is efficient enough to solve the question within a reasonable amount of time. This can be measured using Big-O notation.
 
-Let's say we have some code that accepts $n$ numbers of numbers from the user and stores them in an array. The amount of time this code will take can be represent as some function $f(n) = m dot n+c$. The exact values of $m$ and $c$ depend on what the compiler does, how long it takes c++ to accepts and store. The main idea however is that it's a linear function. The simpler way to state this is to say that this code has a time complexity of $O(n)$. 
+Let's say we have some code that accepts $n$ numbers of numbers from the user and stores them in an array. The amount of time this code will take can be represent as some function $f(n) = m dot n+c$. The exact values of $m$ and $c$ depend on what the compiler does, how long it takes c++ to accepts and store. The main idea however is that it's a linear function. The simpler way to state this is to say that this code has a time complexity of $O(n)$.
 
 The formal definition of Big-O is:
 
@@ -151,7 +151,7 @@ int main(){
 
   cout << a << " " << *b << " " << c << " " <<  *d << endl;
   c = 9;//also changes a and d
-  cout << a << endl;//9 
+  cout << a << endl;//9
   *d = 15;// also changes a and c
   cout << a << endl;//15
 
@@ -163,7 +163,7 @@ int main(){
 While we have written comments, we'll still go deeper to explain the most important lines:
 
 - `int a = 5` creates a variable `a` which has a value 5.
-- `int *b = new int(7)` makes a pointer `b`, which at its memory location has the value 7. 
+- `int *b = new int(7)` makes a pointer `b`, which at its memory location has the value 7.
 - `int &c = a` makes a variable `c` which has the same value that `a` has. This means that modifying one of them will modify the other. They are the same value with 2 different names.
 - `int *d = &a` makes a pointer `d` which stores the memory location of `a`. This also makes `d` the same as `a` and `c` however `d` is a memory location which at the location has the same value as `a` and `c`.
 - `cout << a << " " << *b << " " << c << " " <<  *d << endl` outputs `a`, `*b` which is the value at memory location `b`, `c` and `*d` which is the value at memory location `d`.
@@ -180,7 +180,7 @@ To summarize the new syntax of pointers:
 
 == Vectors in Depth
 
-We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as arrays except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions. 
+We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as arrays except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions.
 
 The way `vectors` make this efficient time wise without wastes a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$. This means that the time complexity of inserting elements into a `vector` is close, but not quite $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation and because `vector` resizes occur infrequently.
 
@@ -222,7 +222,7 @@ Fun fact: It's proven that any recursion function can be written with a loop! Lo
 
 == Lambda expressions
 
-Lambda expressions are a way to write functions in line without having to write them separately. For example: 
+Lambda expressions are a way to write functions in line without having to write them separately. For example:
 
 
 ```cpp
@@ -230,13 +230,13 @@ Lambda expressions are a way to write functions in line without having to write 
 using namespace std;
 
 int main(){
-  
-  int n; 
+
+  int n;
   cin >> n;
-  
+
   function<int (int)> fact = [&] (int num){ // defining the lambda expression
     if(num == 1)
-      return 1; 
+      return 1;
     return num * fact(num-1);
   };
 
@@ -245,7 +245,7 @@ int main(){
   return 0;
 }
 ```
-As you can see we've defined a function within the main function. The first part `function<int (int)>` says that you're making a function with return type int and one int parameter. Then after the equal to the `[&]` part allows you to access variables in the scope of the outer function by reference. `[=]` would allow you to access them by value and `[]` wouldn't allow any access. Then you write the actual contents of the function inside the braces. 
+As you can see we've defined a function within the main function. The first part `function<int (int)>` says that you're making a function with return type int and one int parameter. Then after the equal to the `[&]` part allows you to access variables in the scope of the outer function by reference. `[=]` would allow you to access them by value and `[]` wouldn't allow any access. Then you write the actual contents of the function inside the braces.
 
 Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
 
@@ -303,7 +303,7 @@ using namespace std;
 
 int main(){
 
-  int n; 
+  int n;
   cin >> n;
   vector<pair<int,int>> v;
   for(int i = 0; i < n; i++)
@@ -331,39 +331,39 @@ The main steps are as follows:
 + If you are less than the target, eliminate the left and then jump to the middle of the right half then go back up to 2. If not, go to 4
 + If you are more than the target, eliminate the right half and jump to the middle of the left, then go to 2.
 
-Let's see the algorithm in action:- 
+Let's see the algorithm in action:-
 
 Let's say we have the following sorted array:
 
 $
-{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, 18, 21, 30}
+  {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, 18, 21, 30}
 $
 
-And let that the target number we are looking for be 18. Let the be the variables $#text(fill:blue)[left] = 0$, $#text(fill:red)[right] = 13$, and $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (0 + 13)/2 = 6$ which is the average of #text(fill:blue)[left] and #text(fill:red)[right].
+And let that the target number we are looking for be 18. Let the be the variables $#text(fill: blue)[left] = 0$, $#text(fill: red)[right] = 13$, and $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (0 + 13)/2 = 6$ which is the average of #text(fill: blue)[left] and #text(fill: red)[right].
 
 $
-{#text(fill:blue)[1], 4, 4, 5, 6, 6, #text(fill:green)[7], 9, 13, 15, 16, 18, 21, #text(fill:red)[30]}
+  {#text(fill: blue)[1], 4, 4, 5, 6, 6, #text(fill: green)[7], 9, 13, 15, 16, 18, 21, #text(fill: red)[30]}
 $
 
-Now we can compare the value of #text(fill:green)[middle] with our target 18. As you can see, #text(fill:green)[middle] < 18. This tells us that our target value lies to the right of #text(fill:green)[middle]. We can now update #text(fill:green)[middle] by first making #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 6 + 1 = 7, then make $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (7 + 13)/2 = 10$.
+Now we can compare the value of #text(fill: green)[middle] with our target 18. As you can see, #text(fill: green)[middle] < 18. This tells us that our target value lies to the right of #text(fill: green)[middle]. We can now update #text(fill: green)[middle] by first making #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 6 + 1 = 7, then make $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (7 + 13)/2 = 10$.
 
 $
-{1, 4, 4, 5, 6, 6, 7, #text(fill:blue)[9], 13, 15, #text(fill:green)[16], 18, 21, #text(fill:red)[30]}
+  {1, 4, 4, 5, 6, 6, 7, #text(fill: blue)[9], 13, 15, #text(fill: green)[16], 18, 21, #text(fill: red)[30]}
 $
 
-Once again we are to low, so we set #text(fill:blue)[left] = #text(fill:green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (11 + 13)/2 = 12$. 
+Once again we are to low, so we set #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 13)/2 = 12$.
 
 $
-{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill:blue)[18], #text(fill:green)[21], #text(fill:red)[30]}
+  {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: blue)[18], #text(fill: green)[21], #text(fill: red)[30]}
 $
 
-This time we're to high, so now we set #text(fill:red)[right] = #text(fill:green)[middle] - 1 = 12 - 1 = 11 and then $#text(fill:green)[middle] = (#text(fill:blue)[left] +#text(fill:red)[right])/2 = (11 + 11)/2 = 11$
+This time we're to high, so now we set #text(fill: red)[right] = #text(fill: green)[middle] - 1 = 12 - 1 = 11 and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 11)/2 = 11$
 
 $
-{1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: green)[18], 21, 30}
+  {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: green)[18], 21, 30}
 $
 
-Now #text(fill:green)[middle] is equal to 18 our target! And it only took us 4 steps. If we had iterated normally it would've taken 12.
+Now #text(fill: green)[middle] is equal to 18 our target! And it only took us 4 steps. If we had iterated normally it would've taken 12.
 
 Here the implementation of this, where the user will supply us a sorted list of numbers and a target value for us to find. We output whether the value exists and then it's position in the list:
 
@@ -376,13 +376,13 @@ int main(){
   ios_base::sync_with_stdio(0);
   cin.tie(0);
   cout.tie(0);
-  
+
   int n, t;
   cin >> n;
   vector<int> v(n);
   for(int i = 0; i < n; i++)
     cin >> v[i];
-  
+
   int l = 0, r = n - 1, m ;
   while(l <= r){
     m = (l + r)/2;
@@ -458,13 +458,13 @@ int main(){
   ios_base::sync_with_stdio(0);
   cin.tie(0);
   cout.tie(0);
-  
+
   int n, t;
   cin >> n;
   vector<int> v(n);
   for(int i = 0; i < n; i++)
     cin >> v[i];
-  
+
   vector<int>::iterator lb = lower_bound(v.begin(),v.end(),t);//lower_bound() returns an iterator to the position of the lower bound of t.
   vector<int>::iterator ub = upper_bound(v.begin(),v.end(),t);//upper_bound() returns an iterator to the position of the upper bound of t.
 
@@ -479,20 +479,20 @@ As you can see from the code above:-
 - `upper(v.begin(),v.end(),t)` returns an `iterator` to the upper bound of `t`.
 
 
-To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because that takes the difference in memory location. 
+To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because that takes the difference in memory location.
 
 You now might wonder, how do you get the largest element lesser than or the largest element less than or equal to. This can be achieved by subtracting 1 to the lower bound and upper bound respectively.
 
 
 === `lower_bound()` & `upper_bound()` with custom sorting.
 
-Sometimes your `vector` may not be sorted in ascending order. Sometimes it might be descending, sometimes it could be some custom ordering. In these cases it's important to understand what `lower_bound()` and `upper_bound()` are actually doing. 
+Sometimes your `vector` may not be sorted in ascending order. Sometimes it might be descending, sometimes it could be some custom ordering. In these cases it's important to understand what `lower_bound()` and `upper_bound()` are actually doing.
 
 `lower_bound(first, last, val, comp())` returns an iterator of the first value where `comp(*it,val)` is `false`
 
 `upper_bound(first, last, val, comp())` returns an iterator of the first value where `comp(val,*it)` is `true`
 
-By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed. 
+By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed.
 
 == Sets
 
@@ -507,7 +507,7 @@ A `set` in a data structure in `c++`, which has the following properties:
 Here's a quick problem, whose solution will explain how to use sets:-
 
 
-Accept numbers from a user. Then check if a number exists in the list, if it does, print `YES` followed by removing that number from the list, otherwise print `NO`. At the end print the new list in ascending order. 
+Accept numbers from a user. Then check if a number exists in the list, if it does, print `YES` followed by removing that number from the list, otherwise print `NO`. At the end print the new list in ascending order.
 
 Solution:
 
@@ -516,7 +516,7 @@ Solution:
 using namespace std;
 
 int main(){
-  
+
   int n, q;
   cin >> n >> q;
   set<int> s;
@@ -534,8 +534,8 @@ int main(){
       cout << "YES" << endl;
       s.erase(x);//s.erase(x) removes x from the set
     }
-    else 
-      cout << "NO" << endl; 
+    else
+      cout << "NO" << endl;
   }
 
   for(set<int>::iterator it = s.begin(); it != s.end(); it++){
@@ -548,11 +548,11 @@ int main(){
 In the solution, we can see that
 - `s.insert(x)` inserts `x` into the `set s`. This will ensure that `s` will remain sorted by inserting it into the correct place.
 - `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a pointer at one place past the position of the last element in the set.
-- `s.erase(x)` removes `x` from `s`. 
+- `s.erase(x)` removes `x` from `s`.
 
-Finally we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary. 
+Finally we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary.
 
-=== `lower_bound` and `upper_bound` 
+=== `lower_bound` and `upper_bound`
 
 Unlike for vectors, if you try to use the `lower_bound()` and `upper_bound()` functions, it won't execute binary search and will instead search through them in linear time. The reason for this is that set iterators are not random access, i.e. you can't just say `it + 5` and get the element 5 places ahead of `it`. Instead, you must run a loop to do `it++` 5 times. Fortunately, `set's` have their own implementation of `lower_bound()` and `upper_bound()`. If you have a `set<int> s`, then s.lower_bound(t) will return an iterator to the lower bound of `t` and `s.upper_bound(t)` will return an iterator to the upper bound of `t`.
 
@@ -607,9 +607,9 @@ using namespace std;
 
 
 int main(){
-  
+
   string str = "abcd";
-  
+
   do {
     cout << str << endl;
   } while(next_permutation(str.begin(),str.end());
@@ -630,7 +630,7 @@ using namespace std;
 bool permute(string &str){
   for(int i = str.length() - 2; i >= 0; i--){
     if(str[i] < str[i + 1]){//pivot finding
-      
+
       int ub_idx = lower_bound(str.begin() + (i + 1), str.end(), str[i], greater<int>()) - 1 - str.begin();//finds the upper bound of element at pivot.
       swap(str[i], str[ub_idx]);//swaps the ub and the element at the pivot
       reverse(str.begin() + (i + 1), str.end());//reverses the elements after the pivot
@@ -644,9 +644,9 @@ bool permute(string &str){
 }
 
 int main(){
-  
+
   string str = "abcd";
-  
+
   do {
     cout << str << endl;
   } while(permute(str));
@@ -666,13 +666,14 @@ The algorithm to solve this question is to pick an event which ends the earliest
 The reason for this is to think of the opposite. If you were to pick an event the ends later, at best case you can still pick the same number of new events. However at worst you will overlap some events that you could have picked. Let's look at the following example:
 
 #align(center)[
-  #table(columns: 2,
-    [start],[end],
-    [1],[3],
-    [2],[5],
-    [4],[6],
-    [3],[8],
-    [7],[10]
+  #table(
+    columns: 2,
+    [start], [end],
+    [1], [3],
+    [2], [5],
+    [4], [6],
+    [3], [8],
+    [7], [10],
   )
 ]
 
@@ -681,24 +682,24 @@ Here's the visualization of all the events:
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
-    line((0,0),(10,0), name: "numline")
-    content((name: "numline", anchor: 0%),box(fill: white, $0$))
-    content((name: "numline", anchor: 10%),box(fill: white, $1$))
-    content((name: "numline", anchor: 20%),box(fill: white, $2$))
-    content((name: "numline", anchor: 30%),box(fill: white, $3$))
-    content((name: "numline", anchor: 40%),box(fill: white, $4$))
-    content((name: "numline", anchor: 50%),box(fill: white, $5$))
-    content((name: "numline", anchor: 60%),box(fill: white, $6$))
-    content((name: "numline", anchor: 70%),box(fill: white, $7$))
-    content((name: "numline", anchor: 80%),box(fill: white, $8$))
-    content((name: "numline", anchor: 90%),box(fill: white, $9$))
-    content((name: "numline", anchor: 100%),box(fill: white, $10$))
-  
-    rect((1,-0.5),(3,-1), fill: luma(240))
-    rect((2,-1.5),(5,-2), fill: luma(240))
-    rect((4,-2.5),(6,-3), fill: luma(240))
-    rect((3,-3.5),(8,-4), fill: luma(240))
-    rect((7,-4.5),(10,-5), fill: luma(240))
+    line((0, 0), (10, 0), name: "numline")
+    content((name: "numline", anchor: 0%), box(fill: white, $0$))
+    content((name: "numline", anchor: 10%), box(fill: white, $1$))
+    content((name: "numline", anchor: 20%), box(fill: white, $2$))
+    content((name: "numline", anchor: 30%), box(fill: white, $3$))
+    content((name: "numline", anchor: 40%), box(fill: white, $4$))
+    content((name: "numline", anchor: 50%), box(fill: white, $5$))
+    content((name: "numline", anchor: 60%), box(fill: white, $6$))
+    content((name: "numline", anchor: 70%), box(fill: white, $7$))
+    content((name: "numline", anchor: 80%), box(fill: white, $8$))
+    content((name: "numline", anchor: 90%), box(fill: white, $9$))
+    content((name: "numline", anchor: 100%), box(fill: white, $10$))
+
+    rect((1, -0.5), (3, -1), fill: luma(240))
+    rect((2, -1.5), (5, -2), fill: luma(240))
+    rect((4, -2.5), (6, -3), fill: luma(240))
+    rect((3, -3.5), (8, -4), fill: luma(240))
+    rect((7, -4.5), (10, -5), fill: luma(240))
   })
 ]
 
@@ -779,32 +780,32 @@ This problem can be solved by using backtracking. We can start by placing the fi
   "....",
 ))
 #align(center)[
-#cetz.canvas({
+  #cetz.canvas({
     import cetz.draw: *
     cetz.tree.tree(
       (
-      board1,
-      board2,
-      (
-        board3,
-        figure(board6, supplement: none, caption: text(fill:red)[invalid]),
-        figure(board7, supplement: none, caption: text(fill:red)[invalid]),
-        figure(board8, supplement: none, caption: text(fill:red)[invalid]),
-        figure(board9, supplement: none, caption: text(fill:green)[valid]),
+        board1,
+        board2,
+        (
+          board3,
+          figure(board6, supplement: none, caption: text(fill: red)[invalid]),
+          figure(board7, supplement: none, caption: text(fill: red)[invalid]),
+          figure(board8, supplement: none, caption: text(fill: red)[invalid]),
+          figure(board9, supplement: none, caption: text(fill: green)[valid]),
+        ),
+        board4,
+        board5,
       ),
-      board4,
-      board5,
-      )
     )
   })
 ]
 
 /*
-* TODO: 
-* Bitmask
-* Backtracking
-* Graph Representations
-* BFS
-* Prefix Sum
-* Fenwick Tree
-*/
+ * TODO:
+ * Bitmask
+ * Backtracking
+ * Graph Representations
+ * BFS
+ * Prefix Sum
+ * Fenwick Tree
+ */

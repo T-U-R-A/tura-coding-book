@@ -295,12 +295,17 @@ The spiral fills outward in square layers, where layer L contains all cells with
 - Odd layers work inversely: if you're on the top edge (y=L), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance.
 This directional pattern emerges because the spiral alternates its filling direction with each layer to maintain continuity.
 
+\
+
 *Example:* y = 5, x = 3
+
 
 #table(
   columns: 5,
 
-  fill: (x, y) => if (x == 2 and y == 4) { green.lighten(60%) } else if x == 4 or y == 4 { red.lighten(60%) },
+  fill: (x, y) => if (x == 2 and y == 4) { green.lighten(60%) } else if (x == 4 and y == 4) {
+    yellow.lighten(60%)
+  } else if x == 4 or y == 4 { red.lighten(60%) },
 
   [1], [2], [9], [10], [25],
   [4], [3], [8], [11], [24],
@@ -308,9 +313,17 @@ This directional pattern emerges because the spiral alternates its filling direc
   [16], [15], [14], [13], [22],
   [17], [18], [19], [20], [21],
 )
+\
 
+*Algorithm (Step by Step Flow):*
 
++ As $max(5, 3) = 5$, It is on the 5th layer.
 
++ $n^2 - n + 1$ = $25 - 5 + 1$ = $21$. 21 serves as our anchor point.
+
++ It is important to keep it mind that we are on an odd layer. Going left subtract, while going up adds.
+
++ And as we have to go two cells to the left from our anchor point, answer $= 21 - 2 = 19$.
 
 
 \
