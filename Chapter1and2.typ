@@ -321,9 +321,9 @@ This directional pattern emerges because the spiral alternates its filling direc
 
 + $n^2 - n + 1$ = $25 - 5 + 1$ = $21$. 21 serves as our anchor point.
 
-+ It is important to keep it mind that we are on an odd layer. Going left subtract, while going up adds.
++ It is important to keep it mind that we are on an odd layer(as 5 is odd). 
 
-+ And as we have to go two cells to the left from our anchor point, answer $= 21 - 2 = 19$.
++ And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer $= 21 - 2 = 19$.
 
 
 \

@@ -9,7 +9,6 @@ Two Knights - apurva
 Tower of Hanoi - Apurva
 Mex Grid Construction - Apurva
 
-
 Collecting Numbers
 Collecting Numbers II
 Distinct Values Subarrays
@@ -18,12 +17,12 @@ Josephus Problem I
 Josephus Problem II
 Nested Ranges Check
 Room Allocation
-Reading Books
-Sum of Four Values
+Reading Books -- easy
+Sum of Four Values 
 Subarray Sums II
 Subarray Divisibility
 Distinct Values Subarrays II
-Array Division
+Array Division --easy
 Movie Festival II
 Maximum Subarray Sum II
 
