@@ -1,4 +1,5 @@
 #import "@preview/cetz:0.4.2"
+#import "@preview/board-n-pieces:0.7.0": *
 
 #set text(
   font: "New Computer Modern Math"
@@ -705,11 +706,105 @@ These events are currently sorted in ascending order of their end times. Let's s
 
 There are many other questions where you can use a greedy approach and you'll understand how to use them by solving such questions.
 
+(Add tag to Tasks and deadlines when documents are merged)
+
+== Backtracking
+
+A backtracking algorithm is one where you recursively go the all possibilities and then backtrack at invalid solutions. Let's use an example to explain this better.
+
+Say we want to know for a $n times n$ chess board, how may ways are there to place $n$ queens, such that two queens never attack each other.#footnote[If you don't know anything about chess, 2 queens attack each other if they both lie on the same row, column, or diagonal.]
+
+This problem can be solved by using backtracking. We can start by placing the first queen in all positions on the first row, for each of those position, see which positions you can place a queen in the second row and so on. Let's looks at some partial solutions when $n = 4$.
+
+#let board1 = board.with(square-size: 0.5cm)(position(
+  "....",
+  "....",
+  "....",
+  "....",
+))
+
+#let board2 = board.with(square-size: 0.5cm)(position(
+  "Q...",
+  "....",
+  "....",
+  "....",
+))
+
+#let board3 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "....",
+  "....",
+  "....",
+))
+
+#let board4 = board.with(square-size: 0.5cm)(position(
+  "..Q.",
+  "....",
+  "....",
+  "....",
+))
+
+#let board5 = board.with(square-size: 0.5cm)(position(
+  "...Q",
+  "....",
+  "....",
+  "....",
+))
+
+#let board6 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "Q...",
+  "....",
+  "....",
+))
+
+#let board7 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  ".Q..",
+  "....",
+  "....",
+))
+
+#let board8 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "..Q.",
+  "....",
+  "....",
+))
+
+#let board9 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "...Q",
+  "....",
+  "....",
+))
+#align(center)[
+#cetz.canvas({
+    import cetz.draw: *
+    cetz.tree.tree(
+      (
+      board1,
+      board2,
+      (
+        board3,
+        figure(board6, supplement: none, caption: text(fill:red)[invalid]),
+        figure(board7, supplement: none, caption: text(fill:red)[invalid]),
+        figure(board8, supplement: none, caption: text(fill:red)[invalid]),
+        figure(board9, supplement: none, caption: text(fill:green)[valid]),
+      ),
+      board4,
+      board5,
+      )
+    )
+  })
+]
+
 /*
 * TODO: 
+* Bitmask
 * Backtracking
 * Graph Representations
 * BFS
-* Prefix Suff
+* Prefix Sum
 * Fenwick Tree
 */
