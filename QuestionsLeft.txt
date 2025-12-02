@@ -3,7 +3,6 @@ Gray code
 Chessboard and Queens
 Raab Game I
 Knight Moves Grid
-Grid Coloring I
 String Reorder
 Grid Path Description
 

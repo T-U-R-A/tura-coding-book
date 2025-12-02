@@ -1,11 +1,11 @@
 #set text(
-  font: "New Computer Modern Math" 
+  font: "New Computer Modern Math",
 )
 #set page(
-  numbering: "1"
+  numbering: "1",
 )
 #set heading(
-  numbering: "1."
+  numbering: "1.",
 )
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
@@ -25,19 +25,19 @@
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1068")[Backup Link]
 
 \
-*Explanation* : 
+*Explanation* :
 
 + Modulus Function (%): Used to check the parity of n
-   - If (n % 2 == 0), n is even, so divide n by 2 
-   - If (n % 2 == 1), n is odd, so multiply n by 3 and add 1
+  - If (n % 2 == 0), n is even, so divide n by 2
+  - If (n % 2 == 1), n is odd, so multiply n by 3 and add 1
 
 + While Loop: Continues the process until n becomes 1.
-   - The loop runs as long as n is not 1, applying the above rules in each iteration.
-   - Print each value of n to track the sequence.
+  - The loop runs as long as n is not 1, applying the above rules in each iteration.
+  - Print each value of n to track the sequence.
 
 \
 *Code :*
- 
+
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
@@ -51,10 +51,10 @@ int main() {
     while (n != 1) {
       // Case 1: n is even → halve it
       if (n % 2 == 0) n /= 2;
-        
+
       // Case 2: n is odd → apply 3n + 1
       else n = 3 * n + 1;
-    
+
       // Print current value after operation
       cout << n << " ";
     }
@@ -72,7 +72,7 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1083")[Backup Link]
 
 \
-*Explanation* : 
+*Explanation* :
 
 We use a simple mathematical trick: calculate the expected sum of numbers from 1 to n using the arithmetic progression formula $ n(n+1)/2 $
 
@@ -84,18 +84,18 @@ Then subtract the actual sum of the given numbers to reveal the missing number, 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     long long n, x, total = 0;
     cin >> n;
- 
+
     for (int i = 0; i < n - 1; i++) {
         cin >> x;
         total += x;
     } // Read n-1 numbers and sum them
- 
+
     long long sum = n * (n + 1) / 2;  // Expected sum of 1 to n
-    
+
     // The missing number is the difference
     cout << sum - total << endl;
     return 0;
@@ -118,15 +118,15 @@ It goes through each character one by one:
 
 + If it’s the same as the previous one, it extends the current streak.
 + If it’s different, it resets the count.
-+  It keeps track of the maximum streak found.
++ It keeps track of the maximum streak found.
 
 Finally, it prints the length of that longest consecutive sequence.
 
 
 \
 *Code :*
-  
-```cpp 
+
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -142,10 +142,10 @@ int main() {
         if (s[i] == s[i - 1]) current++;
 
         // Reset current to 1 if characters differ
-        else current = 1; 
+        else current = 1;
 
         // Update maxLen if current is larger
-        maxLen = max(maxLen, current); 
+        maxLen = max(maxLen, current);
     }
 
     cout << maxLen << "\n";
@@ -163,12 +163,12 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1094")[Backup Link]
 
 \
-*Explanation* :  
+*Explanation* :
 
-We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this. 
+We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this.
 
 \
-*Algorithm (Step by Step Flow):*  
+*Algorithm (Step by Step Flow):*
 
 + Read the first element and store it as prev.
 + Iterate through the rest of the array:
@@ -181,16 +181,16 @@ We need to make the given array non-decreasing — that is, every element must b
 \
 
 *Code :*
-  
-```cpp 
+
+```cpp
 #include <iostream>
-using namespace std; 
- 
+using namespace std;
+
 int main() {
     int n, prev;
     long long operations = 0; // total number of increments needed
     cin >> n >> prev;
-    
+
     // process the rest of the array
     for (int i = 1; i < n; ++i) {
         int current;
@@ -200,9 +200,9 @@ int main() {
         // we need to increment it to match 'prev' (to keep array non-decreasing)
         if (current < prev) {
             // count how many increments are required
-            operations += prev - current; 
+            operations += prev - current;
             // simulate the increment (virtually update current)
-            current = prev;               
+            current = prev;
         }
 
         prev = current; // update 'prev' for the next iteration
@@ -227,42 +227,42 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity. This is because the difference between consecutive odd numbers is always greater than 1.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int n;
     cin >> n;
- 
+
     // Special case: if n = 2 or 3, it is impossible to arrange
     // numbers from 1...n so that no two consecutive numbers
     // differ by 1. Hence, print "NO SOLUTION".
-    if (n > 1 && n < 4) 
+    if (n > 1 && n < 4)
         cout << "NO SOLUTION";
- 
+
     // Base case: if n = 1, the only permutation is "1".
     else if (n == 1)
         cout << "1";
- 
+
     // Edge case: if n = 4, the general logic won't directly
     // give a valid solution, so hardcode one valid answer.
-    else if (n == 4) 
+    else if (n == 4)
         cout << "2 4 1 3";
- 
+
     // General case: n >= 5
     else {
         // First print all odd numbers in descending order
         // This ensures that consecutive numbers differ by >= 2
         for (int i = n; i >= 1; i -= 2)
             cout << i << " ";
- 
+
         // Then print all even numbers in descending order
         // This also ensures no two adjacent numbers differ by 1
         for (int i = n - 1; i >= 1; i -= 2)
@@ -282,17 +282,17 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
-The spiral fills outward in square layers, where layer L contains all cells with $max(x,y) = L$. Each layer's diagonal cell (L, L) holds the value L²-L+1, serving as our anchor point. 
+The spiral fills outward in square layers, where layer L contains all cells with $max(x, y) = L$. Each layer's diagonal cell (L, L) holds the value L²-L+1, serving as our anchor point.
 
 
 
-*The key insight:* 
+*The key insight:*
 
-- Even layers fill downward then leftward, while odd layers fill rightward then upward. So for even layers, if you're on the rightmost edge (x=L), you subtract how far down you are from the diagonal; otherwise you're on the top edge, so add how far left you are. 
+- Even layers fill downward then leftward, while odd layers fill rightward then upward. So for even layers, if you're on the rightmost edge (x=L), you subtract how far down you are from the diagonal; otherwise you're on the top edge, so add how far left you are.
 
-- Odd layers work inversely: if you're on the top edge (y=L), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance. 
+- Odd layers work inversely: if you're on the top edge (y=L), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance.
 This directional pattern emerges because the spiral alternates its filling direction with each layer to maintain continuity.
 
 *Example:* y = 5, x = 3
@@ -300,10 +300,8 @@ This directional pattern emerges because the spiral alternates its filling direc
 #table(
   columns: 5,
 
-  fill: (x, y) => 
-  if (x == 2 and y == 4) {green.lighten(60%)} 
-  else if x == 4 or y == 4 {red.lighten(60%)},
-  
+  fill: (x, y) => if (x == 2 and y == 4) { green.lighten(60%) } else if x == 4 or y == 4 { red.lighten(60%) },
+
   [1], [2], [9], [10], [25],
   [4], [3], [8], [11], [24],
   [5], [6], [7], [12], [23],
@@ -318,26 +316,26 @@ This directional pattern emerges because the spiral alternates its filling direc
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int t; // Number of test cases
     cin >> t;
     while (t--) {
         // Cell coordinates
-        long long y, x; 
+        long long y, x;
         cin >> y >> x;
         long long layer = max(x, y); // Layer is max(x, y)
         long long val = layer * layer - layer + 1; // Base value for layer's diagonal cell
- 
+
         if (layer % 2 == 0) // Even layer
             if (x == layer) // Adjust for y
-                cout << val - (layer - y) << "\n"; 
+                cout << val - (layer - y) << "\n";
             else // Adjust for x
-                cout << val + (layer - x) << "\n";   
-                
+                cout << val + (layer - x) << "\n";
+
         else // Odd layer
             if (y == layer) // Adjust for x
                 cout << val - (layer - x) << "\n";
@@ -360,13 +358,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Count all unordered pairs of squares, then subtract the placements where two knights attack each other. Those attacking positions live inside 2×3 or 3×2 rectangles, and there are 4 of each per rectangle.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -396,7 +394,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The sum of the first n integers is given by : $n(n+1)/2$
 
@@ -406,49 +404,49 @@ Every time the numbers can be paired off symmetrically: {n, n−3} balancing {n�
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int n;
     cin >> n;
-    
+
     // Check if the total sum n*(n+1)/2 is even (i.e., divisible by 2 after halving),
     // which requires n*(n+1) to be divisible by 4. If not, impossible to split.
     if (n*(n+1) % 4 != 0) cout<<"NO";
-    
+
     else {
         cout<<"YES"<<endl;
-        
+
         // Vectors to store the two sets.
         vector<int> a, b;
-        
+
         // Process numbers in groups of 4 from largest to smallest,
         // assigning to sets such that each group adds equal sum to both.
         while (n > 3 && n > 0) {
                 a.push_back(n);
                 a.push_back(n-3);
- 
+
                 b.push_back(n-1);
                 b.push_back(n-2);
-                
+
                 n = n - 4;
         }
-        
+
         // Handle the remaining 3 numbers if n % 4 == 3 (balanced assignment).
         if (n == 3) {
             a.push_back(3);
-            
+
             b.push_back(2);
             b.push_back(1);
         }
-        
-        // Output size and elements 
+
+        // Output size and elements
         cout << a.size()<<endl;
         for (int num : a)
             cout << num << " ";
- 
+
         cout << b.size()<<endl;
         for (int num : b)
             cout << num << " ";
@@ -470,7 +468,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Each of the n positions can be either 0 or 1, so the answer is simply $2^n$. We compute the power iteratively while taking remainders modulo 1e9+7 to avoid overflow.
 
@@ -478,7 +476,7 @@ Each of the n positions can be either 0 or 1, so the answer is simply $2^n$. We 
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -509,7 +507,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The problem asks for the number of trailing zeros in n factorial. Zeros come from factor pairs of 2s and 5s. There will be excess 2s. Therefore the number of 5s alone determine the number of zeros.
 
@@ -529,21 +527,21 @@ Note : want to add reference as to what the meaning of the floor function is...
 
 *Code :*
 
-   
-```cpp  
+
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
     int n, count = 0;
     cin >> n; // Read input number n
-    
+
     // Count factors of 5 in n! by summing n/5 + n/25 + n/125 + ...
-    // 
+    //
     for (int i = 5; n / i >= 1; i *= 5) {
         count += n / i; // Add number of multiples of i (powers of 5)
     }
-    
+
     cout << count << endl; // Output the number of trailing zeros
     return 0;
 }
@@ -563,7 +561,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 There are two key observations in this question :-
 
@@ -576,21 +574,21 @@ Using this we check if the above two conditions are met and accordingly output t
 
 *Code :*
 
-```cpp  
-#include <bits/stdc++.h> 
+```cpp
+#include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int t;
     cin >> t;
- 
+
     while (t--) {
         int a, b;
         cin >> a >> b;
 
         bool cond_1 = (a + b) % 3 == 0;
         bool cond_2 = max(a, b) <= 2 * min(a, b);
- 
+
         if(cond_1 && cond_2) {
           cout<<"YES"<<endl;
         }
@@ -598,7 +596,7 @@ int main() {
           cout<<"NO";
         }
     }
-  
+
     return 0;
 }
 
@@ -615,32 +613,32 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We start by counting the frequency of each letter. If there is an even number of characters, odd frequencies are not allowed, since a palindrome would be impossible. If there is an odd number of characters, only one letter with an odd frequency is allowed, as it can be placed in the center (for example, “aba”). Otherwise, the program builds the palindrome by placing characters symmetrically from both ends and putting any leftover odd-frequency character in the middle. The final constructed string is then printed, completing the rearrangement.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     string s;
     cin >> s; // Read input string
- 
+
     int arr[26] = {}; // frequency array for letters A–Z (all initialized to 0)
- 
+
     // Count how many times each character appears
-    for (char c : s) 
+    for (char c : s)
         arr[c - 'A']++;
- 
+
     // Count how many characters have odd frequencies
     int oddCount = 0;
-    for (int i = 0; i < 26; i++) 
-        if (arr[i] % 2 != 0) 
+    for (int i = 0; i < 26; i++)
+        if (arr[i] % 2 != 0)
             oddCount++;
- 
+
     // Palindrome rule:
     // - If string length is even → no odd frequencies allowed
     // - If string length is odd  → exactly one odd frequency allowed
@@ -650,13 +648,13 @@ int main() {
     }
     else if (oddCount > 0 && s.size() % 2 == 0) {
         cout << "NO SOLUTION"; // even-length string with odd-count letters
-        return 0;    
+        return 0;
     }
     else {
         // Container to build the palindrome result
         vector<char> str(s.length());
         int left = 0, right = s.length() - 1;
- 
+
         // Fill symmetric pairs from both sides
         for (int i = 0; i < 26; i++) {
             while (arr[i] >= 2) {
@@ -665,15 +663,15 @@ int main() {
                 arr[i] -= 2; // remove two occurrences
             }
         }
- 
+
         // If one odd-count character remains, put it in the middle
         for (int i = 0; i < 26; i++)
             if (arr[i] == 1)
                 str[left] = (char)('A' + i);
- 
+
         // Convert vector<char> back to a string
         s = string(str.begin(), str.end());
- 
+
         // Print the final palindrome
         cout << s << endl;
         return 0;
@@ -695,13 +693,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Start with the 1-bit codes 0 and 1. To create the next length, prepend 0 to the current list and 1 to its reverse. This reflection guarantees that consecutive strings differ by exactly one bit.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -739,13 +737,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 To move n disks, first move the top n−1 disks to the helper peg, then move the largest disk to the destination, and finally move the stack from the helper to the destination. This recursion yields 2^n − 1 moves and provides the lexicographical simple solution.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -780,7 +778,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexicographical sequence for a string or a vector.
 
@@ -793,11 +791,11 @@ Note : explain meaning of lexicographical down below
 \
 *Code :*
 
-```cpp  
+```cpp
 
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     string s;
     cin >> s;
@@ -812,7 +810,7 @@ int main() {
     } while (next_permutation(s.begin(), s.end()));
     // returns false if no other permutation exists
     // otherwise it rearranges the string
- 
+
     cout<<v.size()<<"\n";
     for (int i = 0; i < v.size(); i++) {
         cout << v[i] << endl;
@@ -832,13 +830,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks, you compute the sum of one group and compare it with the other using `abs(total − 2*sum)`. The smallest such difference across all subsets is the optimal answer.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -896,13 +894,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Place queens row by row. At each row we try every column that is not blocked and whose column and diagonals are still free. Bitmasks help track used columns and diagonals in O(1), and recursion counts all valid configurations.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -948,13 +946,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We can fix the order of the first player as 1…n and seek a permutation of the second player’s cards that yields exactly a wins, b losses, and the remaining draws. Treat each position as needing “greater than”, “equal”, or “less than” relations and build a bipartite graph between positions and card values. A standard augmenting-path matching either finds a valid assignment or proves it impossible.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1050,13 +1048,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Fill the grid row by row. For each cell collect the numbers already appearing to its left and above, then choose the smallest nonnegative integer missing from that set. With n ≤ 100 the straightforward O(n³) implementation is perfectly fast.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1100,13 +1098,13 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Run a breadth-first search from the top-left corner. Each BFS layer corresponds to knight moves; the first time we reach any cell gives its minimum distance.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1158,35 +1156,72 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
-A chessboard coloring works: assign two letters to black squares and two letters to white squares. Because adjacent cells have opposite parity, they automatically differ. Each cell then chooses the letter from its parity pair that is different from its original character.
+For each cell maintain an array of 4 booleans tracking which colors (A-D) are available. Now there are three conditions:
+
++ Mark the current cell's original color as invalid.
++ Mark the color of the cell above it in the `ans` grid as invalid.
++ Mark the color of the cell to the left of it in the `ans` grid as invalid.
+
+Now we can greedily assign the first available color to the ans grid. As there are 4 colors and
+only 3 conditions, we can always find a valid color.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
     int n, m;
     cin >> n >> m;
-    vector<string> grid(n);
-    for (int i = 0; i < n; ++i) cin >> grid[i];
-    const string even = "AB";
-    const string odd = "CD";
-    vector<string> ans = grid;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
-            const string& options = ((i + j) % 2 == 0) ? even : odd;
-            ans[i][j] = (options[0] != grid[i][j]) ? options[0] : options[1];
+
+    vector<string> v(n);        // Input grid
+    char ans[n][m];             // Output grid with adjusted characters
+
+    // Read the input grid
+    for (int i = 0; i < n; i++)
+        cin >> v[i];
+
+    // Construct the output grid
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+
+            // Tracks whether letters A, B, C, D are allowed at this cell
+            bool isValid[4] = {true, true, true, true};
+
+            // Block the original character in this position
+            isValid[v[i][j] - 'A'] = false;
+
+            // Block the character above (if exists)
+            if (i > 0)
+                isValid[ans[i - 1][j] - 'A'] = false;
+
+            // Block the character to the left (if exists)
+            if (j > 0)
+                isValid[ans[i][j - 1] - 'A'] = false;
+
+            // Choose the first valid character using your four ifs
+            if (isValid[0])
+                ans[i][j] = 'A';
+            else if (isValid[1])
+                ans[i][j] = 'B';
+            else if (isValid[2])
+                ans[i][j] = 'C';
+            else if (isValid[3])
+                ans[i][j] = 'D';
         }
     }
-    for (int i = 0; i < n; ++i) cout << ans[i] << "\n";
-    return 0;
+
+    // Print the final grid
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++)
+            cout << ans[i][j];
+        cout << "\n";
+    }
 }
+
 ```
 
 \
@@ -1203,14 +1238,14 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The trick is to notice that numbers form blocks by digit-length: 1–9 (1-digit), 10–99 (2-digit), 100–999 (3-digit), and so on. Each block contributes a predictable number of digits, so the code keeps subtracting whole blocks until the target digit falls inside one specific block. Once the block is located, it directly computes which exact number contains the digit, converts that number to a string, and extracts the correct character. This avoids generating any sequence and keeps the solution fast even for huge positions.
 
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -1263,13 +1298,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We count character frequencies and greedily append the smallest possible letter that differs from the previous character and still allows a valid completion. Feasibility is checked by ensuring no letter dominates the remaining length and that not all remaining characters match the one we just placed.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1326,13 +1361,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We explore all possible paths consistent with the string by recursive backtracking. Pruning is essential: whenever the path hits a cell where it would split the grid into two disconnected regions, we can stop exploring that branch immediately. The classic CSES pruning checks for forced turns by verifying whether moving vertically or horizontally would trap us.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1401,7 +1436,7 @@ More about sets can be found here.
 
 *Solution*
 
-```cpp 
+```cpp
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -1434,7 +1469,7 @@ int main(){
 
 \
 
-*Explanation : * 
+*Explanation : *
 
 The algorithm sorts both applicants and apartments, then uses a two pointer approach to match each applicant with the smallest available apartment whose size differs by at most `k`.
 If an apartment is too small, move to the next apartment; if it’s too large, move to the next applicant.
@@ -1444,16 +1479,16 @@ This greedy method ensures the maximum number of matches efficiently.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int n, m, k;
     cin >> n >> m >> k;
-    
+
     vector<int> applicants(n), apartments(m);
-    
+
     // Read applicant preferences
     for (int i = 0; i < n; i++)
         cin >> applicants[i];
@@ -1461,14 +1496,14 @@ int main() {
     // Read apartment sizes
     for (int i = 0; i < m; i++)
         cin >> apartments[i];
-    
+
     // Sort both arrays
     sort(applicants.begin(), applicants.end());
     sort(apartments.begin(), apartments.end());
-    
+
     int count = 0;
     int i = 0, j = 0;
-    
+
     // Two-pointer approach to match applicants to apartments
     while (i < n && j < m) {
         // Check if current apartment fits current applicant's preference
@@ -1476,7 +1511,7 @@ int main() {
             count++;
             i++;
             j++;
-        } 
+        }
         // If apartment is too small, try next apartment
         else if (applicants[i] - apartments[j] > k) {
             j++;
@@ -1486,7 +1521,7 @@ int main() {
             i++;
         }
     }
-    
+
     cout << count << endl;
     return 0;
 }
@@ -1512,25 +1547,25 @@ The algorithm sorts all weights, then uses two pointer, one at the lightest and 
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int n, x;
     cin >> n >> x;
-    
+
     vector<int> weights(n);
     for (int i = 0; i < n; i++) {
         cin >> weights[i];
     }
-    
+
     // Sort the weights
     sort(weights.begin(), weights.end());
-    
+
     int gondolas = 0;
     int left = 0, right = n - 1;
-    
+
     while (left <= right) {
         // If heaviest and lightest can share a gondola
         if (weights[left] + weights[right] <= x) {
@@ -1543,9 +1578,9 @@ int main() {
         }
         gondolas++;
     }
-    
+
     cout << gondolas << endl;
-    
+
     return 0;
 }
 
@@ -1562,7 +1597,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 Store all ticket prices in a multiset to keep them sorted and allow duplicates. Each customer gives an offer, and you use `upper_bound` to find the first price strictly greater than that offer, then step one step back to get the best affordable ticket. If such a ticket exists, print it and remove it; otherwise print –1. This algorithm neatly handles each request without iterating through the whole list.
 
@@ -1570,10 +1605,10 @@ Store all ticket prices in a multiset to keep them sorted and allow duplicates. 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int n, m, input;
     cin >> n >> m;
@@ -1583,7 +1618,7 @@ int main() {
 
     // Store the m offers from customers
     vector<int> offers(m);
- 
+
     // Insert the n ticket prices into the multiset
     for (int i = 0; i < n; i++) {
         cin >> input;
@@ -1591,9 +1626,9 @@ int main() {
     }
 
     // Read all offers
-    for (int i = 0; i < m; i++) 
+    for (int i = 0; i < m; i++)
         cin >> offers[i];
- 
+
     // For each offer, try to find the best possible ticket
     for (int i = 0; i < m; i++) {
 
@@ -1603,7 +1638,7 @@ int main() {
         // If upper_bound points to begin(), no ticket <= offer exists
         if (it == prices.begin()) {
             cout << "-1" << endl;
-        } 
+        }
         else {
             // Move iterator to the largest price <= offer
             --it;
@@ -1626,7 +1661,7 @@ int main() {
 #link("https://web.archive.org/web/20250810190946/https://cses.fi/problemset/task/1619/")[Backup Link]
 
 \
-*Explanation* : 
+*Explanation* :
 
 The algorithm sorts all arrival and departure times, then uses two pointers to simulate guests entering and leaving. Each arrival increases the current count, and each departure decreases it. The maximum value reached during this sweep gives the peak number of guests present simultaneously.
 
@@ -1634,14 +1669,14 @@ The algorithm sorts all arrival and departure times, then uses two pointers to s
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
- 
+
     int n;
     cin >> n;
     vector<int> arrivals(n), departures(n);
@@ -1683,7 +1718,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We store each movie as a pair of (end_time, start_time) and sort by end_time so we can always consider the earliest finishing movie first. The greedy approach works because picking the movie that ends earliest leaves maximum time for future movies.
 
@@ -1692,12 +1727,12 @@ We iterate through all movies, watching one only if it starts after the previous
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    int n; 
+    int n;
     cin >> n;
 
     // Store each movie as a pair (end_time, start_time)
@@ -1740,7 +1775,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The algorithm sorts all numbers, then uses two pointers—one starting at the smallest and one at the largest value—to find a pair that sums to the target. If the sum is too small, the left pointer moves right; if too large, the right pointer moves left.
 This efficiently finds the correct pair in linear time after sorting.
@@ -1749,7 +1784,7 @@ This efficiently finds the correct pair in linear time after sorting.
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1762,9 +1797,9 @@ int main() {
     for (int i = 0; i < n; i++) {
         // number value
         cin >> nums[i].first;
-        
-        // original position (1-based index)   
-        nums[i].second = i + 1; 
+
+        // original position (1-based index)
+        nums[i].second = i + 1;
     }
 
     // Sort numbers by value to apply two-pointer technique
@@ -1792,7 +1827,7 @@ int main() {
 
 ```
 #pagebreak()
-== Maximum Subarray 
+== Maximum Subarray
 
 \
 #link("https://cses.fi/problemset/task/1643")[Question - Maximum Subarray Sum]
@@ -1801,7 +1836,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The algorithm finds the maximum possible sum of a continuous sequence in an array. It begins by assuming the first element is the best sum. Then, as it moves through the array, it decides whether to keep adding to the current streak or start fresh from the current number. At each step, it updates the overall best sum found so far, ensuring the final answer is the largest contiguous total.
 
@@ -1809,7 +1844,7 @@ The algorithm finds the maximum possible sum of a continuous sequence in an arra
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1819,7 +1854,7 @@ int main() {
 
     vector<long long> arr(n);
     for (int i = 0; i < n; i++) {
-        cin >> arr[i];  
+        cin >> arr[i];
     }
 
     // max_current = maximum subarray sum ending at the current index
@@ -1855,7 +1890,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The program minimizes the total adjustment cost to make all sticks equal in length. It sorts the stick lengths and picks the median as the target length since the median minimizes the sum of absolute differences. Unlike the mean, which minimizes squared differences, the median ensures minimal total movement for all sticks.
 
@@ -1867,7 +1902,7 @@ Intuitively, the median balances the values — half the sticks are shorter and 
 *Code :*
 
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1887,7 +1922,7 @@ int main() {
 
     long long ans = 0;
     // Calculate the total distance of all elements from the median
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
         ans += abs(v[i] - c);
 
     // Output the minimum total distance
@@ -1906,10 +1941,10 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 
-Sorting the Coins: By sorting the coins in non-decreasing order, we can process them greedily. 
+Sorting the Coins: By sorting the coins in non-decreasing order, we can process them greedily.
 
 Greedy Approach:
 Initialize a variable `sumSoFar` to 0, representing the maximum sum we can create with the coins processed so far.
@@ -1920,13 +1955,13 @@ If `currCoin` is greater than `sumSoFar + 1`, it means we cannot create the sum 
 If we process all coins without finding a gap, the smallest sum we cannot create is current_max + 1.
 
 Why This Works:
-If we can create all sums from 0 to `sumSoFar`, and the next coin `currCoin` is at most `sumSoFar + 1`, we can extend the range of creatable sums to `sumSoFar + currCoin`. 
+If we can create all sums from 0 to `sumSoFar`, and the next coin `currCoin` is at most `sumSoFar + 1`, we can extend the range of creatable sums to `sumSoFar + currCoin`.
 A gap occurs when a coin is too large to fill the next sum (`sumSoFar + 1`), making that sum impossible to form.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -1941,7 +1976,7 @@ int main() {
     for (int i = 0; i < n; i++) cin >> coins[i];
     sort(coins.begin(), coins.end());
 
-    long long sumSoFar = 0;  
+    long long sumSoFar = 0;
     // We can currently form all sums from 1 to sumSoFar.
 
     for (long long currCoin : coins) {
@@ -1974,14 +2009,14 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The array is a permutation of 1…n. Reading the numbers in increasing order takes one pass, but every time the position of i+1 appears before the position of i we need an extra round. Counting such inversions between consecutive numbers and adding one gives the total number of passes required.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2017,14 +2052,14 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The answer depends only on the order of consecutive values: each pair (v, v+1) adds one round if position[v] > position[v+1]. Swapping two elements changes only the pairs around those values, so we adjust the count locally before and after the swap instead of recomputing from scratch.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2079,7 +2114,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The trick is to slide a window across the array while keeping all its elements distinct. A set tracks which songs are currently inside the window: if the next song is already present, we shrink the window from the left until the duplicate disappears. Otherwise we extend the window to include it. As the window grows and shrinks, we keep updating the maximum length, which becomes the length of the longest playlist with all unique songs.
 
@@ -2087,7 +2122,7 @@ The trick is to slide a window across the array while keeping all its elements d
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2114,7 +2149,7 @@ int main() {
         if (window.count(v[right])) {
             window.erase(v[left]);
             left++;
-        } 
+        }
         else {
             // Element is unique in the window — include it
             window.insert(v[right]);
@@ -2144,7 +2179,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The idea is to maintain the top blocks of all towers in a multiset. For each new block, place it on the leftmost tower whose top is strictly greater; if no such tower exists, you start a new one. This greedy strategy works because always using the smallest possible valid tower keeps future placements flexible. The number of towers equals the size of the multiset.
 
@@ -2152,7 +2187,7 @@ The idea is to maintain the top blocks of all towers in a multiset. For each new
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2199,38 +2234,38 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 The program simulates cutting a stick of length `a` at `b` given positions. It uses a multiset ms to store all cut points and another multiset lens to track segment lengths. After each cut, it removes the old segment and adds two new ones. Finally, it prints the length of the largest segment remaining after each cut.
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
- 
+
 int main() {
     int a, b, x;
     cin >> a >> b;
- 
+
     multiset<int> ms, lens; // ms stores all cut positions, lens stores all segment lengths
     ms.insert(a); // rightmost boundary
     ms.insert(0); // leftmost boundary
     lens.insert(a); // initially one segment of length 'a'
-    
+
     for (int i = 0; i < b; i++) {
         cin >> x;
- 
+
         // Insert the new cut position and find its neighbors
         auto mid = ms.insert(x);
         auto first = prev(mid);
         auto last = next(mid);
- 
+
         // Remove the old segment and add the two new smaller segments
         lens.erase(lens.find(*last - *first));
         lens.insert(*last - *mid);
         lens.insert(*mid - *first);
- 
+
         // Output the largest segment length after each cut
         cout << *lens.rbegin() << " ";
     }
@@ -2250,14 +2285,14 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Sort all bookings by start time. Use a priority queue of (end_time, room_id) to free the earliest-finished room that is available when a new booking starts; otherwise assign a new room. Track assignments for each original booking and the maximum rooms used.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2328,7 +2363,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 The key idea is that the number of items produced increases monotonically with time, so we can binary-search the minimum time needed to make at least `t` items. For any guessed time `mid`, we compute how many items all machines together can produce by summing $mid / v[i]$. If the total is ≥ t, we try a smaller time; otherwise, we increase the time. This guarantees we find the earliest moment when production meets the target.
 
@@ -2336,7 +2371,7 @@ The key idea is that the number of items produced increases monotonically with t
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2397,14 +2432,14 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 When we choose to complete a task, the rewards of all remaining tasks are “hurt” or negatively affected. The amount of this hurt is directly proportional to how long the chosen task takes, because its duration is added to the completion times of all future tasks. To maximize the total reward, we must minimize this hurt, which is achieved by completing the shortest tasks first and the longest tasks last. We accomplish this by sorting the array by duration and keeping track of the time elapsed.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2446,14 +2481,14 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Two readers can work in parallel, so the minimal finishing time is the larger of the total sum of pages and twice the size of the longest book. If the biggest book dominates, the other reader waits for it; otherwise the total workload dictates the time.
 
 \
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2495,7 +2530,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 This solution finds three numbers that sum to the target by first sorting the array and then fixing one element at a time. For each fixed element, it uses a two-pointer scan on the remaining range to efficiently search for a complementary pair. Sorting allows the sum to guide pointer movement, reducing the search from cubic to quadratic time. If no valid triple exists, the answer is declared impossible, keeping the logic clean and deterministic.
 
@@ -2503,7 +2538,7 @@ This solution finds three numbers that sum to the target by first sorting the ar
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2562,7 +2597,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Store all pair sums formed entirely before the current index. When considering a new pair (i, j), look for a previously stored pair whose sum completes the target and whose indices are all distinct. Using a map from sum to list of earlier pairs ensures we find a valid quadruple if one exists.
 
@@ -2570,7 +2605,7 @@ Store all pair sums formed entirely before the current index. When considering a
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2618,13 +2653,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* : 
+*Intuitive Explanation* :
 
 We use a set of pairs (value, index) to maintain a sorted collection of elements seen so far. The lower_bound function efficiently locates the first element not smaller than the current value, allowing quick access to the previous smaller element by moving one step back. After each iteration, larger or equal elements are erased to maintain order and correctness.
 
 *Code :*
 
-```cpp  
+```cpp
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -2671,15 +2706,15 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
-All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray. 
+All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray.
 
 \
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2725,7 +2760,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 With negative numbers allowed, we switch to prefix sums. For each position we store how many earlier prefixes have value `current − x`; each such prefix starts a subarray ending here that sums to x. An unordered_map keeps counts in O(1) expected time.
 
@@ -2733,7 +2768,7 @@ With negative numbers allowed, we switch to prefix sums. For each position we st
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2770,7 +2805,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Two prefixes with the same remainder modulo n define a subarray whose sum is divisible by n. We track counts of each remainder as we scan the array and add the current remainder’s frequency to the answer.
 
@@ -2778,7 +2813,7 @@ Two prefixes with the same remainder modulo n define a subarray whose sum is div
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2830,7 +2865,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Use a sliding window with a frequency map. Expand the right end; if the number of distinct elements exceeds k, shrink from the left until it doesn’t. Every position contributes `window_length` new subarrays ending there, so we add that to the answer.
 
@@ -2838,7 +2873,7 @@ Use a sliding window with a frequency map. Expand the right end; if the number o
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -2883,7 +2918,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Binary search the smallest possible maximal subarray sum. For a guessed limit, greedily form segments; whenever adding the next element would exceed the limit we start a new segment. If we can stay within k segments, the limit is feasible and we search lower; otherwise we search higher.
 
@@ -2891,7 +2926,7 @@ Binary search the smallest possible maximal subarray sum. For a guessed limit, g
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -2947,7 +2982,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Maintain two multisets: `low` holds the smaller half (including the median) and `high` holds the larger half. After each insert/remove we rebalance so that `low` is never smaller than `high` and differs by at most one element. The median is always the largest element of `low`.
 
@@ -2955,7 +2990,7 @@ Maintain two multisets: `low` holds the smaller half (including the median) and 
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -3021,7 +3056,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 As in Sliding Median, keep two multisets split around the median but also track their sums. The total cost is `median * |low| − sumLow + sumHigh − median * |high|`. After each insertion/removal we rebalance and recompute using the maintained sums in O(1).
 
@@ -3029,7 +3064,7 @@ As in Sliding Median, keep two multisets split around the median but also track 
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
@@ -3113,7 +3148,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Sort movies by ending time. Keep a multiset of viewers’ current end times. For each movie, try to find the viewer who becomes free latest but still not after the movie starts (largest end time ≤ start). Reassign that viewer to the current movie; if none exist and we still have spare viewers, start a new one. Each successful assignment increases the count.
 
@@ -3121,7 +3156,7 @@ Sort movies by ending time. Keep a multiset of viewers’ current end times. For
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -3170,7 +3205,7 @@ int main() {
 
 \
 
-*Explanation* : 
+*Explanation* :
 
 Let `pref[i]` be the sum of the first i elements. For each end index i we need the smallest prefix value among starts that keep the subarray length in [a, b]; the answer candidate is `pref[i] − minPrefix`. A multiset over the valid prefix window supports O(log n) insert/erase as we slide i forward.
 
@@ -3178,7 +3213,7 @@ Let `pref[i]` be the sum of the first i elements. For each end index i we need t
 
 *Code :*
 
-```cpp  
+```cpp
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

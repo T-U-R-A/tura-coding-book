@@ -1,7 +1,0 @@
-chap1
-
-backtracking
-next_permutation
-
-
-
