@@ -284,7 +284,7 @@ int main() {
 
 *Intuitive Explanation* :
 
-The spiral fills outward in square layers, where layer L contains all cells with $max(x, y) = L$. Each layer's diagonal cell (L, L) holds the value L²-L+1, serving as our anchor point.
+The spiral fills outward in square layers, where layer $L$ contains all cells with $max(x, y) = L$. Each layer's diagonal cell $(L, L)$ holds the value $L^2-(L-1)$ because at the $L$th layer, the value $L^2$ is at one of the edges and then to go from there to the diagonal, subtract $(L-1)$. This value serves as our anchor point.
 
 
 
@@ -319,7 +319,7 @@ This directional pattern emerges because the spiral alternates its filling direc
 
 + As $max(5, 3) = 5$, It is on the 5th layer.
 
-+ $n^2 - n + 1$ = $25 - 5 + 1$ = $21$. 21 serves as our anchor point.
++ $L^2 - (L - 1)$ = $25 - (5 - 1)$ = $21$. 21 serves as our anchor point.
 
 + It is important to keep it mind that we are on an odd layer(as 5 is odd). 
 
