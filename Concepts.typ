@@ -800,10 +800,91 @@ This problem can be solved by using backtracking. We can start by placing the fi
   })
 ]
 
+As you can see, we start with an empty board, then we place a queen in all positions on the first row. Then we place the next queen on the next row in a valid position and then go from there.
+
+To write the code for this. We need 4 arrays, one for every row, columns, and both diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place a queen there. The indexes of the two diagonals will be a follows:
+
+#let table1 = figure(
+  table(columns: 4, 
+  [0],[1],[2],[3],
+  [1],[2],[3],[4],
+  [2],[3],[4],[5],
+  [3],[4],[5],[6],
+  ),
+  caption: [First diagonal],
+  supplement: none,
+)
+
+#let table2 = figure(
+  table(columns: 4,
+  [3],[2],[1],[0],
+  [4],[3],[2],[1],
+  [5],[4],[3],[2],
+  [6],[5],[4],[3]
+  ),
+  caption: [Second diagonal],
+  supplement: none,
+)
+
+
+#grid(
+  columns: (1fr, 1fr),
+  align: center,
+  column-gutter: -7cm,
+  table1, table2
+)
+
+If a queen is on row `i` and column `j`, then it will be on `row[i]`, `column[j]`, `diag1[i + j]` and on `diag[(n-1) - j + i]`. Then for the next row, a queen can't be placed on this row, columns, and diagonal.
+
+Here's the code of the implementation for this algorithm:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, ans = 0;
+vector<bool> col, diag1, diag2;
+
+void findPositions(int i = 0){
+	if(i == n){//If true, we successfully placed all the queens in an arrangement.
+		ans++;
+		return;
+	}
+
+	for(int j = 0; j < n; j++){
+		if(col[j] || diag1[i+j] || diag2[(n-1)-j+i]) //The new queen would be attacked
+      continue;
+		col[j] = diag1[i+j] = diag2[(n-1)-j+i] = true;//Placing the queen on the current spot
+		findPositions(i+1);
+		col[j] = diag1[i+j] = diag2[(n-1)-j+i] = false;//Removing queen for the current spot
+	}
+}
+int main(){
+	ios_base::sync_with_stdio(0);
+	cin.tie(0);
+	cout.tie(0);
+
+  cin >> n;
+  col.resize(n);
+  diag1.resize(2*n-1);
+  diag2.resize(2*n-1);
+  findPositions();
+
+	cout << ans << endl;
+	return 0;
+}
+
+```
+
+The `resize()` function of a vector is used when you wish to specify the size of a `vector` after its initialization. The `findPositions()` function has a default value of `i = 0`, so if the parameter isn't supplied it assumes the value to be `0`.
+Also observer that we didn't use a `row vector`, because the backtracking algorithm ensures that we are placing the new queen on a new row each time.
+
+The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) =  234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
+
 /*
  * TODO:
  * Bitmask
- * Backtracking
  * Graph Representations
  * BFS
  * Prefix Sum
