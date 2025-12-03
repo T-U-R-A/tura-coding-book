@@ -321,7 +321,7 @@ This directional pattern emerges because the spiral alternates its filling direc
 
 + $n^2 - n + 1$ = $25 - 5 + 1$ = $21$. 21 serves as our anchor point.
 
-+ It is important to keep it mind that we are on an odd layer(as 5 is odd). 
++ It is important to keep it mind that we are on an odd layer(as 5 is odd).
 
 + And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer $= 21 - 2 = 19$.
 
@@ -2933,7 +2933,7 @@ int main() {
 
 *Explanation* :
 
-Binary search the smallest possible maximal subarray sum. For a guessed limit, greedily form segments; whenever adding the next element would exceed the limit we start a new segment. If we can stay within k segments, the limit is feasible and we search lower; otherwise we search higher.
+
 
 \
 
@@ -2944,45 +2944,62 @@ Binary search the smallest possible maximal subarray sum. For a guessed limit, g
 using namespace std;
 using ll = long long;
 
-bool feasible(const vector<ll>& a, int k, ll limit) {
-    ll curr = 0;
-    int parts = 1;
-    for (ll x : a) {
-        if (x > limit) return false;
-        if (curr + x > limit) {
-            parts++;
-            curr = x;
-        } else {
-            curr += x;
-        }
-    }
-    return parts <= k;
-}
-
 int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     int n, k;
     cin >> n >> k;
-    vector<ll> a(n);
-    ll low = 0, high = 0;
+    vector<int> a(n);
+
+    ll left = 0, right = 0;
+    // 'left' = minimum possible max sum (largest single element)
+    // 'right' = maximum possible max sum (sum of all elements)
+
     for (int i = 0; i < n; i++) {
         cin >> a[i];
-        low = max(low, a[i]);
-        high += a[i];
+        left = max(left, (ll)a[i]);
+        right += a[i];
     }
 
-    ll ans = high;
-    while (low <= high) {
-        ll mid = (low + high) / 2;
-        if (feasible(a, k, mid)) {
-            ans = mid;
-            high = mid - 1;
+    ll ans = right;   // Best answer found via binary search
+
+    while (left <= right) {
+        ll mid = (left + right) / 2;
+
+        // Try to split into <= k subarrays where no subarray sum exceeds 'mid'
+        int subarrays = 1;
+        ll current_sum = 0;
+        bool possible = true;
+
+        for (int i = 0; i < n; i++) {
+            // If adding this element exceeds 'mid', start a new subarray
+            if (current_sum + a[i] > mid) {
+                subarrays++;
+                current_sum = a[i];
+
+                // Too many subarrays ⇒ mid is too small
+                if (subarrays > k) {
+                    possible = false;
+                    break;
+                }
+            } else {
+                current_sum += a[i];
+            }
+        }
+
+        if (possible) {
+            ans = mid;        // mid works ⇒ try to lower the maximum sum
+            right = mid - 1;
         } else {
-            low = mid + 1;
+            left = mid + 1;   // mid too small ⇒ increase
         }
     }
-    cout << ans << "\n";
+
+    cout << ans << endl;
     return 0;
 }
+
 ```
 #pagebreak()
 

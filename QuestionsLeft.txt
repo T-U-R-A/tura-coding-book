@@ -4,11 +4,6 @@ Raab Game I
 Knight Moves Grid
 String Reorder
 Grid Path Description
-
-Two Knights - apurva
-Tower of Hanoi - Apurva
-Mex Grid Construction - Apurva
-
 Collecting Numbers
 Collecting Numbers II
 Distinct Values Subarrays
@@ -17,15 +12,17 @@ Josephus Problem I
 Josephus Problem II
 Nested Ranges Check
 Room Allocation
-Reading Books -- easy
+Reading Books                              -- easy
 Sum of Four Values 
 Subarray Sums II
 Subarray Divisibility
 Distinct Values Subarrays II
-Array Division --easy
+Array Division                          --easy
 Movie Festival II
 Maximum Subarray Sum II
+Tasks and Deadlines          -- sir's help needed
 
-Tasks and Deadlines -- sir's help needed
-
+Two Knights - Apurva
+Tower of Hanoi - Apurva
+Mex Grid Construction - Apurva
 Nested Ranges Count --apurva
