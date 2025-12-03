@@ -1,3 +1,5 @@
+#import "@preview/board-n-pieces:0.7.0"
+
 #set text(
   font: "New Computer Modern Math",
 )
@@ -1113,7 +1115,10 @@ int main() {
 
 *Explanation* :
 
-Run a breadth-first search from the top-left corner. Each BFS layer corresponds to knight moves; the first time we reach any cell gives its minimum distance.
+This is a clear implementation of a Breadth-First Search (BFS#footnote[Breadth-First Search Algorithim was previously explained and is used in multiple areas in competitive programming]) algorithm to find the minimum number of knight moves required to reach a target position on a chessboard from the starting position (0, 0). The BFS algorithm ensures that we explore all possible moves level by level, guaranteeing the shortest path to the target.
+
+A visual understanding of the algorithm can be found in the image below:
+
 
 *Code :*
 
