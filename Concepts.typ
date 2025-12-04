@@ -882,11 +882,90 @@ Also observer that we didn't use a `row vector`, because the backtracking algori
 
 The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) =  234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
+== Bit Operations
+
+In `c++`, you can perform binary operations on individual bits. This may sound confusing, so we'll give some examples.
+
+=== AND `(&)` 
+
+Let's say I have the numbers 5 and 7. The question is what would be the output to `cout << (5 & 7);`?
+
+First we write 5 and 6 in binary, which become 0101 and 0110. Then we perform the `and` operation on each bit to get a new number in binary:
+
+$
+&0101
+\
+#text[`&`] &0110
+\
+&#line(length: 2em)
+\
+&0100
+$
+
+Finally convert 0100 back to decimal, which is 4
+
+So the code
+`cout << (5 & 6);` would output `4`
+
+=== OR (|)
+
+Now we want to find out the output of `cout << (5 | 6) << endl`. We now perform the `or` operation on each bit
+
+
+$
+&0101
+\
+#text[`|`] &0110
+\
+&#line(length: 2em)
+\
+&0111
+$
+
+Which is 7 in decimal.
+
+=== XOR (^)
+
+Now we want to find out the output of `cout << (5 ^ 6) << endl`. We now perform the `xor` operation on each bit
+
+
+$
+&0101
+\
+#text[`^`] &0110
+\
+&#line(length: 2em)
+\
+&0011
+$
+
+Which is 7 in decimal.
+
+=== NOT(\~)
+
+The `not(~)` operator flips all the bits of a number. In the earlier examples, we we're only showing 4 bits because the numbers were small. However, the `int` type has a total of 32 bits. So if you want to find the output of `cout << (~5) << endl` The answer would be:
+
+$
+\~&00000000000000000000000000000101
+\
+&#line(length: 16em)
+\
+&11111111111111111111111111111010
+$
+
+Which is #strike[`4294967290`] `-6`. This is because of the way `int`'s use the last bit to store negative numbers. \~ is essentially the 1's complement of the number 5. The 2's complement would get you to -5.
+
+=== Left shift(`<<`) and right shift(`>>`)
+
+Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
+
 /*
- * TODO:
- * Bitmask
- * Graph Representations
- * BFS
- * Prefix Sum
- * Fenwick Tree
- */
+* TODO:
+* Number bases
+* Boolean Algebra
+* Bitmask
+* Graph Representations
+* BFS
+* Prefix Sum
+* Fenwick Tree
+*/
