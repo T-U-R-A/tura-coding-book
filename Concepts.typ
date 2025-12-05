@@ -978,7 +978,7 @@ $
 &0111
 $
 
-Which is 7 in decimal.
+Which is 3 in decimal.
 
 === XOR (^)
 
