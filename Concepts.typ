@@ -351,13 +351,13 @@ $
   {1, 4, 4, 5, 6, 6, 7, #text(fill: blue)[9], 13, 15, #text(fill: green)[16], 18, 21, #text(fill: red)[30]}
 $
 
-Once again we are to low, so we set #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 13)/2 = 12$.
+Once again we are too low, so we set #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 13)/2 = 12$.
 
 $
   {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: blue)[18], #text(fill: green)[21], #text(fill: red)[30]}
 $
 
-This time we're to high, so now we set #text(fill: red)[right] = #text(fill: green)[middle] - 1 = 12 - 1 = 11 and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 11)/2 = 11$
+This time we're too high, so now we set #text(fill: red)[right] = #text(fill: green)[middle] - 1 = 12 - 1 = 11 and then $#text(fill: green)[middle] = (#text(fill: blue)[left] +#text(fill: red)[right])/2 = (11 + 11)/2 = 11$
 
 $
   {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: green)[18], 21, 30}
@@ -882,9 +882,65 @@ Also observer that we didn't use a `row vector`, because the backtracking algori
 
 The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) =  234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
+== Negative Numbers
+
+In a computer, all numbers are stored in binary. For an `int`, the computer allocated 32 bits. The number 5 stored in an `int` actually looks like:
+
+$
+00000000000000000000000000000101
+$
+
+Now for an `unsigned int`, the largest number you can store would be $2^32 - 1 = 4,294,967,295$, which in binary would be:
+
+$
+11111111111111111111111111111111
+$
+
+However regular `int` need the capability to store negative numbers. If we start from 0 and then subtract 1, we roll back and reach -1 which would be:
+
+$
+11111111111111111111111111111111
+$
+
+Going back one more place give's -2:
+
+
+$
+11111111111111111111111111111110
+$
+
+And so on. until $-2^31 = -2147483648$:
+
+$
+10000000000000000000000000000000
+$
+
+if you subtract one from this you go to $2^31 -1 = 2147483647$
+
+$
+01111111111111111111111111111111
+$
+
+The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number you need to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way: 
+
+
+Say we want to find out what is -9 in binary. First we must take the *1's complement* of positive 9. This simply means we flip every bit (0's become 1's and 1's become 0's):
+
+$
+9 = &00000000000000000000000000001001
+\
+&11111111111111111111111111110110 = -10
+$
+
+If you positive number was $n$, this will give you $-n-1$. To get $-n$, you must add 1. This is called taking the *2's complement*. This would give you:
+
+$
+-9 = 11111111111111111111111111110111
+$
+
 == Bit Operations
 
-In `c++`, you can perform binary operations on individual bits. This may sound confusing, so we'll give some examples.
+In `c++`, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
 === AND `(&)` 
 
@@ -953,7 +1009,7 @@ $
 &11111111111111111111111111111010
 $
 
-Which is #strike[`4294967290`] `-6`. This is because of the way `int`'s use the last bit to store negative numbers. \~ is essentially the 1's complement of the number 5. The 2's complement would get you to -5.
+Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's complement which for some positive $n$ will give you $-n-1$. 
 
 === Left shift(`<<`) and right shift(`>>`)
 
@@ -961,8 +1017,6 @@ Left shifting is moving all the bits some number of places to the left. Each lef
 
 /*
 * TODO:
-* Number bases
-* Boolean Algebra
 * Bitmask
 * Graph Representations
 * BFS
