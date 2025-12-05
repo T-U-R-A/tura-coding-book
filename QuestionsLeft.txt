@@ -12,7 +12,6 @@ Questions Left to Complete:
 10. Josephus Problem I
 11. Josephus Problem II
 12. Nested Ranges Check
-13. Reading Books (easy)
 14. Sum of Four Values
 15. Subarray Sums II
 16. Subarray Divisibility

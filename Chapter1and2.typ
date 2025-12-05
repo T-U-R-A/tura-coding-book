@@ -2541,7 +2541,7 @@ int main() {
 
 *Explanation* :
 
-Two readers can work in parallel, so the minimal finishing time is the larger of the total sum of pages and twice the size of the longest book. If the biggest book dominates, the other reader waits for it; otherwise the total workload dictates the time.
+If one book takes more than half the total time, one child will be forced to wait while the other finishes that long book. Otherwise, they can optimally interleave their reading with no idle time. Thus, the answer is $max("total_time", 2 * "longest_book")$.
 
 \
 *Code :*
