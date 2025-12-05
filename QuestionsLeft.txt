@@ -1,9 +1,8 @@
 Questions Left to Complete:
 
-1.  Gray code
 2.  Chessboard and Queens
 3.  Raab Game I  --today
-4.  String Reorder   ------------- today
+4.  String Reorder
 5.  Grid Path Description
 6.  Collecting Numbers   --today
 7.  Collecting Numbers II
@@ -22,6 +21,7 @@ Questions Left to Complete:
 21. Tasks and Deadlines (sir's help needed)
 
 Assigned to Apurva:
+- Gray code
 - Two Knights
 - Tower of Hanoi
 - Mex Grid Construction
