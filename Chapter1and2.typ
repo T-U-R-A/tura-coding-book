@@ -1,4 +1,4 @@
-#import "@preview/board-n-pieces:0.7.0"
+#import "@preview/board-n-pieces:0.7.0": *
 
 #set text(
   font: "New Computer Modern Math",
@@ -1119,43 +1119,81 @@ This is a clear implementation of a Breadth-First Search (BFS#footnote[Breadth-F
 
 A visual understanding of the algorithm can be found in the image below:
 
+#board(
+  fen("n1n5/2nn4/1n6/3n4/n1n5/8/8/8 w - - 0 1"),
+
+  arrows: ("a8 b6", "a8 c7", "b6 a4", "b6 c4", "b6 d5", "b6 d7", "b6 c8"),
+  display-numbers: true,
+
+  white-square-fill: rgb("#e9f3ea"),
+  black-square-fill: rgb("#278bc4"),
+  white-mark: marks.cross(paint: rgb("#2bcbC6")),
+  black-mark: marks.cross(paint: rgb("#2bcbC6")),
+  arrow-fill: rgb("#f4a338df"),
+  arrow-thickness: 0.25cm,
+
+  stroke: 0.8pt + black,
+)
+
+You move from the knight to all unvisited grid. This approach guarantess the shortest path to the target.
+
+\
 
 *Code :*
 
 ```cpp
 #include <bits/stdc++.h>
+
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
     int n;
     cin >> n;
+
+    // Initialize distance matrix with -1 (unvisited)
     vector<vector<int>> dist(n, vector<int>(n, -1));
-    queue<pair<int,int>> q;
+
+    // Queue for BFS traversal
+    queue<pair<int, int>> q;
+
+    // Knight move offsets (8 possible L-shaped moves)
+    vector<int> dx = {-2, -1, 2, 1, 2, 1, -1, -2};
+    vector<int> dy = {-1, -2, 1, 2, -1, -2, 2, 1};
+
+    // Check if position is within bounds and unvisited
+    auto isValid = [&](int x, int y) {
+        return x >= 0 && y >= 0 && x < n && y < n && dist[x][y] == -1;
+    };
+
+    // Start BFS from top-left corner
     dist[0][0] = 0;
     q.push({0, 0});
-    const int dr[8] = {-2, -2, -1, -1, 1, 1, 2, 2};
-    const int dc[8] = {-1, 1, -2, 2, -2, 2, -1, 1};
+
+    // BFS traversal
     while (!q.empty()) {
-        auto [r, c] = q.front();
+        auto [x, y] = q.front();
         q.pop();
-        for (int k = 0; k < 8; ++k) {
-            int nr = r + dr[k];
-            int nc = c + dc[k];
-            if (nr < 0 || nr >= n || nc < 0 || nc >= n) continue;
-            if (dist[nr][nc] != -1) continue;
-            dist[nr][nc] = dist[r][c] + 1;
-            q.push({nr, nc});
+
+        // Explore all 8 knight moves
+        for (int k = 0; k < 8; k++) {
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+
+            if (isValid(nx, ny)) {
+                dist[nx][ny] = dist[x][y] + 1;
+                q.push({nx, ny});
+            }
         }
     }
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (j) cout << ' ';
-            cout << dist[i][j];
+
+    // Output the distance matrix
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << dist[i][j] << " ";
         }
-        cout << "\n";
+        cout << endl;
     }
+
     return 0;
 }
 ```
@@ -2305,7 +2343,7 @@ int main() {
 
 *Explanation* :
 
-Sort all bookings by start time. Use a priority queue of (end_time, room_id) to free the earliest-finished room that is available when a new booking starts; otherwise assign a new room. Track assignments for each original booking and the maximum rooms used.
+We use a greedy algorithm by sorting customers by their arrival time. For each customer, we check if any previously used room has become free (i.e., its last guest departed before the current guest arrives). We use a multiset to efficiently track rooms by their end times - if a suitable free room exists, we reuse it; otherwise, we allocate a new room. This greedy choice is optimal because assigning an available room to the earliest arriving customer never leads to a worse solution than leaving it empty.
 
 \
 *Code :*
@@ -2313,59 +2351,61 @@ Sort all bookings by start time. Use a priority queue of (end_time, room_id) to 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 int main() {
-    int n, rooms = 0;
+    int n;
     cin >> n;
 
-    // Store (start, end, original_index)
-    vector<pair<pair<int,int>, int>> v;
-    vector<int> ans(n);
-
-    // multiset stores (current_room_end_time, room_number)
-    // always sorted by end_time
-    multiset<pair<int,int>> ms;
+    // Store each customer's booking: {start_time, end_time, original_index}
+    vector<tuple<int, int, int>> bookings(n);
 
     for (int i = 0; i < n; i++) {
         int start, end;
         cin >> start >> end;
-        v.push_back({{start, end}, i});
+        bookings[i] = {start, end, i};
     }
 
-    // Sort intervals by start time
-    sort(v.begin(), v.end());
+    // Sort bookings by start time
+    sort(bookings.begin(), bookings.end());
 
-    for (int i = 0; i < n; i++) {
-        int start = v[i].first.first;
-        int end   = v[i].first.second;
-        int idx   = v[i].second;
+    // Track available rooms: {end_time, room_number}
+    // Sorted by end_time to find rooms that become free earliest
+    multiset<pair<int, int>> availableRooms;
 
-        // Find first room whose end time is > start
-        auto it = ms.upper_bound({start, 0});
-        int assigned_room;
+    vector<int> assignedRoom(n);
+    int totalRooms = 0;
 
-        // No existing room free → create a new one
-        if (it == ms.begin()) {
-            assigned_room = ++rooms;
-        }
-        else {
-            // Use the room that ends right before start
+    for (const auto& [start, end, originalIndex] : bookings) {
+        int roomNumber;
+
+        // Find a room that's free before this booking starts
+        // upper_bound finds first room with end_time > start
+        // We want the room with end_time <= start, so we go one back
+        auto it = availableRooms.upper_bound({start, INT_MAX});
+
+        if (it == availableRooms.begin()) {
+            // No available room found - need a new room
+            roomNumber = ++totalRooms;
+        } else {
+            // Reuse an existing room that's now free
             --it;
-            assigned_room = it->second;
-            ms.erase(it);
+            roomNumber = it->second;
+            availableRooms.erase(it);
         }
 
-        // Insert updated end time for this room
-        ms.insert({end, assigned_room});
-
-        // Store answer in original order
-        ans[idx] = assigned_room;
+        // Mark this room as occupied until 'end' time
+        availableRooms.insert({end, roomNumber});
+        assignedRoom[originalIndex] = roomNumber;
     }
 
-    cout << rooms << "\n";
-    for (int x : ans) cout << x << " ";
+    // Output results
+    cout << totalRooms << "\n";
+    for (int room : assignedRoom) {
+        cout << room << " ";
+    }
     cout << "\n";
+
+    return 0;
 }
 
 ```
