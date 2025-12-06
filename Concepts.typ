@@ -1005,11 +1005,55 @@ Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's compl
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
+== Bitmask
+
+Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
+
+Say your given an array and want to return all possible subsets of that array. Here's the code on how to do that and then we'll go through the code:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n = 3;
+  vector<int> v = {5, 4, 7};
+
+  for(int mask = 0; mask < (1 << n); mask++){//mask takes all values from 0 - 2^n-1.
+
+    cout << "{ ";
+
+    for(int i = 0; i < n; i++){
+      if(mask & (1 << i)//checking if the ith of the mask is 1
+        cout << v[i] << " ";
+    }
+
+    cout << "}" << endl;
+  }
+  
+  return 0;
+}
+```
+
+In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output 
+
+```
+{ }
+{ 5 }
+{ 4 }
+{ 5 4 }
+{ 7 }
+{ 5 7 }
+{ 4 7 }
+{ 5 4 7 }
+```
+
 /*
- * TODO:
- * Bitmask
- * Graph Representations
- * BFS
- * Prefix Sum
- * Fenwick Tree
- */
+* TODO:
+* Graph Representations
+* BFS
+* Prefix Sum
+* Fenwick Tree
+*/
