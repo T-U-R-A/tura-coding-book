@@ -1,24 +1,22 @@
 Questions Left to Complete:
 
-2.  Chessboard and Queens
-3.  Raab Game I  --today
-4.  String Reorder
-5.  Grid Path Description
-6.  Collecting Numbers   --today
-7.  Collecting Numbers II
-8.  Distinct Values Subarrays
-9.  Distinct Values Subsequences
-10. Josephus Problem I
-11. Josephus Problem II
-12. Nested Ranges Check
-14. Sum of Four Values
-15. Subarray Sums II
-16. Subarray Divisibility
-17. Distinct Values Subarrays II
-18. Array Division (easy)  ---- today
-19. Movie Festival II
-20. Maximum Subarray Sum II
-21. Tasks and Deadlines (sir's help needed)
+1.  Chessboard and Queens
+2.  Raab Game I  --today
+3.  String Reorder
+4.  Grid Path Description
+5.  Collecting Numbers   --today
+6.  Collecting Numbers II
+7.  Distinct Values Subarrays
+8.  Distinct Values Subsequences
+9.  Josephus Problem I
+10. Josephus Problem II
+11. Nested Ranges Check
+12. Sum of Four Values
+13. Subarray Sums II
+14. Subarray Divisibility
+15. Distinct Values Subarrays II
+16. Movie Festival II
+17. Maximum Subarray Sum II
 
 Assigned to Apurva:
 - Gray code

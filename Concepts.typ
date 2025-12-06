@@ -805,22 +805,24 @@ As you can see, we start with an empty board, then we place a queen in all posit
 To write the code for this. We need 4 arrays, one for every row, columns, and both diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place a queen there. The indexes of the two diagonals will be a follows:
 
 #let table1 = figure(
-  table(columns: 4, 
-  [0],[1],[2],[3],
-  [1],[2],[3],[4],
-  [2],[3],[4],[5],
-  [3],[4],[5],[6],
+  table(
+    columns: 4,
+    [0], [1], [2], [3],
+    [1], [2], [3], [4],
+    [2], [3], [4], [5],
+    [3], [4], [5], [6],
   ),
   caption: [First diagonal],
   supplement: none,
 )
 
 #let table2 = figure(
-  table(columns: 4,
-  [3],[2],[1],[0],
-  [4],[3],[2],[1],
-  [5],[4],[3],[2],
-  [6],[5],[4],[3]
+  table(
+    columns: 4,
+    [3], [2], [1], [0],
+    [4], [3], [2], [1],
+    [5], [4], [3], [2],
+    [6], [5], [4], [3],
   ),
   caption: [Second diagonal],
   supplement: none,
@@ -831,7 +833,7 @@ To write the code for this. We need 4 arrays, one for every row, columns, and bo
   columns: (1fr, 1fr),
   align: center,
   column-gutter: -7cm,
-  table1, table2
+  table1, table2,
 )
 
 If a queen is on row `i` and column `j`, then it will be on `row[i]`, `column[j]`, `diag1[i + j]` and on `diag[(n-1) - j + i]`. Then for the next row, a queen can't be placed on this row, columns, and diagonal.
@@ -880,82 +882,78 @@ int main(){
 The `resize()` function of a vector is used when you wish to specify the size of a `vector` after its initialization. The `findPositions()` function has a default value of `i = 0`, so if the parameter isn't supplied it assumes the value to be `0`.
 Also observer that we didn't use a `row vector`, because the backtracking algorithm ensures that we are placing the new queen on a new row each time.
 
-The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) =  234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
+The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
 == Negative Numbers
 
 In a computer, all numbers are stored in binary. For an `int`, the computer allocated 32 bits. The number 5 stored in an `int` actually looks like:
 
 $
-00000000000000000000000000000101
+  00000000000000000000000000000101
 $
 
 Now for an `unsigned int`, the largest number you can store would be $2^32 - 1 = 4,294,967,295$, which in binary would be:
 
 $
-11111111111111111111111111111111
+  11111111111111111111111111111111
 $
 
 However regular `int` need the capability to store negative numbers. If we start from 0 and then subtract 1, we roll back and reach -1 which would be:
 
 $
-11111111111111111111111111111111
+  11111111111111111111111111111111
 $
 
 Going back one more place give's -2:
 
 
 $
-11111111111111111111111111111110
+  11111111111111111111111111111110
 $
 
 And so on. until $-2^31 = -2147483648$:
 
 $
-10000000000000000000000000000000
+  10000000000000000000000000000000
 $
 
 if you subtract one from this you go to $2^31 -1 = 2147483647$
 
 $
-01111111111111111111111111111111
+  01111111111111111111111111111111
 $
 
-The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number you need to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way: 
+The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number you need to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way:
 
 
 Say we want to find out what is -9 in binary. First we must take the *1's complement* of positive 9. This simply means we flip every bit (0's become 1's and 1's become 0's):
 
 $
-9 = &00000000000000000000000000001001
-\
-&11111111111111111111111111110110 = -10
+  9 = & 00000000000000000000000000001001 \
+      & 11111111111111111111111111110110 = -10
 $
 
 If you positive number was $n$, this will give you $-n-1$. To get $-n$, you must add 1. This is called taking the *2's complement*. This would give you:
 
 $
--9 = 11111111111111111111111111110111
+  -9 = 11111111111111111111111111110111
 $
 
 == Bit Operations
 
 In `c++`, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
-=== AND `(&)` 
+=== AND `(&)`
 
 Let's say I have the numbers 5 and 7. The question is what would be the output to `cout << (5 & 7);`?
 
 First we write 5 and 6 in binary, which become 0101 and 0110. Then we perform the `and` operation on each bit to get a new number in binary:
 
 $
-&0101
-\
-#text[`&`] &0110
-\
-&#line(length: 2em)
-\
-&0100
+             & 0101 \
+  #text[`&`] & 0110 \
+             & #line(length: 2em) \
+             & 0100
 $
 
 Finally convert 0100 back to decimal, which is 4
@@ -969,13 +967,10 @@ Now we want to find out the output of `cout << (5 | 6) << endl`. We now perform 
 
 
 $
-&0101
-\
-#text[`|`] &0110
-\
-&#line(length: 2em)
-\
-&0111
+             & 0101 \
+  #text[`|`] & 0110 \
+             & #line(length: 2em) \
+             & 0111
 $
 
 Which is 3 in decimal.
@@ -986,13 +981,10 @@ Now we want to find out the output of `cout << (5 ^ 6) << endl`. We now perform 
 
 
 $
-&0101
-\
-#text[`^`] &0110
-\
-&#line(length: 2em)
-\
-&0011
+             & 0101 \
+  #text[`^`] & 0110 \
+             & #line(length: 2em) \
+             & 0011
 $
 
 Which is 7 in decimal.
@@ -1002,24 +994,22 @@ Which is 7 in decimal.
 The `not(~)` operator flips all the bits of a number. In the earlier examples, we we're only showing 4 bits because the numbers were small. However, the `int` type has a total of 32 bits. So if you want to find the output of `cout << (~5) << endl` The answer would be:
 
 $
-\~&00000000000000000000000000000101
-\
-&#line(length: 16em)
-\
-&11111111111111111111111111111010
+  \~ & 00000000000000000000000000000101 \
+     & #line(length: 16em) \
+     & 11111111111111111111111111111010
 $
 
-Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's complement which for some positive $n$ will give you $-n-1$. 
+Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's complement which for some positive $n$ will give you $-n-1$.
 
 === Left shift(`<<`) and right shift(`>>`)
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
 /*
-* TODO:
-* Bitmask
-* Graph Representations
-* BFS
-* Prefix Sum
-* Fenwick Tree
-*/
+ * TODO:
+ * Bitmask
+ * Graph Representations
+ * BFS
+ * Prefix Sum
+ * Fenwick Tree
+ */

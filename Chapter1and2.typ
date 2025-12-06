@@ -2492,7 +2492,10 @@ int main() {
 
 *Explanation* :
 
-When we choose to complete a task, the rewards of all remaining tasks are “hurt” or negatively affected. The amount of this hurt is directly proportional to how long the chosen task takes, because its duration is added to the completion times of all future tasks. To maximize the total reward, we must minimize this hurt, which is achieved by completing the shortest tasks first and the longest tasks last. We accomplish this by sorting the array by duration and keeping track of the time elapsed.
+In this problem, we must schedule tasks to maximize total reward, where each task gives a reward only if completed before its deadline.
+
+The intuitive greedy approach is to always prioritize tasks with the shortest durations first, because choosing a long task early delays all subsequent tasks and reduces their chances of meeting deadlines. By sorting tasks by duration and maintaining a timeline, we ensure we fit the maximum number of tasks in the shortest possible time. Whenever adding a new task would exceed its deadline, we can replace the longest task in our schedule with it if it has a smaller duration.
+Thus, the algorithm minimizes wasted time and maximizes the number of completed tasks for optimal total reward.
 
 \
 *Code :*
@@ -2978,6 +2981,7 @@ int main() {
 
 *Explanation* :
 
+This solution minimizes the largest subarray sum when dividing the array into `k` consecutive subarrays using binary search. It establishes bounds where the answer lies between the largest element and the total sum of the array. For each candidate sum (mid), it checks if it's possible to split the array into at most `k` subarrays without any subarray exceeding that sum. If possible, a lower sum is attempted; otherwise, a higher sum is tested. Finally, the smallest feasible maximum subarray sum is output as the answer.
 
 
 \
