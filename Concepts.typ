@@ -1037,7 +1037,7 @@ int main(){
 }
 ```
 
-In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output 
+In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output.
 
 ```
 { }
@@ -1050,10 +1050,87 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 5 4 7 }
 ```
 
+== Prefix sum
+
+Let's say your asked this question. You're given an array of numbers, and then your given some queries. Each query will give you a range. Your goal is to output the sum of all numbers in that range. For example, let's say you have the following array:
+
+$
+{5, -6, 4, 3, 12, 6, -7, -3}
+$
+
+And now you're told to find the sum of elements from index 4-7, index 2-5, and 1-3. The answers to that would be:
+
+$
+12 + 6 + -7 + -3 = 8
+\
+4 + 3 + 12 + 6 = 25
+\
+-6 + 4 + 3 = 1
+$
+
+Note that indices are 0-indexed.
+
+You could solve this questions by simply iterating through all elements in each range and then adding them up. However, each of these operations is amortized $O(n)$. If there are $q$ queries, your complexity would be $O(n q)$. If $n$ and $q$'s limits are $2 times 10^5$, $O(n q)$ would be too slow.
+
+The must faster way would be to compute a *prefix sum* array. This means that every element `pref[i]` sore the sum of all elements from `v[0]` to `v[i]`. Now let's say you want to know the sum from index `a` to `b`. You only have to compute `pref[b] - pref[a-1]` to get the answer. Using our example, the prefix sum array would be:
+
+$
+"original array" &{5,-6,4,3,12,6,-7,-3}
+\
+"prefix sum array" &{5,-1,3,6,18,24,17,14}
+$
+
+Now the answers to the 3 queries are:
+
+$
+14 - 6 = 8
+\
+24 - (-1) = 25
+\
+6 - 5 = 1
+$
+
+You get the correct answer by only having to subtract 2 numbers rather than having to add an entire array.
+
+Here's the code for the implementation of prefix sum:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> pref(n);
+  pref[0] = v[0];
+
+  for(int i = 1; i < n; i++)
+    pref[i] = v[i] + pref[i-1];
+
+  for(int i = 0; i < q; i++){
+    int a, b;
+    cin >> a >> b;
+
+    if(a != 0)
+      cout << (pref[b] - pref[a-1]) << endl;
+  }
+  
+  return 0;
+}
+
+```
+
+
 /*
 * TODO:
 * Graph Representations
 * BFS
-* Prefix Sum
 * Fenwick Tree
+* Linked List
 */
