@@ -2660,7 +2660,8 @@ int main() {
 
 *Explanation* :
 
-Store all pair sums formed entirely before the current index. When considering a new pair (i, j), look for a previously stored pair whose sum completes the target and whose indices are all distinct. Using a map from sum to list of earlier pairs ensures we find a valid quadruple if one exists.
+If you understood the above three sum algorithm, four sum simply extends this by fixing two elements instead of one. You iterate through all pairs (i, j), then for each pair, use the same two-pointer technique to find the remaining two numbers that complete the target sum.
+
 
 \
 
@@ -2671,36 +2672,57 @@ Store all pair sums formed entirely before the current index. When considering a
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n;
-    long long target;
+    int n, target;
     cin >> n >> target;
-    vector<long long> a(n);
-    for (int i = 0; i < n; ++i) cin >> a[i];
 
-    unordered_map<long long, vector<pair<int,int>>> sums;
+    // Store (value, original_index)
+    vector<pair<int, int>> nums(n);
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = i + 1; j < n; ++j) {
-            long long need = target - (a[i] + a[j]);
-            if (sums.count(need)) {
-                for (auto [p, q] : sums[need]) {
-                    if (p != i && p != j && q != i && q != j) {
-                        cout << p + 1 << " " << q + 1 << " " << i + 1 << " " << j + 1 << "\n";
-                        return 0;
-                    }
+    for (int i = 0; i < n; i++) {
+        cin >> nums[i].first;
+        nums[i].second = i + 1;   // 1-based indexing as required by CSES
+    }
+
+    // Sort by value to enable two-pointer scanning later
+    sort(nums.begin(), nums.end());
+
+    // Fix first two values using indices i and j
+    for (int i = 0; i < n - 3; i++) {
+        for (int j = i + 1; j < n - 2; j++) {
+
+            int left = j + 1;
+            int right = n - 1;
+
+            // Two-pointer search for remaining pair
+            while (left < right) {
+                long long sum = nums[i].first
+                + nums[j].first
+                + nums[left].first
+                + nums[right].first;
+
+                if (sum == target) {
+                    // Output original positions
+                    cout << nums[i].second << " "
+                    << nums[j].second << " "
+                    << nums[left].second << " "
+                    << nums[right].second;
+                    return 0;
+                }
+
+                // Adjust pointers based on sum size
+                if (sum < target) {
+                    left++;
+                } else {
+                    right--;
                 }
             }
         }
-        for (int j = 0; j < i; ++j) {
-            sums[a[i] + a[j]].push_back({j, i});
-        }
     }
-    cout << "IMPOSSIBLE\n";
+
+    cout << "IMPOSSIBLE";
     return 0;
 }
+
 ```
 #pagebreak()
 

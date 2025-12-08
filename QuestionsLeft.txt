@@ -11,16 +11,15 @@ Questions Left to Complete:
 9.  Josephus Problem I
 10. Josephus Problem II
 11. Nested Ranges Check
-12. Sum of Four Values
-13. Subarray Sums II
-14. Subarray Divisibility
-15. Distinct Values Subarrays II
-16. Movie Festival II
-17. Maximum Subarray Sum II
+12. Subarray Sums II
+13. Subarray Divisibility
+14. Distinct Values Subarrays II
+15. Movie Festival II
+16. Maximum Subarray Sum II
 
 Assigned to Apurva:
-- Gray code
-- Two Knights
-- Tower of Hanoi
-- Mex Grid Construction
-- Nested Ranges Count
+1. Gray code
+2. Two Knights
+3. Tower of Hanoi
+4. Mex Grid Construction
+5. Nested Ranges Count
