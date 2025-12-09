@@ -1005,6 +1005,31 @@ Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's compl
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
+=== Least Significant Set Bit (LSSB) 
+
+The least significant bit is the value of the rightmost bit of a binary number. This bit contributes the least to the number. For example the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSSB(20) = 4.
+
+*Note: Do not confuse this with Least Significant Bit(LSB). The least significant bit is always the leftmost digit of a binary number.*
+
+
+If you want to find the $"LSSB"(n)$, all you have to do is `n & -n`. 
+
+Why does this work? For that, you must first break up `-n` into `~n+1` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's. 
+
+If you now add 1 to get the 2's complement. All the ones up to the right most 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSSB"(n)$.
+
+Here's how it looks on 20:
+
+$
+20 = &00000000000000000000000000010#text(fill:red)[1]00
+\
+\& -20 = &11111111111111111111111111101#text(fill:red)[1]00
+\
+&#line(length: 16em)
+\
+&00000000000000000000000000000#text(fill: red)[1]01
+$
+
 == Bitmask
 
 Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
