@@ -1168,6 +1168,20 @@ Output:
 25
 1
 ```
+The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
+
+== Binary Indexed Tree
+
+Let's say for the question in the previous section, we not only want the ability to find the sum in a given range, we also want to update an element in the array. This means that we need to be able to both change values in the array and output the sum in any given range quickly.
+
+Our earlier approach of maintaining a prefix sum fails, because even though we can output the sum of elements in a range in $O(1)$. If we even change a single value, the time it takes to generate the whole array is amortized $O(n)$. For the constraints of $n <= 2*10^5, q <= 2*10^5$, this is too slow.
+
+There is a data structure which can help us do updates and sums in $O(n log(n))$. This is called a *binary indexed tree(BIT)* or a *Fenwick tree*. In a Fenwick tree, each element is 1-indexed. The $i$th
+
+Let's look at the array from our previous example:
+
+$
+$
 
 /*
 * TODO:
