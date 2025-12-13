@@ -14,6 +14,94 @@
 
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
+
+#let board1 = board.with(square-size: 0.5cm)(position(
+  "....",
+  "....",
+  "....",
+  "....",
+))
+
+#let board2 = board.with(square-size: 0.5cm)(position(
+  "Q...",
+  "....",
+  "....",
+  "....",
+))
+
+#let board3 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "....",
+  "....",
+  "....",
+))
+
+#let board4 = board.with(square-size: 0.5cm)(position(
+  "..Q.",
+  "....",
+  "....",
+  "....",
+))
+
+#let board5 = board.with(square-size: 0.5cm)(position(
+  "...Q",
+  "....",
+  "....",
+  "....",
+))
+
+#let board6 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "Q...",
+  "....",
+  "....",
+))
+
+#let board7 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  ".Q..",
+  "....",
+  "....",
+))
+
+#let board8 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "..Q.",
+  "....",
+  "....",
+))
+
+#let board9 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "...Q",
+  "....",
+  "....",
+))
+
+#let table1 = figure(
+  table(
+    columns: 4,
+    [0], [1], [2], [3],
+    [1], [2], [3], [4],
+    [2], [3], [4], [5],
+    [3], [4], [5], [6],
+  ),
+  caption: [First diagonal],
+  supplement: none,
+)
+
+#let table2 = figure(
+  table(
+    columns: 4,
+    [3], [2], [1], [0],
+    [4], [3], [2], [1],
+    [5], [4], [3], [2],
+    [6], [5], [4], [3],
+  ),
+  caption: [Second diagonal],
+  supplement: none,
+)
+
 #outline()
 
 = Concepts
@@ -717,68 +805,6 @@ Say we want to know for a $n times n$ chess board, how may ways are there to pla
 
 This problem can be solved by using backtracking. We can start by placing the first queen in all positions on the first row, for each of those position, see which positions you can place a queen in the second row and so on. Let's looks at some partial solutions when $n = 4$.
 
-#let board1 = board.with(square-size: 0.5cm)(position(
-  "....",
-  "....",
-  "....",
-  "....",
-))
-
-#let board2 = board.with(square-size: 0.5cm)(position(
-  "Q...",
-  "....",
-  "....",
-  "....",
-))
-
-#let board3 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "....",
-  "....",
-  "....",
-))
-
-#let board4 = board.with(square-size: 0.5cm)(position(
-  "..Q.",
-  "....",
-  "....",
-  "....",
-))
-
-#let board5 = board.with(square-size: 0.5cm)(position(
-  "...Q",
-  "....",
-  "....",
-  "....",
-))
-
-#let board6 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "Q...",
-  "....",
-  "....",
-))
-
-#let board7 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  ".Q..",
-  "....",
-  "....",
-))
-
-#let board8 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "..Q.",
-  "....",
-  "....",
-))
-
-#let board9 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "...Q",
-  "....",
-  "....",
-))
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
@@ -804,29 +830,6 @@ As you can see, we start with an empty board, then we place a queen in all posit
 
 To write the code for this. We need 4 arrays, one for every row, columns, and both diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place a queen there. The indexes of the two diagonals will be a follows:
 
-#let table1 = figure(
-  table(
-    columns: 4,
-    [0], [1], [2], [3],
-    [1], [2], [3], [4],
-    [2], [3], [4], [5],
-    [3], [4], [5], [6],
-  ),
-  caption: [First diagonal],
-  supplement: none,
-)
-
-#let table2 = figure(
-  table(
-    columns: 4,
-    [3], [2], [1], [0],
-    [4], [3], [2], [1],
-    [5], [4], [3], [2],
-    [6], [5], [4], [3],
-  ),
-  caption: [Second diagonal],
-  supplement: none,
-)
 
 
 #grid(
@@ -1005,9 +1008,9 @@ Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's compl
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
-=== Least Significant Set Bit (LSSB) 
+=== Least Significant Set Bit (LSSB) <lssb> 
 
-The least significant bit is the value of the rightmost bit of a binary number. This bit contributes the least to the number. For example the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSSB(20) = 4.
+The least significant bit is the value of the rightmost bit of a binary number. This bit contributes the least to the number. For example, the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSSB(20) = 4.
 
 *Note: Do not confuse this with Least Significant Bit(LSB). The least significant bit is always the leftmost digit of a binary number.*
 
@@ -1169,19 +1172,6 @@ Output:
 1
 ```
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
-
-== Binary Indexed Tree
-
-Let's say for the question in the previous section, we not only want the ability to find the sum in a given range, we also want to update an element in the array. This means that we need to be able to both change values in the array and output the sum in any given range quickly.
-
-Our earlier approach of maintaining a prefix sum fails, because even though we can output the sum of elements in a range in $O(1)$. If we even change a single value, the time it takes to generate the whole array is amortized $O(n)$. For the constraints of $n <= 2*10^5, q <= 2*10^5$, this is too slow.
-
-There is a data structure which can help us do updates and sums in $O(n log(n))$. This is called a *binary indexed tree(BIT)* or a *Fenwick tree*. In a Fenwick tree, each element is 1-indexed. The $i$th
-
-Let's look at the array from our previous example:
-
-$
-$
 
 /*
 * TODO:
