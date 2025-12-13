@@ -2369,6 +2369,200 @@ int main() {
 ```
 #pagebreak()
 
+== Distinct Values Subarrays
+
+\
+#link("https://cses.fi/problemset/task/2162")[Question - Distinct Values Subarrays]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2162")[Backup Link]
+
+\
+
+*Explanation* :
+
+The problem asks for the number of subarrays where all elements are distinct. We can use a sliding window approach (two pointers). For each right endpoint `r`, we want to find the smallest valid left endpoint `l` such that the subarray `arr[l...r]` has no duplicates. To do this efficiently, we track the last seen position of each element. If `arr[r]` was last seen at `last_pos`, the new valid left bound must be at least `last_pos + 1`. We update our global left pointer to be the maximum of its current value and this new constraint. Then, all subarrays ending at `r` starting from `l` to `r` are valid, contributing `r - l + 1` to the total count.
+
+\
+*Code :*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) cin >> a[i];
+
+    map<int, int> last_idx;
+    ll ans = 0;
+    int l = 0;
+    for (int r = 0; r < n; r++) {
+        if (last_idx.count(a[r])) {
+            l = max(l, last_idx[a[r]] + 1);
+        }
+        last_idx[a[r]] = r;
+        ans += (r - l + 1);
+    }
+    cout << ans << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Distinct Values Subsequences
+
+\
+#link("https://cses.fi/problemset/task/3421")[Question - Distinct Values Subsequences]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/3421")[Backup Link]
+
+\
+
+*Explanation* :
+
+We need to count the number of subsequences with all distinct elements. Let `dp[i]` be the number of distinct subsequences using a subset of the first `i` elements. When we consider the element `x` at index `i`:
+1. We can append `x` to all previous valid subsequences (including the empty one), doubling the count: `2 * dp[i-1]`.
+2. However, if `x` has appeared before at index `last[x]`, the subsequences formed by appending the *previous* `x` are already counted. We must subtract those to avoid duplicates. The number of such duplicates is exactly the number of distinct subsequences ending before the previous occurrence, which is `dp[last[x]-1]`.
+So, `dp[i] = 2 * dp[i-1] - dp[last[x]-1]`. The final answer is `dp[n] - 1` (excluding the empty subsequence).
+
+\
+*Code :*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const int MOD = 1e9 + 7;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    vector<int> x(n);
+    for (int i = 0; i < n; i++) cin >> x[i];
+
+    vector<ll> dp(n + 1);
+    dp[0] = 1; // Empty subsequence
+    map<int, int> last; // value -> 1-based index
+
+    for (int i = 1; i <= n; i++) {
+        dp[i] = (2 * dp[i - 1]) % MOD;
+        if (last.count(x[i - 1])) {
+            int prev = last[x[i - 1]];
+            dp[i] = (dp[i] - dp[prev - 1] + MOD) % MOD;
+        }
+        last[x[i - 1]] = i;
+    }
+
+    cout << (dp[n] - 1 + MOD) % MOD << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Josephus Problem I
+
+\
+#link("https://cses.fi/problemset/task/1624")[Question - Josephus Problem I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1624")[Backup Link]
+
+\
+
+*Explanation* :
+
+In this problem, children are removed by skipping one child every turn. We can simulate this process using a queue. We initialize the queue with children 1 to n. In each step, we move the front element to the back (skip), and then remove and print the next element (remove). We repeat this until the queue is empty.
+
+\
+*Code :*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    queue<int> q;
+    for (int i = 1; i <= n; i++) q.push(i);
+
+    while (!q.empty()) {
+        // Skip one
+        int skip = q.front();
+        q.pop();
+        q.push(skip);
+
+        // Remove one
+        int remove = q.front();
+        q.pop();
+        cout << remove << " ";
+    }
+    cout << "\n";
+    return 0;
+}
+```
+#pagebreak()
+
+== Josephus Problem II
+
+\
+#link("https://cses.fi/problemset/task/1625")[Question - Josephus Problem II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1625")[Backup Link]
+
+\
+
+*Explanation* :
+
+Here `k` children are skipped (or we remove the `(k+1)`-th child). Since `k` is large, simple simulation is too slow. We use an Order Statistic Tree (Policy-Based Data Structure) which supports `find_by_order` (find the element at a specific index) and `erase` in O(log n) time.
+We maintain the children in the tree. We track the current removal index, updating it as `idx = (idx + k) % current_size` at each step to determine who gets removed next.
+
+\
+*Code :*
+
+```cpp
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+
+typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, k;
+    cin >> n >> k;
+    ordered_set s;
+    for (int i = 1; i <= n; i++) s.insert(i);
+
+    int idx = 0;
+    while (!s.empty()) {
+        idx = (idx + k) % s.size();
+        auto it = s.find_by_order(idx);
+        cout << *it << " ";
+        s.erase(it);
+    }
+    cout << "\n";
+    return 0;
+}
+```
+
+#pagebreak()
+
 == Room Allocation
 
 \
@@ -3384,3 +3578,6 @@ int main() {
     return 0;
 }
 ```
+#pagebreak()
+
+
