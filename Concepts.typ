@@ -14,6 +14,94 @@
 
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
+
+#let board1 = board.with(square-size: 0.5cm)(position(
+  "....",
+  "....",
+  "....",
+  "....",
+))
+
+#let board2 = board.with(square-size: 0.5cm)(position(
+  "Q...",
+  "....",
+  "....",
+  "....",
+))
+
+#let board3 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "....",
+  "....",
+  "....",
+))
+
+#let board4 = board.with(square-size: 0.5cm)(position(
+  "..Q.",
+  "....",
+  "....",
+  "....",
+))
+
+#let board5 = board.with(square-size: 0.5cm)(position(
+  "...Q",
+  "....",
+  "....",
+  "....",
+))
+
+#let board6 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "Q...",
+  "....",
+  "....",
+))
+
+#let board7 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  ".Q..",
+  "....",
+  "....",
+))
+
+#let board8 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "..Q.",
+  "....",
+  "....",
+))
+
+#let board9 = board.with(square-size: 0.5cm)(position(
+  ".Q..",
+  "...Q",
+  "....",
+  "....",
+))
+
+#let table1 = figure(
+  table(
+    columns: 4,
+    [0], [1], [2], [3],
+    [1], [2], [3], [4],
+    [2], [3], [4], [5],
+    [3], [4], [5], [6],
+  ),
+  caption: [First diagonal],
+  supplement: none,
+)
+
+#let table2 = figure(
+  table(
+    columns: 4,
+    [3], [2], [1], [0],
+    [4], [3], [2], [1],
+    [5], [4], [3], [2],
+    [6], [5], [4], [3],
+  ),
+  caption: [Second diagonal],
+  supplement: none,
+)
+
 #outline()
 
 = Concepts
@@ -717,68 +805,6 @@ Say we want to know for a $n times n$ chess board, how may ways are there to pla
 
 This problem can be solved by using backtracking. We can start by placing the first queen in all positions on the first row, for each of those position, see which positions you can place a queen in the second row and so on. Let's looks at some partial solutions when $n = 4$.
 
-#let board1 = board.with(square-size: 0.5cm)(position(
-  "....",
-  "....",
-  "....",
-  "....",
-))
-
-#let board2 = board.with(square-size: 0.5cm)(position(
-  "Q...",
-  "....",
-  "....",
-  "....",
-))
-
-#let board3 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "....",
-  "....",
-  "....",
-))
-
-#let board4 = board.with(square-size: 0.5cm)(position(
-  "..Q.",
-  "....",
-  "....",
-  "....",
-))
-
-#let board5 = board.with(square-size: 0.5cm)(position(
-  "...Q",
-  "....",
-  "....",
-  "....",
-))
-
-#let board6 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "Q...",
-  "....",
-  "....",
-))
-
-#let board7 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  ".Q..",
-  "....",
-  "....",
-))
-
-#let board8 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "..Q.",
-  "....",
-  "....",
-))
-
-#let board9 = board.with(square-size: 0.5cm)(position(
-  ".Q..",
-  "...Q",
-  "....",
-  "....",
-))
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
@@ -804,29 +830,6 @@ As you can see, we start with an empty board, then we place a queen in all posit
 
 To write the code for this. We need 4 arrays, one for every row, columns, and both diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place a queen there. The indexes of the two diagonals will be a follows:
 
-#let table1 = figure(
-  table(
-    columns: 4,
-    [0], [1], [2], [3],
-    [1], [2], [3], [4],
-    [2], [3], [4], [5],
-    [3], [4], [5], [6],
-  ),
-  caption: [First diagonal],
-  supplement: none,
-)
-
-#let table2 = figure(
-  table(
-    columns: 4,
-    [3], [2], [1], [0],
-    [4], [3], [2], [1],
-    [5], [4], [3], [2],
-    [6], [5], [4], [3],
-  ),
-  caption: [Second diagonal],
-  supplement: none,
-)
 
 
 #grid(
@@ -1005,6 +1008,31 @@ Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's compl
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
+=== Least Significant Set Bit (LSSB) <lssb> 
+
+The least significant bit is the value of the rightmost bit of a binary number. This bit contributes the least to the number. For example, the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSSB(20) = 4.
+
+*Note: Do not confuse this with Least Significant Bit(LSB). The least significant bit is always the leftmost digit of a binary number.*
+
+
+If you want to find the $"LSSB"(n)$, all you have to do is `n & -n`. 
+
+Why does this work? For that, you must first break up `-n` into `~n+1` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's. 
+
+If you now add 1 to get the 2's complement. All the ones up to the right most 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSSB"(n)$.
+
+Here's how it looks on 20:
+
+$
+20 = &00000000000000000000000000010#text(fill:red)[1]00
+\
+\& -20 = &11111111111111111111111111101#text(fill:red)[1]00
+\
+&#line(length: 16em)
+\
+&00000000000000000000000000000#text(fill: red)[1]01
+$
+
 == Bitmask
 
 Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
@@ -1037,7 +1065,7 @@ int main(){
 }
 ```
 
-In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output 
+In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output.
 
 ```
 { }
@@ -1050,10 +1078,105 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 5 4 7 }
 ```
 
+== Prefix sum
+
+Let's say your asked this question. You're given an array of numbers, and then your given some queries. Each query will give you a range. Your goal is to output the sum of all numbers in that range. For example, let's say you have the following array:
+
+$
+{5, -6, 4, 3, 12, 6, -7, -3}
+$
+
+And now you're told to find the sum of elements from index 4-7, index 2-5, and 1-3. The answers to that would be:
+
+$
+12 + 6 + -7 + -3 = 8
+\
+4 + 3 + 12 + 6 = 25
+\
+-6 + 4 + 3 = 1
+$
+
+Note that indices are 0-indexed.
+
+You could solve this questions by simply iterating through all elements in each range and then adding them up. However, each of these operations is amortized $O(n)$. If there are $q$ queries, your complexity would be $O(n q)$. If $n$ and $q$'s limits are $2 times 10^5$, $O(n q)$ would be too slow.
+
+The must faster way would be to compute a *prefix sum* array. This means that every element `pref[i]` sore the sum of all elements from `v[0]` to `v[i]`. Now let's say you want to know the sum from index `a` to `b`. You only have to compute `pref[b] - pref[a-1]` to get the answer. Using our example, the prefix sum array would be:
+
+$
+"original array" &{5,-6,4,3,12,6,-7,-3}
+\
+"prefix sum array" &{5,-1,3,6,18,24,17,14}
+$
+
+Now the answers to the 3 queries are:
+
+$
+14 - 6 = 8
+\
+24 - (-1) = 25
+\
+6 - 5 = 1
+$
+
+You get the correct answer by only having to subtract 2 numbers rather than having to add an entire array.
+
+Here's the code for the implementation of prefix sum:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> pref(n);
+  pref[0] = v[0];
+
+  for(int i = 1; i < n; i++)
+    pref[i] = v[i] + pref[i-1];
+
+  for(int i = 0; i < q; i++){
+    int a, b;
+    cin >> a >> b;
+
+    if(a != 0)
+      cout << (pref[b] - pref[a-1]) << endl;
+  }
+  
+  return 0;
+}
+
+```
+
+Sample input:
+
+```
+8 3
+5 -6 4 3 12 6 -7 -3
+4 7
+2 5
+1 3
+```
+
+Output:
+
+```
+8
+25
+1
+```
+The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
+
 /*
 * TODO:
 * Graph Representations
 * BFS
-* Prefix Sum
 * Fenwick Tree
+* Linked List
 */
