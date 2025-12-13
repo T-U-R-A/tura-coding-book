@@ -2,7 +2,6 @@ Questions Left to Complete:
 
 1.  Chessboard and Queens
 2.  Raab Game I  --today
-3.  String Reorder
 4.  Grid Path Description
 5.  Collecting Numbers   --today
 6.  Collecting Numbers II
