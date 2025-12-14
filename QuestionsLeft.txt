@@ -7,7 +7,6 @@ Questions Left to Complete:
 6.  Collecting Numbers II
 7.  Distinct Values Subarrays
 8.  Distinct Values Subsequences
-9.  Josephus Problem I
 10. Josephus Problem II
 11. Nested Ranges Check
 12. Subarray Sums II

@@ -2479,7 +2479,7 @@ int main() {
 
 *Explanation* :
 
-In this problem, children are removed by skipping one child every turn. We can simulate this process using a queue. We initialize the queue with children 1 to n. In each step, we move the front element to the back (skip), and then remove and print the next element (remove). We repeat this until the queue is empty.
+We store all people in a list, for efficient deletions while moving forward. An iterator walks through the list, skipping one person each time. When the iterator reaches the end, it wraps back to the beginning. Each erased element is printed in order.
 
 \
 *Code :*
@@ -2489,26 +2489,30 @@ In this problem, children are removed by skipping one child every turn. We can s
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-    queue<int> q;
-    for (int i = 1; i <= n; i++) q.push(i);
 
-    while (!q.empty()) {
-        // Skip one
-        int skip = q.front();
-        q.pop();
-        q.push(skip);
+    list<int> circle;
+    for (int i = 1; i <= n; i++)
+        circle.push_back(i);
 
-        // Remove one
-        int remove = q.front();
-        q.pop();
-        cout << remove << " ";
+    auto it = circle.begin();
+
+    while (!circle.empty()) {
+        // move to the next person (skip one)
+        it++;
+        if (it == circle.end())
+            it = circle.begin();
+
+        cout << *it << " ";
+
+        // erase returns iterator to next element
+        it = circle.erase(it);
+
+        if (it == circle.end() && !circle.empty())
+            it = circle.begin();
     }
-    cout << "\n";
+
     return 0;
 }
 ```
