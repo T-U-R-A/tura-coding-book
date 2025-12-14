@@ -775,23 +775,13 @@ Here's the visualization of all the events:
   #cetz.canvas({
     import cetz.draw: *
     line((0, 0), (10, 0), name: "numline")
-    content((name: "numline", anchor: 0%), box(fill: white, $0$))
-    content((name: "numline", anchor: 10%), box(fill: white, $1$))
-    content((name: "numline", anchor: 20%), box(fill: white, $2$))
-    content((name: "numline", anchor: 30%), box(fill: white, $3$))
-    content((name: "numline", anchor: 40%), box(fill: white, $4$))
-    content((name: "numline", anchor: 50%), box(fill: white, $5$))
-    content((name: "numline", anchor: 60%), box(fill: white, $6$))
-    content((name: "numline", anchor: 70%), box(fill: white, $7$))
-    content((name: "numline", anchor: 80%), box(fill: white, $8$))
-    content((name: "numline", anchor: 90%), box(fill: white, $9$))
-    content((name: "numline", anchor: 100%), box(fill: white, $10$))
-
-    rect((1, -0.5), (3, -1), fill: luma(240))
-    rect((2, -1.5), (5, -2), fill: luma(240))
-    rect((4, -2.5), (6, -3), fill: luma(240))
-    rect((3, -3.5), (8, -4), fill: luma(240))
-    rect((7, -4.5), (10, -5), fill: luma(240))
+    for i in (0,1,2,3,4,5,6,7,8,9,10){
+      content((name: "numline", anchor: i), box(fill: white, text[#i]))
+    }
+    
+    for i in ((1,3,0),(2,5,1),(4,6,2),(3,8,3),(7,10,4)){
+      rect((i.at(0), -0.5-i.at(2)), (i.at(1), -1-i.at(2)), fill: luma(240))
+    }
   })
 ]
 
