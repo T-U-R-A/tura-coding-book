@@ -3487,7 +3487,7 @@ int main() {
 
 *Explanation* :
 
-Sort movies by ending time. Keep a multiset of viewers’ current end times. For each movie, try to find the viewer who becomes free latest but still not after the movie starts (largest end time ≤ start). Reassign that viewer to the current movie; if none exist and we still have spare viewers, start a new one. Each successful assignment increases the count.
+The movies are sorted by ending time so earlier-finishing movies are considered first. A multiset stores when each of the k watchers becomes free. For each movie, we find the latest watcher free at or before its start time. If such a watcher exists, we assign the movie and update their free time. This greedy process maximizes the total number of movies watched.
 
 \
 
@@ -3498,38 +3498,45 @@ Sort movies by ending time. Keep a multiset of viewers’ current end times. For
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n, k;
     cin >> n >> k;
+
+    // movies[i] = {end_time, start_time}
     vector<pair<int, int>> movies(n);
     for (int i = 0; i < n; i++) {
-        int a, b;
-        cin >> a >> b;
-        movies[i] = {b, a}; // sort by end
+        cin >> movies[i].second >> movies[i].first;
     }
+
+    // Sort movies by ending time (classic interval scheduling)
     sort(movies.begin(), movies.end());
 
-    multiset<int> endTimes;
-    int watched = 0;
-    for (auto [end, start] : movies) {
-        auto it = endTimes.upper_bound(start);
-        if (it == endTimes.begin()) {
-            if ((int)endTimes.size() < k) {
-                endTimes.insert(end);
-                watched++;
-            }
-        } else {
-            --it;
-            endTimes.erase(it);
-            endTimes.insert(end);
-            watched++;
-        }
+    // Each element represents when a watcher becomes free
+    multiset<int> freeAt;
+    for (int i = 0; i < k; i++) {
+        freeAt.insert(0);
     }
-    cout << watched << "\n";
+
+    int watched = 0;
+
+    for (auto [endTime, startTime] : movies) {
+        // Find a watcher who is free at or before startTime
+        auto it = freeAt.upper_bound(startTime);
+
+        if (it == freeAt.begin()) {
+            // No watcher available
+            continue;
+        }
+
+        // Assign this movie to the latest possible free watcher
+        freeAt.erase(--it);
+        freeAt.insert(endTime);
+        watched++;
+    }
+
+    cout << watched;
     return 0;
 }
+
 ```
 #pagebreak()
 
@@ -3544,7 +3551,8 @@ int main() {
 
 *Explanation* :
 
-Let `pref[i]` be the sum of the first i elements. For each end index i we need the smallest prefix value among starts that keep the subarray length in [a, b]; the answer candidate is `pref[i] − minPrefix`. A multiset over the valid prefix window supports O(log n) insert/erase as we slide i forward.
+The code finds the maximum subarray sum whose length lies between a and b. It first builds a prefix sum array so any subarray sum can be computed in O(1). A multiset stores candidate prefix sums that can serve as valid subarray starts. As the right end moves forward, new valid prefixes are added to the set.
+Prefixes that would make the subarray longer than b are removed. The smallest prefix in the set gives the maximum possible subarray ending at the current index. The answer is updated by comparing all such valid subarrays efficiently.
 
 \
 
@@ -3553,34 +3561,42 @@ Let `pref[i]` be the sum of the first i elements. For each end index i we need t
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+    int n, minLen, maxLen;
+    cin >> n >> minLen >> maxLen;
 
-    int n, a, b;
-    cin >> n >> a >> b;
-    vector<ll> pref(n + 1, 0);
-    for (int i = 1; i <= n; i++) {
-        ll x;
-        cin >> x;
-        pref[i] = pref[i - 1] + x;
+    vector<long long> values(n);
+    for (int i = 0; i < n; i++) {
+        cin >> values[i];
     }
 
-    multiset<ll> window;
-    ll ans = LLONG_MIN;
-    for (int i = a; i <= n; i++) {
-        window.insert(pref[i - a]);
-        if (i - b - 1 >= 0) {
-            window.erase(window.find(pref[i - b - 1]));
+    // Prefix sums: prefix[i] = sum of first i elements
+    vector<long long> prefix(n + 1, 0);
+    for (int i = 0; i < n; i++) {
+        prefix[i + 1] = prefix[i] + values[i];
+    }
+
+    multiset<long long> candidates;
+    long long bestSum = LLONG_MIN;
+
+    for (int right = minLen; right <= n; right++) {
+        // Add prefix corresponding to subarrays of length >= minLen
+        candidates.insert(prefix[right - minLen]);
+
+        // Remove prefix that would make subarray length > maxLen
+        if (right > maxLen) {
+            candidates.erase(candidates.find(prefix[right - maxLen - 1]));
         }
-        ans = max(ans, pref[i] - *window.begin());
+
+        // Best subarray ending at 'right'
+        bestSum = max(bestSum, prefix[right] - *candidates.begin());
     }
 
-    cout << ans << "\n";
+    cout << bestSum << '\n';
     return 0;
 }
+
 ```
 #pagebreak()
 

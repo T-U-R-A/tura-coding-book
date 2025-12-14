@@ -12,7 +12,6 @@ Questions Left to Complete:
 12. Subarray Sums II
 13. Subarray Divisibility
 14. Distinct Values Subarrays II
-15. Movie Festival II
 16. Maximum Subarray Sum II
 
 Assigned to Apurva:
