@@ -2,17 +2,15 @@ Questions Left to Complete:
 
 1.  Chessboard and Queens
 2.  Raab Game I  --today
-4.  Grid Path Description
-5.  Collecting Numbers   --today
-6.  Collecting Numbers II
-7.  Distinct Values Subarrays
-8.  Distinct Values Subsequences
-10. Josephus Problem II
-11. Nested Ranges Check
-12. Subarray Sums II
-13. Subarray Divisibility
-14. Distinct Values Subarrays II
-16. Maximum Subarray Sum II
+3.  Grid Path Description
+4.  Collecting Numbers   --today
+5.  Collecting Numbers II
+6.  Distinct Values Subarrays
+7.  Distinct Values Subsequences
+8. Josephus Problem II
+9. Nested Ranges Check
+12. Distinct Values Subarrays II
+
 
 Assigned to Apurva:
 1. Gray code

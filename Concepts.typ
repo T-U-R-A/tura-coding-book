@@ -1007,29 +1007,26 @@ Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's compl
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
 
-=== Least Significant Set Bit (LSSB) <lssb> 
+=== Least Significant Set Bit (LSSB) <lssb>
 
 The least significant bit is the value of the rightmost bit of a binary number. This bit contributes the least to the number. For example, the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSSB(20) = 4.
 
 *Note: Do not confuse this with Least Significant Bit(LSB). The least significant bit is always the leftmost digit of a binary number.*
 
 
-If you want to find the $"LSSB"(n)$, all you have to do is `n & -n`. 
+If you want to find the $"LSSB"(n)$, all you have to do is `n & -n`.
 
-Why does this work? For that, you must first break up `-n` into `~n+1` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's. 
+Why does this work? For that, you must first break up `-n` into `~n+1` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's.
 
 If you now add 1 to get the 2's complement. All the ones up to the right most 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSSB"(n)$.
 
 Here's how it looks on 20:
 
 $
-20 = &00000000000000000000000000010#text(fill:red)[1]00
-\
-\& -20 = &11111111111111111111111111101#text(fill:red)[1]00
-\
-&#line(length: 16em)
-\
-&00000000000000000000000000000#text(fill: red)[1]01
+      20 = & 00000000000000000000000000010#text(fill: red)[1]00 \
+  \& -20 = & 11111111111111111111111111101#text(fill: red)[1]00 \
+           & #line(length: 16em) \
+           & 00000000000000000000000000000#text(fill: red)[1]01
 $
 
 == Bitmask
@@ -1059,7 +1056,7 @@ int main(){
 
     cout << "}" << endl;
   }
-  
+
   return 0;
 }
 ```
@@ -1082,17 +1079,17 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 Let's say your asked this question. You're given an array of numbers, and then your given some queries. Each query will give you a range. Your goal is to output the sum of all numbers in that range. For example, let's say you have the following array:
 
 $
-{5, -6, 4, 3, 12, 6, -7, -3}
+  {5, -6, 4, 3, 12, 6, -7, -3}
 $
 
 And now you're told to find the sum of elements from index 4-7, index 2-5, and 1-3. The answers to that would be:
 
 $
-12 + 6 + -7 + -3 = 8
-\
-4 + 3 + 12 + 6 = 25
-\
--6 + 4 + 3 = 1
+  12 + 6 + -7 + -3 = 8
+  \
+  4 + 3 + 12 + 6 = 25
+  \
+  -6 + 4 + 3 = 1
 $
 
 Note that indices are 0-indexed.
@@ -1102,19 +1099,18 @@ You could solve this questions by simply iterating through all elements in each 
 The must faster way would be to compute a *prefix sum* array. This means that every element `pref[i]` sore the sum of all elements from `v[0]` to `v[i]`. Now let's say you want to know the sum from index `a` to `b`. You only have to compute `pref[b] - pref[a-1]` to get the answer. Using our example, the prefix sum array would be:
 
 $
-"original array" &{5,-6,4,3,12,6,-7,-3}
-\
-"prefix sum array" &{5,-1,3,6,18,24,17,14}
+    "original array" & {5,-6,4,3,12,6,-7,-3} \
+  "prefix sum array" & {5,-1,3,6,18,24,17,14}
 $
 
 Now the answers to the 3 queries are:
 
 $
-14 - 6 = 8
-\
-24 - (-1) = 25
-\
-6 - 5 = 1
+  14 - 6 = 8
+  \
+  24 - (-1) = 25
+  \
+  6 - 5 = 1
 $
 
 You get the correct answer by only having to subtract 2 numbers rather than having to add an entire array.
@@ -1147,7 +1143,7 @@ int main(){
     if(a != 0)
       cout << (pref[b] - pref[a-1]) << endl;
   }
-  
+
   return 0;
 }
 
@@ -1173,9 +1169,9 @@ Output:
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
 /*
-* TODO:
-* Graph Representations
-* BFS
-* Fenwick Tree
-* Linked List
-*/
+ * TODO:
+ * Graph Representations
+ * BFS
+ * Fenwick Tree
+ * Linked List
+ */

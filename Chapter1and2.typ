@@ -3081,7 +3081,8 @@ int main() {
 
 *Explanation* :
 
-With negative numbers allowed, we switch to prefix sums. For each position we store how many earlier prefixes have value `current − x`; each such prefix starts a subarray ending here that sums to x. An unordered_map keeps counts in O(1) expected time.
+We iterate through the array while maintaining a running prefix sum. A map stores how many times each prefix sum has appeared so far. At each position, if a previous prefix sum equals `currentSum` − `targetSum`, a subarray with the required sum exists. We add its frequency to the answer and then record the current prefix sum.
+This counts all valid subarrays in linear time.
 
 \
 
@@ -3091,27 +3092,38 @@ With negative numbers allowed, we switch to prefix sums. For each position we st
 #include <bits/stdc++.h>
 using namespace std;
 
+using ll = long long;
+
 int main() {
-    int n;
-    long long x;
-    cin >> n >> x;
-    vector<long long> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
+    ll n, targetSum;
+    cin >> n >> targetSum;
 
-    unordered_map<long long, long long> freq;
-    freq.reserve(2 * n);
-    freq.max_load_factor(0.7);
-    freq[0] = 1;
-
-    long long pref = 0, ans = 0;
-    for (long long v : a) {
-        pref += v;
-        if (freq.count(pref - x)) ans += freq[pref - x];
-        freq[pref]++;
+    vector<ll> array(n);
+    for (int i = 0; i < n; i++) {
+        cin >> array[i];
     }
-    cout << ans << "\n";
+
+    // prefixSumCount[s] = how many times prefix sum 's' has occurred
+    map<ll, ll> prefixSumCount;
+    prefixSumCount[0] = 1;   // empty prefix
+
+    ll currentSum = 0;
+    ll subarrayCount = 0;
+
+    for (int i = 0; i < n; i++) {
+        currentSum += array[i];
+
+        // count subarrays ending here with sum = targetSum
+        subarrayCount += prefixSumCount[currentSum - targetSum];
+
+        // record current prefix sum
+        prefixSumCount[currentSum]++;
+    }
+
+    cout << subarrayCount << '\n';
     return 0;
 }
+
 ```
 #pagebreak()
 
@@ -3126,7 +3138,9 @@ int main() {
 
 *Explanation* :
 
-Two prefixes with the same remainder modulo n define a subarray whose sum is divisible by n. We track counts of each remainder as we scan the array and add the current remainder’s frequency to the answer.
+We use prefix sums modulo `n` to count subarrays whose sum is divisible by `n`. Each element is first reduced modulo `n` to keep values small.
+As we iterate, we maintain the current prefix sum modulo `n`. A map stores how many times each modulo value has appeared so far. If the same modulo appears again, the subarray between them has sum divisible by `n`. We add the frequency of the current modulo to the answer and update the map.
+
 
 \
 
@@ -3137,41 +3151,32 @@ Two prefixes with the same remainder modulo n define a subarray whose sum is div
 using namespace std;
 
 int main() {
-    int n;
+    long long n;
     cin >> n;
 
-    // Read array and reduce each element modulo n (helps avoid overflow)
     vector<long long> arr(n);
     for (int i = 0; i < n; i++) {
         cin >> arr[i];
-        arr[i] %= n;
+        arr[i] %= n;                 // keep values within modulo n
     }
 
-    // freq[x] = how many prefix sums have remainder x mod n
-    map<long long, long long> freq;
-    freq[0] = 1;  // Empty prefix considered as remainder 0
+    unordered_map<long long, long long> frequency;
+    frequency[0] = 1;               // empty prefix sum
 
-    long long sum = 0;
-    long long count = 0;
+    long long prefixSum = 0;
+    long long result = 0;
 
-    // Loop over all elements and compute prefix sums
     for (int i = 0; i < n; i++) {
-        sum += arr[i];
+        prefixSum = (prefixSum + arr[i]) % n;
+        if (prefixSum < 0) prefixSum += n;
 
-        // Compute positive modulo n (handles negative sums)
-        long long mod = ((sum % n) + n) % n;
-
-        // Any previous prefix with same modulo forms a valid subarray
-        count += freq[mod];
-
-        // Increase frequency for this remainder
-        freq[mod]++;
+        result += frequency[prefixSum];
+        frequency[prefixSum]++;
     }
 
-    // Total count of subarrays whose sum is divisible by n
-    cout << count << endl;
+    cout << result;
+    return 0;
 }
-
 ```
 #pagebreak()
 
