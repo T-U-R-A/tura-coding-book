@@ -80,6 +80,8 @@
   "....",
 ))
 
+#let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
+
 #let table1 = figure(
   table(
     columns: 4,
@@ -757,15 +759,14 @@ The algorithm to solve this question is to pick an event which ends the earliest
 
 The reason for this is to think of the opposite. If you were to pick an event the ends later, at best case you can still pick the same number of new events. However at worst you will overlap some events that you could have picked. Let's look at the following example:
 
+
 #align(center)[
   #table(
     columns: 2,
     [start], [end],
-    [1], [3],
-    [2], [5],
-    [4], [6],
-    [3], [8],
-    [7], [10],
+    ..for interval in arr1{
+      interval
+    }
   )
 ]
 
@@ -775,12 +776,16 @@ Here's the visualization of all the events:
   #cetz.canvas({
     import cetz.draw: *
     line((0, 0), (10, 0), name: "numline")
-    for i in (0,1,2,3,4,5,6,7,8,9,10){
+    let i = 0
+    while i <= 10{
       content((name: "numline", anchor: i), box(fill: white, text[#i]))
+      i = i + 1
     }
     
-    for i in ((1,3,0),(2,5,1),(4,6,2),(3,8,3),(7,10,4)){
-      rect((i.at(0), -0.5-i.at(2)), (i.at(1), -1-i.at(2)), fill: luma(240))
+    i = 0
+    while i < 5 {
+      rect((int(arr1.at(i).at(0)), -0.5-i), (int(arr1.at(i).at(1)), -1-i), fill: luma(240))
+      i = i + 1
     }
   })
 ]
