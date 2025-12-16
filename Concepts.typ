@@ -783,7 +783,7 @@ Here's the visualization of all the events:
     }
     
     i = 0
-    while i < 5 {
+    while i < arr1.len() {
       rect((int(arr1.at(i).at(0)), -0.5-i), (int(arr1.at(i).at(1)), -1-i), fill: luma(240))
       i = i + 1
     }
