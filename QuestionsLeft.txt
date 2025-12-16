@@ -3,9 +3,7 @@ Questions Left to Complete:
 1.  Chessboard and Queens
 2.  Raab Game I
 3.  Grid Path Description
-4.  Collecting Numbers
 5.  Collecting Numbers II
-6.  Distinct Values Subarrays
 7.  Distinct Values Subsequences
 8. Josephus Problem II
 9. Nested Ranges Check

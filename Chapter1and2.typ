@@ -2105,7 +2105,7 @@ int main() {
 
 *Explanation* :
 
-The array is a permutation of 1…n. Reading the numbers in increasing order takes one pass, but every time the position of i+1 appears before the position of i we need an extra round. Counting such inversions between consecutive numbers and adding one gives the total number of passes required.
+The program stores the index of each number in the order it appears. It then scans numbers from 1 to n and checks whether a number appears before its predecessor. Whenever this happens, a new round is required. The final count represents the total number of rounds needed.
 
 \
 *Code :*
@@ -2115,24 +2115,26 @@ The array is a permutation of 1…n. Reading the numbers in increasing order tak
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-    vector<int> pos(n + 1);
-    for (int i = 1; i <= n; ++i) {
-        int x;
-        cin >> x;
-        pos[x] = i;
+
+    vector<int> position(n + 1);
+    for (int i = 0; i < n; i++) {
+        int value;
+        cin >> value;
+        position[value] = i;
     }
+
     int rounds = 1;
-    for (int v = 1; v < n; ++v) {
-        if (pos[v] > pos[v + 1]) rounds++;
+    for (int i = 2; i <= n; i++) {
+        if (position[i] < position[i - 1]) {
+            rounds++;
+        }
     }
-    cout << rounds << "\n";
-    return 0;
+
+    cout << rounds;
 }
+
 ```
 #pagebreak()
 
@@ -2380,7 +2382,7 @@ int main() {
 
 *Explanation* :
 
-The problem asks for the number of subarrays where all elements are distinct. We can use a sliding window approach (two pointers). For each right endpoint `r`, we want to find the smallest valid left endpoint `l` such that the subarray `arr[l...r]` has no duplicates. To do this efficiently, we track the last seen position of each element. If `arr[r]` was last seen at `last_pos`, the new valid left bound must be at least `last_pos + 1`. We update our global left pointer to be the maximum of its current value and this new constraint. Then, all subarrays ending at `r` starting from `l` to `r` are valid, contributing `r - l + 1` to the total count.
+This code uses a sliding window to count subarrays with all distinct elements. The right pointer expands the window, while a frequency map tracks duplicates. If a duplicate appears, the left pointer shrinks the window until all elements are unique again.At each position, the number of valid subarrays ending there is added to the answer.
 
 \
 *Code :*
@@ -2388,30 +2390,38 @@ The problem asks for the number of subarrays where all elements are distinct. We
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
     int n;
     cin >> n;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
 
-    map<int, int> last_idx;
-    ll ans = 0;
-    int l = 0;
-    for (int r = 0; r < n; r++) {
-        if (last_idx.count(a[r])) {
-            l = max(l, last_idx[a[r]] + 1);
-        }
-        last_idx[a[r]] = r;
-        ans += (r - l + 1);
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i];
     }
-    cout << ans << "\n";
-    return 0;
+
+    // Frequency map for elements in the current window
+    map<int, int> freq;
+
+    int left = 0;          // Left pointer of the sliding window
+    long long answer = 0;  // Total number of valid subarrays
+
+    for (int right = 0; right < n; right++) {
+        freq[a[right]]++;  // Add current element to the window
+
+        // Shrink window until all elements are distinct
+        while (freq[a[right]] > 1) {
+            freq[a[left]]--;
+            left++;
+        }
+
+        // Number of distinct subarrays ending at 'right'
+        answer += (right - left + 1);
+    }
+
+    cout << answer;
 }
+
 ```
 #pagebreak()
 
