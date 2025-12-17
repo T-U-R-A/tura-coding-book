@@ -17,6 +17,7 @@
 
 #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
+
 #let board1 = board.with(square-size: 0.5cm)(position(
   "....",
   "....",
@@ -80,7 +81,28 @@
   "....",
 ))
 
-#let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
+
+
+#let arrayToMath(arr) = { // This function should be used only inside math blocks for it's intended effect.
+  "{"
+  for x in arr {
+    str(x)
+    if x != arr.last(){ 
+    ", " 
+    }
+  }
+  "}"
+}
+
+#let bracketIfNegative(num) = {
+  if num.signum() == -1 {
+    "("
+    str(num)
+    ")"
+  } else {
+    str(num)
+  }
+}
 
 #let table1 = figure(
   table(
@@ -751,6 +773,9 @@ int main(){
 
 == Greedy algorithms
 
+//Variables required for Greedy.
+#let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
+
 A greedy algorithm is a type of algorithm where the solution for a smaller sub-part of the question also applies to the whole question. A greedy algorithm never goes back and corrects it's previous decision. Let's take a look at a question that can be solve with a greedy algorithm:
 
 Question: You are given a list of events. Every event has a start time and an end time. You can only attend one event at a time. Your goal is to pick events in such a way so that you can attend the maximum number of events.
@@ -1075,21 +1100,60 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 ```
 
 == Prefix sum
+//Variables required for Prefix sum.
+
+#let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
+#let arr3 = ((4, 7), (2, 5), (1, 3))
+
+#let pref = ()
+
+#let i = 0
+#while i < arr2.len() {
+  pref.push(arr2.at(i))
+  if i > 0 {
+    pref.at(i) = pref.at(i) + pref.at(i - 1)
+  }
+  i = i + 1
+}
 
 Let's say your asked this question. You're given an array of numbers, and then your given some queries. Each query will give you a range. Your goal is to output the sum of all numbers in that range. For example, let's say you have the following array:
 
 $
-  {5, -6, 4, 3, 12, 6, -7, -3}
+  arrayToMath(arr2)
 $
 
-And now you're told to find the sum of elements from index 4-7, index 2-5, and 1-3. The answers to that would be:
+// And now you're told to find the sum of elements from index #arr3.at(0).at(0)-#arr3.at(0).at(1), index #arr3.at(1).at(0)-#arr3.at(1).at(1), index #arr3.at(2).at(0)-#arr3.at(2).at(1). The answers to that would be:
+And now you're told to find the sum of elements from index 
+#for (l, r) in arr3{
+  "index "
+  str(l)
+  "-"
+  str(r)
+  if(l != arr3.last().at(0)){
+  ", "
+  } else {
+    "."
+  }
+}
+The answers to that would be:
 
 $
-  12 + 6 + -7 + -3 = 8
-  \
-  4 + 3 + 12 + 6 = 25
-  \
-  -6 + 4 + 3 = 1
+  #for (l, r) in arr3{
+    let i = l
+    let total = 0
+    while i <= r{
+      total = total + arr2.at(i)
+      str(arr2.at(i)) 
+      if(i != r) {
+        " + "
+      } else {
+        " = "
+      }
+      i = i + 1
+    }
+    str(total)
+    linebreak()
+  }
 $
 
 Note that indices are 0-indexed.
@@ -1098,19 +1162,23 @@ You could solve this questions by simply iterating through all elements in each 
 
 The must faster way would be to compute a *prefix sum* array. This means that every element `pref[i]` sore the sum of all elements from `v[0]` to `v[i]`. Now let's say you want to know the sum from index `a` to `b`. You only have to compute `pref[b] - pref[a-1]` to get the answer. Using our example, the prefix sum array would be:
 
+
 $
-    "original array" & {5,-6,4,3,12,6,-7,-3} \
-  "prefix sum array" & {5,-1,3,6,18,24,17,14}
+    "original array" & arrayToMath(arr2) \
+  "prefix sum array" & arrayToMath(pref)
 $
 
 Now the answers to the 3 queries are:
 
 $
-  14 - 6 = 8
-  \
-  24 - (-1) = 25
-  \
-  6 - 5 = 1
+  #for (l, r) in arr3{
+    bracketIfNegative(pref.at(r))
+    $ - $
+    bracketIfNegative(pref.at(l - 1))
+    $ = $
+    str(pref.at(r) - pref.at(l - 1))
+    linebreak()
+  }
 $
 
 You get the correct answer by only having to subtract 2 numbers rather than having to add an entire array.
@@ -1151,21 +1219,40 @@ int main(){
 
 Sample input:
 
-```
-8 3
-5 -6 4 3 12 6 -7 -3
-4 7
-2 5
-1 3
-```
+
+#raw(
+  str(arr2.len()) + " " + str(arr3.len()) 
++ 
+" 
+" 
++ 
+  for x in arr2 {
+    str(x) + " " 
+  } 
+  +
+  for (l, r) in arr3{
+"
+"
+  str(l) + " " + str(r)
+}, 
+
+  block: true,
+)
+
 
 Output:
 
-```
-8
-25
-1
-```
+#raw(
+  for (l, r) in arr3{
+    str(pref.at(r) - pref.at(l - 1))
+    if l != arr3.last().at(0) {
+"
+"
+    }
+  },
+  block: true,
+)
+
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
 /*
