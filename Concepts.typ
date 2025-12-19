@@ -85,11 +85,13 @@
 
 #let arrayToMath(arr) = { // This function should be used only inside math blocks for it's intended effect.
   "{"
-  for x in arr {
-    str(x)
-    if x != arr.last(){ 
+  let i = 0
+  while i < arr.len() {
+    str(arr.at(i))
+    if i != arr.len() - 1{ 
     ", " 
     }
+    i = i + 1
   }
   "}"
 }
@@ -1102,6 +1104,7 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 == Prefix sum
 //Variables required for Prefix sum.
 
+// #let arr2 = (5, 6, 4, 3, 9, 6, 1, 3) positive only variation in case of spacing issues
 #let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
 #let arr3 = ((4, 7), (2, 5), (1, 3))
 
@@ -1255,6 +1258,358 @@ Output:
 
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
+
+== Binary Indexed Tree
+
+Let's say for the question in the previous section, we not only want the ability to find the sum in a given range, we also want to update an element in the array. This means that we need to be able to both change values in the array and output the sum in any given range quickly.
+
+Our earlier approach of maintaining a prefix sum fails, because even though we can output the sum of elements in a range in $O(1)$. If we even change a single value, the time it takes to generate the whole array is amortized $O(n)$. For the constraints of $n <= 2*10^5, q <= 2*10^5$, this is too slow.
+
+There is a data structure which can help us do updates and sums in $O(n log(n))$. This is called a *binary indexed tree(BIT)* or a *Fenwick tree*. In a Fenwick tree, each element is 1-indexed. The $i$th value in the Fenwick tree stores the sum of all elements in the original array from $i - "LSSB(i)" + 1$ to $i$. (see @lssb for meaning of LSSB).
+
+
+To understand this better, let's look at the array from our previous example and the Fenwick tree that's made from the array.
+
+
+$
+arrayToMath(arr2)
+$
+
+
+#let fenw = () 
+
+/*
+#let add(x, k) = {
+  while x < fenw.len() {
+    fenw.at(x) = fenw.at(x) + k
+    x = x + x.bit-and(-x)
+  }
+}
+
+#let prefSum(x) = {
+  let ans = 0
+  while x > 0 {
+    ans = ans + fenw.at(x)
+    x =  x - x.bit-and(-x)
+  } 
+  ans
+}
+
+  #let build() = {
+    fenw.push(0)
+    
+    let i = 0
+    while i <= arr2.len(){
+      fenw.push(0)
+      i = i + 1
+    } 
+    
+    i = 0
+    while i < arr2.len(){
+      add(i + 1, arr2.at(i))  
+      i = i + 1
+    }
+  } 
+*/
+
+#fenw.push(0)
+
+#let i = 0
+#while i < arr2.len(){
+  fenw.push(0)
+  i = i + 1
+} 
+
+#let i = 0
+#while i < arr2.len(){
+  let x = i+1
+  while x < fenw.len() {
+    fenw.at(x) = fenw.at(x) + arr2.at(i)
+    x = x + x.bit-and(-x)
+  }
+  i = i + 1
+}
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = 1
+    while i < fenw.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      i = i + 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = 1
+    while i <= arr2.len(){
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            str(arr2.at(j))
+            if j != i - 1 {
+              " + "
+            }
+            j = j + 1 
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i + 1
+    }
+
+  })
+]
+
+Note that the values in a fenwick tree are one-indexed, so there we be an empty element at `fenw[0]`.
+
+#let idx1 = 5
+#let val = 4
+#let idx2 = 7 
+#let i = idx1
+
+Hopefully the image made it clearer on how data is stored.  The reason for storing data like this is because if you want to add a value to 1 element in the original array, you only need to update $O(log n)$ values in the Fenwick tree. And after doing this, you can find the sum in $O(log n)$. Say we wish to add #val to the #str(idx1)th index (one-indexed), we only need to update the 
+#while i <= fenw.len(){
+  str(i)+"th"
+  if i + i.bit-and(-i) <= fenw.len() {
+    ", "
+  }
+  i = i + i.bit-and(-i)
+}
+
+#let i = idx2
+
+index. If you now want to compute the prefix sum of the array from index #idx2, you only need to add the values in the 
+#while i > 0{
+  str(i)+"th"
+  if i - i.bit-and(-i) > 0 {
+    ", "
+  }
+  i = i - i.bit-and(-i)
+}
+index.
+
+Here's a diagram to illustrate the changes:
+
+Add #val to the #str(idx1)th index:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = 1
+    let check = idx1
+    while i < fenw.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      if i == check {
+        content((name: "box", anchor: "center"), box(fill: white, text(fill: red)[#(fenw.at(i) + 4)]))
+        check = check + check.bit-and(-check)
+      }
+      else {
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      }
+      i = i + 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = 1
+    while i <= arr2.len(){
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            if j == idx1 - 1 {
+              text(fill:red)[#(arr2.at(j) + 4)] 
+            } else {
+              str(arr2.at(j))
+            }
+            if j != i - 1 {
+              " + "
+            }
+            j = j + 1 
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i + 1
+    }
+
+  })
+]
+
+Prefix sum at the #str(idx2)th index:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = fenw.len() - 1
+    let check = idx2
+    while i > 0 {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      if i == check {
+        content((name: "box", anchor: "center"), box(fill: white, text(fill: red)[#fenw.at(i)]))
+        check = check - check.bit-and(-check)
+      }
+      else {
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      }
+      i = i - 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = arr2.len()
+    check = idx2
+    while i > 0{
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            if i == check {
+              text(fill:red)[#arr2.at(j)]
+              if j != i - 1 {
+                text(fill:red)[ \+ ] 
+              }
+            }
+            else {
+              str(arr2.at(j))
+              if j != i - 1 {
+                " + "
+              }
+            }
+            j = j + 1 
+          }
+          if(i == check){
+            check = check - check.bit-and(-check)  
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i - 1
+    }
+
+  })
+]
+
+If you can caculate the prefix sum at some index $i$ in $O(log n )$, you can then do `sum(b) - sum(a-1)` to find the sum of numbers in the sub array `a` to `b`.
+
+Here's the code for the Fenwick tree implementation:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> fenw;
+
+void add(int x, int k){
+  for(; x <= n ; x += x & -x)// x & -x is the LSSB(x)
+    fenw[x] += k;
+}
+
+int sum(int x){
+  int ans = 0;
+  for(; x > 0; x -= x & -x)// x & -x is the LSSB(x)
+    ans += fenw[x];
+  return ans;
+}
+
+int sum(int a, int b){
+  return sum(b) - sum(a - 1);
+}
+
+int main(){
+  int q;
+  cin >> n >> q;
+  fenw.resize(n + 1, 0);
+  for(int i = 1; i <= n; i++){
+    int x;
+    cin >> x;
+    add(i, x);
+  }
+  
+  for(int i = 0; i < q; i++){
+    int t;
+    cin >> t;
+    if(t == 1){// addition queries
+      int x, k;
+      cin >> x >> k;
+      add(x, k);
+    }
+    else if(t == 2){// range sum queries
+      int a, b;
+      cin >> a >> b;
+      int ans = sum(a, b);
+      cout << sum(a, b) << endl;
+    }
+  }
+  return 0;
+}
+```
+
+Sample Input:
+
+```
+8 6
+5 -6 4 3 12 6 -7 -3
+2 4 7
+1 5 4
+2 4 7
+2 1 3
+1 3 -8
+2 2 7
+```
+Output:
+
+```
+14
+18
+3
+8
+```
+  
 /*
  * TODO:
  * Graph Representations
