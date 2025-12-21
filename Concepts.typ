@@ -612,7 +612,7 @@ Sometimes your `vector` may not be sorted in ascending order. Sometimes it might
 
 By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed.
 
-== Sets
+== Sets <set>
 
 A `set` in a data structure in `c++`, which has the following properties:
 
@@ -1609,6 +1609,35 @@ Output:
 3
 8
 ```
+
+=== Fenwick Tree's as Indexed Sets
+
+A Fenwick tree can also be used as an indexed set. In @set, a set was explained to be a data structure that lets you insert, find, and erase elements in $O(log n)$ time. It was also sorted and contained unique elements. However, it's not possible to simply access the 2nd, or 5th, or 12th, value in a set unless you iterate all the way from the beginning to that position. That makes accessing elements at a specific index $O(n)$.
+
+If you also want to be able to access elements at specific indexes in a set, you can use a Fenwick tree as a frequency table. This means that at `fewn[x]`, you store the of times element `x` occurs in your original data. Of course `fewn[x]` will actually store the sum of frequencies from `x - LSSB(x) + 1` to `x` but you get the point. This makes is sorted by default because it describes how many times 1 appears, followed by how many times 2 appears and so on. 
+
+Now if you want to add an element `a` to the set, you simply do `add(a,1)` in the Fenwick tree to increase it's frequency by 1. If you want to remove an element `b`, you do `add(b, -1)` to decrease it's frequency by 1. If you want to find the index of the last occurrence of an element `c`, do `sum(c)`, if you want to find the index of the first occurrence of `c` do `sum(c-1) + 1`. And finally, the main difference is the ability to find what element is at position `i`. This requires a new function.
+
+Here's the code of the search function:
+
+```cpp
+int search(int idx){
+  int ans = 0;
+
+  for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
+    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+      ans += 1 << k;//update the answer.
+      idx -= fenw[ans];//account for all indices upto fenw[ans].
+    }
+  }
+
+  return ans + 1;//ans was the value that was before idx, so one value ahead of that is at idx.
+}
+```
+
+In the code of the search function, you start with `k = floor(log2(n))` where $2^k$ is the largest power of 2 less than or equal to $n$. Then for each value, you check to see if it's index (`fenw[ans + 1 << k]`) is less than the `idx`. If it is, you add $2^k$ to the answer and then subtract `idx` by the indexes covered (`fenw[ans]`). 
+
+Since `ans` store the number that is definitely before index, `ans + 1` tells you what number is exactly at `idx`. The reason why you can't find the index directly is because the Fenwick tree frequency table can have multiple of the same numbers, so you can't guarantee that you will find what value is there at your exact `idx`.
   
 /*
  * TODO:
