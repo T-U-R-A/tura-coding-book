@@ -919,32 +919,53 @@ Place queens row by row. At each row we try every column that is not blocked and
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<string> board(8);
-long long solutions = 0;
+static const int N = 8;
 
-void search(int row, int cols, int diag1, int diag2) {
-    if (row == 8) {
-        solutions++;
+vector<string> board(N);
+
+// Tracking used columns and diagonals
+bool usedColumn[N];
+bool usedMainDiag[2 * N - 1];   // row + col
+bool usedAntiDiag[2 * N - 1];   // row - col + (N - 1)
+
+int totalWays = 0;
+
+void placeQueen(int row) {
+    // All rows filled → one valid arrangement
+    if (row == N) {
+        totalWays++;
         return;
     }
-    for (int col = 0; col < 8; ++col) {
+
+    for (int col = 0; col < N; col++) {
         if (board[row][col] == '*') continue;
-        int colMask = 1 << col;
-        int d1Mask = 1 << (row + col);
-        int d2Mask = 1 << (row - col + 7);
-        if (cols & colMask) continue;
-        if (diag1 & d1Mask) continue;
-        if (diag2 & d2Mask) continue;
-        search(row + 1, cols | colMask, diag1 | d1Mask, diag2 | d2Mask);
+
+        int mainDiag = row + col;
+        int antiDiag = row - col + (N - 1);
+
+        if (usedColumn[col] || usedMainDiag[mainDiag] || usedAntiDiag[antiDiag])
+            continue;
+
+        // Place queen
+        usedColumn[col] = usedMainDiag[mainDiag] = usedAntiDiag[antiDiag] = true;
+
+        placeQueen(row + 1);
+
+        // Backtrack
+        usedColumn[col] = usedMainDiag[mainDiag] = usedAntiDiag[antiDiag] = false;
     }
 }
 
 int main() {
-    for (int i = 0; i < 8; ++i) cin >> board[i];
-    search(0, 0, 0, 0);
-    cout << solutions << "\n";
+    for (int i = 0; i < N; i++) {
+        cin >> board[i];
+    }
+
+    placeQueen(0);
+    cout << totalWays << "\n";
     return 0;
 }
+
 ```
 
 \
@@ -968,83 +989,55 @@ We can fix the order of the first player as 1…n and seek a permutation of the 
 *Code :*
 
 ```cpp
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int t;
-    cin >> t;
-    while (t--) {
+    int testCases;
+    cin >> testCases;
+
+    while (testCases--) {
         int n, a, b;
         cin >> n >> a >> b;
+
+        // Invalid if required elements exceed n
         if (a + b > n) {
             cout << "NO\n";
             continue;
         }
-        int draws = n - (a + b);
-        vector<char> category;
-        category.insert(category.end(), b, 'B');
-        category.insert(category.end(), draws, 'D');
-        category.insert(category.end(), a, 'A');
-        vector<vector<int>> adj(n);
-        for (int i = 0; i < n; ++i) {
-            int pos = i + 1;
-            if (category[i] == 'B') {
-                for (int val = pos + 1; val <= n; ++val) adj[i].push_back(val);
-            } else if (category[i] == 'D') {
-                adj[i].push_back(pos);
-            } else {
-                for (int val = 1; val < pos; ++val) adj[i].push_back(val);
-            }
-            if (adj[i].empty()) {
-                adj.clear();
-                break;
-            }
-        }
-        if (adj.empty()) {
+
+        // Invalid if exactly one of a or b is zero
+        if ((a == 0 || b == 0) && a + b != 0) {
             cout << "NO\n";
             continue;
         }
-        vector<int> match(n + 1, -1);
-        function<bool(int, vector<int>&)> dfs = [&](int u, vector<int>& seen) {
-            for (int v : adj[u]) {
-                if (seen[v]) continue;
-                seen[v] = 1;
-                if (match[v] == -1 || dfs(match[v], seen)) {
-                    match[v] = u;
-                    return true;
-                }
-            }
-            return false;
-        };
-        bool ok = true;
-        for (int i = 0; i < n && ok; ++i) {
-            vector<int> seen(n + 1, 0);
-            if (!dfs(i, seen)) ok = false;
-        }
-        if (!ok) {
-            cout << "NO\n";
-            continue;
-        }
-        vector<int> order(n);
-        for (int val = 1; val <= n; ++val) {
-            int pos = match[val];
-            order[pos] = val;
-        }
+
         cout << "YES\n";
-        for (int i = 1; i <= n; ++i) {
-            if (i > 1) cout << ' ';
-            cout << i;
+
+        // First permutation: 1 to n
+        for (int i = 1; i <= n; i++) {
+            cout << i << " ";
         }
         cout << "\n";
-        for (int i = 0; i < n; ++i) {
-            if (i) cout << ' ';
-            cout << order[i];
+
+        // Second permutation:
+        // First b elements after a
+        for (int i = 1; i <= b; i++) {
+            cout << a + i << " ";
+        }
+
+        // Next a smallest elements
+        for (int i = 1; i <= a; i++) {
+            cout << i << " ";
+        }
+
+        // Remaining elements
+        for (int i = a + b + 1; i <= n; i++) {
+            cout << i << " ";
         }
         cout << "\n";
     }
+
     return 0;
 }
 ```

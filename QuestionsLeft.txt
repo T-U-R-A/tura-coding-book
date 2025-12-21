@@ -3,11 +3,11 @@ Questions Left to Complete:
 1.  Chessboard and Queens
 2.  Raab Game I
 3.  Grid Path Description
-5.  Collecting Numbers II
-7.  Distinct Values Subsequences
-8. Josephus Problem II
-9. Nested Ranges Check
-10. Distinct Values Subarrays II
+4.  Collecting Numbers II
+5.  Distinct Values Subsequences
+6. Josephus Problem II
+7. Nested Ranges Check
+8. Distinct Values Subarrays II
 
 
 Assigned to Apurva:
