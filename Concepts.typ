@@ -81,8 +81,6 @@
   "....",
 ))
 
-
-
 #let arrayToMath(arr) = { // This function should be used only inside math blocks for it's intended effect.
   "{"
   let i = 0
@@ -209,7 +207,7 @@ int main() {
 }
 ```
 
-While this isn't the only way to solve the question, the code should cover the most basic `c++ syntax`
+While this isn't the only way to solve the question, the code should cover the most basic `c++ syntax`.
 
 === Data Types
 
