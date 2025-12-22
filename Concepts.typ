@@ -1,6 +1,7 @@
 #import "@preview/cetz:0.4.2"
 #import "@preview/board-n-pieces:0.7.0": *
 
+
 #set text(
   font: "New Computer Modern Math",
 )
