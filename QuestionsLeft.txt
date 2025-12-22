@@ -1,7 +1,5 @@
 Questions Left to Complete:
 
-1.  Chessboard and Queens
-2.  Raab Game I
 3.  Grid Path Description
 4.  Collecting Numbers II
 5.  Distinct Values Subsequences

@@ -911,7 +911,14 @@ int main() {
 
 *Intuitive Explanation* :
 
-Place queens row by row. At each row we try every column that is not blocked and whose column and diagonals are still free. Bitmasks help track used columns and diagonals in O(1), and recursion counts all valid configurations.
+This solution uses backtracking#footnote[backtracking was explained here] to count all valid ways to place 8 queens on an 8×8 board with blocked cells.
+We place exactly one queen per row, moving row by row.
+For each cell, we first skip blocked positions marked by `*`.
+Three boolean arrays track conflicts: columns, main diagonals (`row + col`), and anti-diagonals (`row - col + 7`).
+If a position is safe, we mark these arrays and recurse to the next row.
+When all 8 rows are filled, one valid arrangement is found and counted.
+After recursion, we backtrack by unmarking the position to explore other possibilities.
+
 
 *Code :*
 
@@ -919,7 +926,7 @@ Place queens row by row. At each row we try every column that is not blocked and
 #include <bits/stdc++.h>
 using namespace std;
 
-static const int N = 8;
+const int N = 8;
 
 vector<string> board(N);
 
@@ -984,7 +991,15 @@ int main() {
 
 *Intuitive Explanation* :
 
-We can fix the order of the first player as 1…n and seek a permutation of the second player’s cards that yields exactly a wins, b losses, and the remaining draws. Treat each position as needing “greater than”, “equal”, or “less than” relations and build a bipartite graph between positions and card values. A standard augmenting-path matching either finds a valid assignment or proves it impossible.
+For each test case, we first check feasibility: if $a + b > n$, the required outcomes exceed the number of elements, then it is impossible. If exactly one of $a$ or $b$ is zero, the conditions become invalid.
+
+When valid, we begin by printing numbers from $1$ to $n$, representing the moves of the first player.
+The second line, representing the corresponding moves of the second player, is constructed carefully to control pairwise comparisons.
+The first $b$ elements are taken from the range $a+1$ to $a+b$, ensuring they are strictly larger than the next block and hence guarantee $b$ wins.
+Next, the smallest $a$ elements, $1$ to $a$, are placed, ensuring wins for the first player.
+The remaining elements are appended in increasing order, resulting in draws for the remaining positions.
+This construction satisfies all constraints while maintaining valid permutations.
+
 
 *Code :*
 
@@ -1014,13 +1029,12 @@ int main() {
 
         cout << "YES\n";
 
-        // First permutation: 1 to n
+        // 1 to n
         for (int i = 1; i <= n; i++) {
             cout << i << " ";
         }
         cout << "\n";
 
-        // Second permutation:
         // First b elements after a
         for (int i = 1; i <= b; i++) {
             cout << a + i << " ";
