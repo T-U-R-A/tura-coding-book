@@ -4,6 +4,8 @@
 #import "@preview/codly-languages:0.1.1": *
 #show: codly-init.with()
 #codly(languages: codly-languages)
+#codly(display-icon: false)
+
 
 #set text(
   font: "New Computer Modern Math"
