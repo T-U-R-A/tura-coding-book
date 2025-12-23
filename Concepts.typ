@@ -768,7 +768,7 @@ int main(){
 //Variables required for Greedy.
 #let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
 
-A greedy algorithm is a type of algorithm where the solution for a smaller sub-part of the question also applies to the whole question. A greedy algorithm never goes back and corrects it's previous decision. Let's take a look at a question that can be solve with a greedy algorithm:
+A greedy algorithm is a type of algorithm where the solution for a smaller subpart of the question also applies to the whole question. A greedy algorithm never goes back and corrects it's previous decision. Let's take a look at a question that can be solve with a greedy algorithm:
 
 Question: You are given a list of events. Every event has a start time and an end time. You can only attend one event at a time. Your goal is to pick events in such a way so that you can attend the maximum number of events.
 
@@ -942,7 +942,7 @@ $
   01111111111111111111111111111111
 $
 
-The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number you need to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way:
+The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way:
 
 
 Say we want to find out what is -9 in binary. First we must take the *1's complement* of positive 9. This simply means we flip every bit (0's become 1's and 1's become 0's):
@@ -1035,7 +1035,7 @@ If you want to find the $"LSSB"(n)$, all you have to do is `n & -n`.
 
 Why does this work? For that, you must first break up `-n` into `~n+1` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's.
 
-If you now add 1 to get the 2's complement. All the ones up to the right most 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSSB"(n)$.
+If you now add 1 to get the 2's complement. All the ones up to the rightmost 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSSB"(n)$.
 
 Here's how it looks on 20:
 
@@ -1116,7 +1116,7 @@ $
 $
 
 // And now you're told to find the sum of elements from index #arr3.at(0).at(0)-#arr3.at(0).at(1), index #arr3.at(1).at(0)-#arr3.at(1).at(1), index #arr3.at(2).at(0)-#arr3.at(2).at(1). The answers to that would be:
-And now you're told to find the sum of elements from index 
+And now you're told to find the sum of elements from index
 #for (l, r) in arr3{
   "index "
   str(l)
@@ -1366,14 +1366,14 @@ $
   })
 ]
 
-Note that the values in a fenwick tree are one-indexed, so there we be an empty element at `fenw[0]`.
+Note that the values in a Fenwick tree are one-indexed, so there we be an empty element at `fenw[0]`.
 
 #let idx1 = 5
 #let val = 4
 #let idx2 = 7 
 #let i = idx1
 
-Hopefully the image made it clearer on how data is stored.  The reason for storing data like this is because if you want to add a value to 1 element in the original array, you only need to update $O(log n)$ values in the Fenwick tree. And after doing this, you can find the sum in $O(log n)$. Say we wish to add #val to the #str(idx1)th index (one-indexed), we only need to update the 
+Hopefully the image made it clearer on how data is stored. The reason for storing data like this is because if you want to add a value to 1 element in the original array, you only need to update $O(log n)$ values in the Fenwick tree. And after doing this, you can find the sum in $O(log n)$. Say we wish to add #val to the #str(idx1)th index (one-indexed), we only need to update the
 #while i <= fenw.len(){
   str(i)+"th"
   if i + i.bit-and(-i) <= fenw.len() {
@@ -1384,7 +1384,7 @@ Hopefully the image made it clearer on how data is stored.  The reason for stori
 
 #let i = idx2
 
-index. If you now want to compute the prefix sum of the array from index #idx2, you only need to add the values in the 
+index. If you now want to compute the prefix sum of the array from index #idx2, you only need to add the values in the
 #while i > 0{
   str(i)+"th"
   if i - i.bit-and(-i) > 0 {
@@ -1522,7 +1522,7 @@ Prefix sum at the #str(idx2)th index:
   })
 ]
 
-If you can caculate the prefix sum at some index $i$ in $O(log n )$, you can then do `sum(b) - sum(a-1)` to find the sum of numbers in the sub array `a` to `b`.
+If you can calculate the prefix sum at some index $i$ in $O(log n )$, you can then do `sum(b) - sum(a-1)` to find the sum of numbers in the subarray `a` to `b`.
 
 Here's the code for the Fenwick tree implementation:
 
@@ -1605,7 +1605,7 @@ A Fenwick tree can also be used as an indexed set. In @set, a set was explained 
 
 If you also want to be able to access elements at specific indexes in a set, you can use a Fenwick tree as a frequency table. This means that at `fewn[x]`, you store the of times element `x` occurs in your original data. Of course `fewn[x]` will actually store the sum of frequencies from `x - LSSB(x) + 1` to `x` but you get the point. This makes is sorted by default because it describes how many times 1 appears, followed by how many times 2 appears and so on. 
 
-Now if you want to add an element `a` to the set, you simply do `add(a,1)` in the Fenwick tree to increase it's frequency by 1. If you want to remove an element `b`, you do `add(b, -1)` to decrease it's frequency by 1. If you want to find the index of the last occurrence of an element `c`, do `sum(c)`, if you want to find the index of the first occurrence of `c` do `sum(c-1) + 1`. And finally, the main difference is the ability to find what element is at position `i`. This requires a new function.
+Now if you want to add an element `a` to the set, you simply do `add(a,1)` in the Fenwick tree to increase its frequency by 1. If you want to remove an element `b`, you do `add(b, -1)` to decrease its frequency by 1. If you want to find the index of the last occurrence of an element `c`, do `sum(c)`, if you want to find the index of the first occurrence of `c` do `sum(c-1) + 1`. And finally, the main difference is the ability to find what element is at position `i`. This requires a new function.
 
 Here's the code of the search function:
 
