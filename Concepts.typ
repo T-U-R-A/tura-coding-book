@@ -135,6 +135,25 @@
 )
 
 // Beginning of content:
+// #set page(margin: 0pt) // Remove all page margins
+//
+// #page(
+//   background: image(
+//     "Cover.jpeg", // Replace with your image file name
+//     width: 100%, 
+//     height: 100%, 
+//     fit: "cover" // or "stretch" or "contain"
+//   ),
+//   place(
+//     center, 
+//     block(
+//       width: 50%, 
+//       text(white, 2em, "") // Example of centered white text
+//     )
+//   )
+// )
+
+#set page(margin: auto) // Remove all page margins
 
 #outline()
 
