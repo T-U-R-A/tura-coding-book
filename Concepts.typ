@@ -1646,10 +1646,108 @@ int search(int idx){
 In the code of the search function, you start with `k = floor(log2(n))` where $2^k$ is the largest power of 2 less than or equal to $n$. Then for each value, you check to see if it's index (`fenw[ans + 1 << k]`) is less than the `idx`. If it is, you add $2^k$ to the answer and then subtract `idx` by the indexes covered (`fenw[ans]`). 
 
 Since `ans` store the number that is definitely before index, `ans + 1` tells you what number is exactly at `idx`. The reason why you can't find the index directly is because the Fenwick tree frequency table can have multiple of the same numbers, so you can't guarantee that you will find what value is there at your exact `idx`.
+
+== Linked List
+
+A linked list is a data structure, where ever element in a list list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one, point to the element after the erased one. The same is true for inserting an element in a given position.
+
+Linked list can either be made linear or circular. In a linear linked list, the last element points to the `nullptr`. In a circular linked list, the last element points back to the first element.
+
+Here's the implementation of a linear linked list:
+
+```cpp
+
+struct Node{
+  int val;// the value in the current element
+  Node* nxt;//a pointer to the next element
+  Node(const int& val = 0, Node* nxt = nullptr){//constructor
+    this->val = val;
+    this->nxt = nxt;
+  }
+};
+
+struct List{
+  Node* head;
+
+  List(const int& size = 0, const int& val = 0){//creaing the linked list. The list will have "size" elements filled with val.
+    head = new Node();
+    Node* cur = head;
+    for(int i = 1; i <= size; i++){
+      cur->val = val;
+      cur = cur->nxt = new Node();
+    }
+  }
+
+  void insert(Node* pos, const int& val){//inserts a new node after poss
+  Node* nxt = pos->nxt; 
+    pos->nxt = new Node(val,nxt);
+  }  
+
+  void erase(Node* pos){//Erases the next node after pos
+    if(pos->nxt == nullptr)
+      return;
+    Node* nxt = pos->nxt;
+    pos->nxt = nxt->nxt;
+    delete(nxt);
+  }
+}
+```
+
+Of course this Is a very poor implementation with not much memory safety leading to memory leaks. Fortunately `c++` has it's own implementation of a linked list.
+
+=== `std::list`
+
+Here's a cod examples on how the `c++` implementation of a linked list is used:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+
+  list<int> l(n, 0);
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++){
+    int x;
+    cin >> x;
+    *it = x;
+  }
   
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)// loop to erase every odd element(1-indexed).
+    it = l.erase(it);
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    l.insert(it, *it-1);//before each element insert the value of that element-1.
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    cout << *it << " ";
+
+  return 0;
+}
+```
+
+Sample Input:
+#no-codly[
+```
+6
+4 -6 3 8 7 -2
+```
+]
+
+Sample Output:
+#no-codly[
+```
+-5 -6 9 8 -1 -2 
+```
+]
+
+As you can see from the code, if you want to store a value you simple update `*it`. If you want to insert a value before the current iterator, do `l.insert(it, val)`. Lastly if you want to erase the current iterator, do `l.erase(it)`. `erase()` also return the position to the next iterator so that you don't invalidate your current iterator.
+
+For the `std::list` documentation, click #link("https://en.cppreference.com/w/cpp/container/list.html")[here].
+
 /*
  * TODO:
  * Graph Representations
  * BFS
- * Linked List
  */
