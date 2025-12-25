@@ -1231,29 +1231,31 @@ int main(){
 
 Sample input:
 
-
-#raw(
-  str(arr2.len()) + " " + str(arr3.len()) 
+#no-codly[
+  #raw(
+    str(arr2.len()) + " " + str(arr3.len()) 
 + 
 " 
 " 
 + 
-  for x in arr2 {
-    str(x) + " " 
-  } 
-  +
-  for (l, r) in arr3{
+    for x in arr2 {
+      str(x) + " " 
+    } 
+    +
+    for (l, r) in arr3{
 "
 "
-  str(l) + " " + str(r)
-}, 
+    str(l) + " " + str(r)
+  }, 
 
-  block: true,
-)
+    block: true,
+  )
+]
 
 
 Output:
 
+#no-codly[
 #raw(
   for (l, r) in arr3{
     str(pref.at(r) - pref.at(l - 1))
@@ -1264,6 +1266,7 @@ Output:
   },
   block: true,
 )
+]
 
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
@@ -1597,8 +1600,9 @@ int main(){
 }
 ```
 
-Sample Input:
+Sample input:
 
+#no-codly[
 ```
 8 6
 5 -6 4 3 12 6 -7 -3
@@ -1609,14 +1613,18 @@ Sample Input:
 1 3 -8
 2 2 7
 ```
+]
+
 Output:
 
+#no-codly[
 ```
 14
 18
 3
 8
 ```
+]
 
 === Fenwick Tree's as Indexed Sets
 
@@ -1727,7 +1735,7 @@ int main(){
 }
 ```
 
-Sample Input:
+Sample input:
 #no-codly[
 ```
 6
@@ -1735,7 +1743,7 @@ Sample Input:
 ```
 ]
 
-Sample Output:
+Output:
 #no-codly[
 ```
 -5 -6 9 8 -1 -2 
