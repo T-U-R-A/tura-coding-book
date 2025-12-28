@@ -2450,10 +2450,9 @@ int main() {
 
 *Explanation* :
 
-We need to count the number of subsequences with all distinct elements. Let `dp[i]` be the number of distinct subsequences using a subset of the first `i` elements. When we consider the element `x` at index `i`:
-1. We can append `x` to all previous valid subsequences (including the empty one), doubling the count: `2 * dp[i-1]`.
-2. However, if `x` has appeared before at index `last[x]`, the subsequences formed by appending the *previous* `x` are already counted. We must subtract those to avoid duplicates. The number of such duplicates is exactly the number of distinct subsequences ending before the previous occurrence, which is `dp[last[x]-1]`.
-So, `dp[i] = 2 * dp[i-1] - dp[last[x]-1]`. The final answer is `dp[n] - 1` (excluding the empty subsequence).
+For each distinct value with `occ` occurrences, we have `(occ + 1)` choices: exclude it (0 copies) or choose 1 of the `occ` identical copies to include.  
+Multiplying choices for all distinct numbers gives total possible combinations including the empty subsequence.  
+Subtract 1 to remove the empty subsequence case, leaving the count of all distinct-value subsequences.
 
 \
 *Code :*
@@ -2461,6 +2460,7 @@ So, `dp[i] = 2 * dp[i-1] - dp[last[x]-1]`. The final answer is `dp[n] - 1` (excl
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
+
 using ll = long long;
 const int MOD = 1e9 + 7;
 
@@ -2470,23 +2470,26 @@ int main() {
 
     int n;
     cin >> n;
-    vector<int> x(n);
-    for (int i = 0; i < n; i++) cin >> x[i];
 
-    vector<ll> dp(n + 1);
-    dp[0] = 1; // Empty subsequence
-    map<int, int> last; // value -> 1-based index
-
-    for (int i = 1; i <= n; i++) {
-        dp[i] = (2 * dp[i - 1]) % MOD;
-        if (last.count(x[i - 1])) {
-            int prev = last[x[i - 1]];
-            dp[i] = (dp[i] - dp[prev - 1] + MOD) % MOD;
-        }
-        last[x[i - 1]] = i;
+    // Count frequency of each distinct value
+    map<ll, ll> freq;
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        freq[x]++;
     }
 
-    cout << (dp[n] - 1 + MOD) % MOD << "\n";
+    // For each distinct value, we can include 0, 1, 2, ..., or occ copies
+    // This gives (occ + 1) choices per value; multiply all choices together
+    ll ans = 1;
+    for (auto [num, occ] : freq) {
+        ans = (ans * (occ + 1)) % MOD;
+    }
+
+    // Subtract 1 to exclude the empty subsequence
+    ans = (ans - 1 + MOD) % MOD;
+    cout << ans << '\n';
+
     return 0;
 }
 ```
