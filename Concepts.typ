@@ -1215,29 +1215,31 @@ int main(){
 
 Sample input:
 
-
-#raw(
-  str(arr2.len()) + " " + str(arr3.len()) 
+#no-codly[
+  #raw(
+    str(arr2.len()) + " " + str(arr3.len()) 
 + 
 " 
 " 
 + 
-  for x in arr2 {
-    str(x) + " " 
-  } 
-  +
-  for (l, r) in arr3{
+    for x in arr2 {
+      str(x) + " " 
+    } 
+    +
+    for (l, r) in arr3{
 "
 "
-  str(l) + " " + str(r)
-}, 
+    str(l) + " " + str(r)
+  }, 
 
-  block: true,
-)
+    block: true,
+  )
+]
 
 
 Output:
 
+#no-codly[
 #raw(
   for (l, r) in arr3{
     str(pref.at(r) - pref.at(l - 1))
@@ -1248,6 +1250,7 @@ Output:
   },
   block: true,
 )
+]
 
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
@@ -1581,8 +1584,9 @@ int main(){
 }
 ```
 
-Sample Input:
+Sample input:
 
+#no-codly[
 ```
 8 6
 5 -6 4 3 12 6 -7 -3
@@ -1593,14 +1597,18 @@ Sample Input:
 1 3 -8
 2 2 7
 ```
+]
+
 Output:
 
+#no-codly[
 ```
 14
 18
 3
 8
 ```
+]
 
 === Fenwick Tree's as Indexed Sets
 
@@ -1630,10 +1638,203 @@ int search(int idx){
 In the code of the search function, you start with `k = floor(log2(n))` where $2^k$ is the largest power of 2 less than or equal to $n$. Then for each value, you check to see if it's index (`fenw[ans + 1 << k]`) is less than the `idx`. If it is, you add $2^k$ to the answer and then subtract `idx` by the indexes covered (`fenw[ans]`). 
 
 Since `ans` store the number that is definitely before index, `ans + 1` tells you what number is exactly at `idx`. The reason why you can't find the index directly is because the Fenwick tree frequency table can have multiple of the same numbers, so you can't guarantee that you will find what value is there at your exact `idx`.
+
+== Linked List
+
+A linked list is a data structure, where ever element in a list list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one, point to the element after the erased one. The same is true for inserting an element in a given position.
+
+Linked list can either be made linear or circular. In a linear linked list, the last element points to the `nullptr`. In a circular linked list, the last element points back to the first element.
+
+Here's the implementation of a linear linked list:
+
+```cpp
+
+struct Node{
+  int val;// the value in the current element
+  Node* nxt;//a pointer to the next element
+  Node(const int& val = 0, Node* nxt = nullptr){//constructor
+    this->val = val;
+    this->nxt = nxt;
+  }
+};
+
+struct List{
+  Node* head;
+
+  List(const int& size = 0, const int& val = 0){//creaing the linked list. The list will have "size" elements filled with val.
+    head = new Node();
+    Node* cur = head;
+    for(int i = 1; i <= size; i++){
+      cur->val = val;
+      cur = cur->nxt = new Node();
+    }
+  }
+
+  void insert(Node* pos, const int& val){//inserts a new node after poss
+  Node* nxt = pos->nxt; 
+    pos->nxt = new Node(val,nxt);
+  }  
+
+  void erase(Node* pos){//Erases the next node after pos
+    if(pos->nxt == nullptr)
+      return;
+    Node* nxt = pos->nxt;
+    pos->nxt = nxt->nxt;
+    delete(nxt);
+  }
+}
+```
+
+Of course this Is a very poor implementation with not much memory safety leading to memory leaks. Fortunately `c++` has it's own implementation of a linked list.
+
+=== `std::list`
+
+Here's a cod examples on how the `c++` implementation of a linked list is used:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+
+  list<int> l(n, 0);
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++){
+    int x;
+    cin >> x;
+    *it = x;
+  }
   
-/*
- * TODO:
- * Graph Representations
- * BFS
- * Linked List
- */
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)// loop to erase every odd element(1-indexed).
+    it = l.erase(it);
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    l.insert(it, *it-1);//before each element insert the value of that element-1.
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    cout << *it << " ";
+
+  return 0;
+}
+```
+
+Sample input:
+#no-codly[
+```
+6
+4 -6 3 8 7 -2
+```
+]
+
+Output:
+#no-codly[
+```
+-5 -6 9 8 -1 -2 
+```
+]
+
+As you can see from the code, if you want to store a value you simple update `*it`. If you want to insert a value before the current iterator, do `l.insert(it, val)`. Lastly if you want to erase the current iterator, do `l.erase(it)`. `erase()` also return the position to the next iterator so that you don't invalidate your current iterator.
+
+For the `std::list` documentation, click #link("https://en.cppreference.com/w/cpp/container/list.html")[here].
+
+== Queue
+
+A *queue* behaves very similarly to a queue in real life. Say you wish to buy tickets for a movie. You must first join the back of the queue, then the people who joined before you must all receive their tickets and then you can buy your own ticket and then leave the front of the queue.
+
+In c++, joining the queue is called *pushing* an element into the queue. Leaving the front of the queue is called being *popped* from the queue.
+
+The data structure of a *queue* has already been implemented in `c++` as `std::queue`.
+
+Some of the operations a `queue` is:
+
++ `push()` adds an element to the back of the queue in $O(1)$ time.
++ `pop()`: removes the element from the front of the queue in $O(1)$ time.
++ `front()` gets the value of the element at the front without removing it in $O(1)$ time.
+
+Let's look at a practical problem that demonstrates how queues work:
+
+Problem: You are managing a ticket counter. People arrive and join the queue. Every person has a name and the number of tickets they want. Process each person in the order they arrived, and print their information when serving them.
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Person{
+  string name;
+  int tickets;
+  
+  Person();// default constructor
+
+  Person(string name, int tickets){
+    this->name = name;
+    this->tickets = tickets;
+  }
+};
+
+int main(){
+  int n;
+  cin >> n;
+
+  queue<Person> q;
+
+  // Adding people to the queue
+  for(int i = 0; i < n; i++){
+    string name;
+    int tickets;
+    cin >> name >> tickets;
+
+    q.push(Person(name, tickets));// Add person to the back of the queue
+  }
+
+  cout << "Serving customers:" << endl;
+
+  // Process the queue
+  while(!q.empty()){// While the queue is not empty
+    Person cur = q.front();// Get the person at the front
+    q.pop();// Remove them from the queue
+
+    cout << "Serving " << cur.name << " " << cur.tickets;
+    if(cur.tickets = 1)
+      cout << " ticket." << endl;
+    else
+      cout << " tickets." << endl;
+  }
+
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+```
+5
+Alice 2
+Bob 1
+Charlie 3
+Diana 2
+Eve 1
+```
+]
+
+Output:
+
+#no-codly[
+```
+Serving customers:
+Serving Alice 2 tickets.
+Serving Bob 1 ticket.
+Serving Charlie 3 tickets.
+Serving Diana 2 tickets.
+Serving Eve - 1 ticket.
+```
+]
+
+As you can see, the people are served in exactly the same order they joined the queue. Alice joined first, so she was served first, and Eve joined last, so she was served last.
+
+While this example could've been achieved with a `vector`, you'll find that there are better uses for queue in the graph algorithm section.
+
+For the `std::queue` documentation, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
