@@ -1075,11 +1075,15 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3419")[Backup Link]
 
 
+
 \
 
 *Intuitive Explanation* :
 
-Fill the grid row by row. For each cell collect the numbers already appearing to its left and above, then choose the smallest nonnegative integer missing from that set. With n ≤ 100 the straightforward O(n³) implementation is perfectly fast.
+We fill the grid row by row, left to right.
+For each cell, we collect all values already placed to its left in the same row and above it in the same column.The cell is assigned the **mex** (smallest non-negative integer not present in those values).
+Since all needed cells are already filled, this greedy process always works.
+
 
 *Code :*
 
@@ -1090,32 +1094,46 @@ using namespace std;
 int main() {
     int n;
     cin >> n;
+
     vector<vector<int>> grid(n, vector<int>(n, 0));
-    int limit = 2 * n + 5;
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            vector<int> seen(limit, 0);
-            for (int c = 0; c < j; ++c) seen[grid[i][c]] = 1;
-            for (int r = 0; r < i; ++r) seen[grid[r][j]] = 1;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            // Track used numbers
+            vector<bool> used(2 * n, false);
+
+            // Left in the same row
+            for (int k = 0; k < j; k++) {
+                used[grid[i][k]] = true;
+            }
+
+            // Above in the same column
+            for (int k = 0; k < i; k++) {
+                used[grid[k][j]] = true;
+            }
+
+            // Find mex
             int mex = 0;
-            while (seen[mex]) ++mex;
+            while (used[mex]) mex++;
+
             grid[i][j] = mex;
         }
     }
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (j) cout << ' ';
-            cout << grid[i][j];
+
+    // Output the grid
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << grid[i][j] << (j + 1 < n ? ' ' : '\n');
         }
-        cout << "\n";
     }
+
     return 0;
 }
+
 ```
 
 \
 #pagebreak()
-
 
 == Knight Moves Grid
 
@@ -1123,7 +1141,6 @@ int main() {
 #link("https://cses.fi/problemset/task/3217")[Question - Knight Moves Grid]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3217")[Backup Link]
-
 
 \
 

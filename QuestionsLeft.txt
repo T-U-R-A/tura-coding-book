@@ -1,14 +1,18 @@
 Questions Left to Complete:
 
 1. Grid Path Description
+3. Knight Moves grid
 3. Josephus Problem II
 4. Nested Ranges Check
 5. Distinct Values Subarrays II
+5. Nested Ranges Count
 
 
 Assigned to Apurva:
-1. Gray code
 2. Two Knights
 3. Tower of Hanoi
-4. Mex Grid Construction
-5. Nested Ranges Count
+
+
+Release 2 :
+
+Mex Grid Construction
