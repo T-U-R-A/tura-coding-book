@@ -1,0 +1,108 @@
+Questions Left to Complete:
+
+1. Grid Path Description
+2. Knight Moves grid
+3. Josephus Problem II
+4. Nested Ranges Check
+5. Distinct Values Subarrays II
+
+Assigned to Apurva:
+1. Two Knights
+2. Tower of Hanoi
+3. Nested Ranges Count
+
+Release 2 :
+
+Taksh -
+
+1. Dice Combinations
+2. Minimizing Coins
+3. Coin Combinations I
+4. Coin Combinations II
+5. Removing Digits
+6. Grid Paths I
+7. Book Shop
+8. Array Description
+9. Counting Towers
+10. Edit Distance
+11. Longest Common Subsequence
+12. Rectangle Cutting
+13. Minimal Grid Path
+14. Money Sums
+15. Removal Game
+16. Two Sets II
+17. Mountain Range
+18. Increasing Subsequence
+19. Projects
+20. Elevator Rides
+21. Counting Tilings
+22. Counting Numbers
+23. Increasing Subsequence II
+24. Graph Algorithms
+25. Counting Rooms
+26. Labyrinth
+27. Building Roads
+28. Message Route
+29. Building Teams
+30. Round Trip
+31. Monsters
+32. Shortest Routes I
+33. Shortest Routes II
+34. High Score
+35. Flight Discount
+36. Cycle Finding
+37. Flight Routes
+38. Round Trip II
+39. Course Schedule
+40. Longest Flight Route
+41. Game Routes
+42. Investigation
+43. Planets Queries I
+44. Planets Queries II
+45. Planets Cycles
+46. Road Reparation
+47. Road Construction
+48. Flight Routes Check
+49. Planets and Kingdoms
+50. Giant Pizza
+51. Coin Collector
+52. Mail Delivery
+53. De Bruijn Sequence
+54. Teleporters Path
+55. Hamiltonian Flights
+56. Knight's Tour
+57. Download Speed
+58. Police Chase
+59. School Dance
+60. Distinct Routes
+61. Static Range Sum Queries
+62. Static Range Minimum Queries
+63. Dynamic Range Sum Queries
+64. Dynamic Range Minimum Queries
+65. Range Xor Queries
+66. Range Update Queries
+67. Forest Queries
+68. Hotel Queries
+69. List Removals
+70. Salary Queries
+71. Prefix Sum Queries
+72. Pizzeria Queries
+73. Visible Buildings Queries
+74. Range Interval Queries
+75. Subarray Sum Queries
+76. Subarray Sum Queries II
+77. Distinct Values Queries
+78. Distinct Values Queries II
+79. Increasing Array Queries
+80. Movie Festival Queries
+81. Forest Queries II
+82. Range Updates and Sums
+83. Polynomial Queries
+84. Range Queries and Copies
+85. Missing Coin Sum Queries 
+
+Apurva - 
+
+1. Mex Grid Construction xor approach
+2. Counting rooms review
+
