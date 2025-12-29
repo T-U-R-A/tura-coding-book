@@ -1,12 +1,11 @@
-Questions Left to Complete:
-
+Taksh:
 1. Grid Path Description
 2. Knight Moves grid
 3. Josephus Problem II
 4. Nested Ranges Check
 5. Distinct Values Subarrays II
 
-Assigned to Apurva:
+Apurva:
 1. Two Knights
 2. Tower of Hanoi
 3. Nested Ranges Count
