@@ -2164,7 +2164,11 @@ int main() {
 
 *Explanation* :
 
-The answer depends only on the order of consecutive values: each pair (v, v+1) adds one round if position[v] > position[v+1]. Swapping two elements changes only the pairs around those values, so we adjust the count locally before and after the swap instead of recomputing from scratch.
+This problem works with a permutation of numbers from 1 to n and asks how many rounds are needed to collect the numbers in increasing order. A new round is required whenever the position of a number x appears after the position of x+1 in the array. Initially, we scan the array and count how many such “breaks” exist to compute the number of rounds.
+
+For each query, two positions in the array are swapped. A full recount after every swap would be too slow, so the key idea is to only update the parts of the array that are affected. Swapping two values only changes the order relations involving those values and their immediate neighbors (x-1, x, x+1). Before performing the swap, we subtract any existing breaks caused by these values. After the swap, we recompute and add back the new breaks.
+
+By maintaining an array that stores the current position of each value, each check can be done in constant time. This allows every query to be processed efficiently, keeping the total complexity fast even for large inputs.
 
 \
 *Code :*
@@ -2173,42 +2177,84 @@ The answer depends only on the order of consecutive values: each pair (v, v+1) a
 #include <bits/stdc++.h>
 using namespace std;
 
+int n, m;
+vector<int> arr;   // Stores the permutation
+vector<int> pos;   // pos[x] = index where value x is currently located
+
+// Checks whether x and x+1 form a "break"
+// A break means x appears after x+1 in the array
+bool isBreak(int x) {
+    if (x < 1 || x >= n) return false;   // Out of valid range
+    return pos[x] > pos[x + 1];
+}
+
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n, m;
     cin >> n >> m;
-    vector<int> p(n + 1), pos(n + 1);
-    for (int i = 1; i <= n; ++i) {
-        cin >> p[i];
-        pos[p[i]] = i;
+
+    arr.resize(n);
+    pos.resize(n + 2);
+
+    // Read the permutation and record positions of each value
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+        pos[arr[i]] = i;
     }
 
-    auto contributes = [&](int v) -> int {
-        if (v < 1 || v >= n) return 0;
-        return pos[v] > pos[v + 1];
-    };
-
+    // Initially, at least one round is needed
     int rounds = 1;
-    for (int v = 1; v < n; ++v) rounds += contributes(v);
 
+    // Count how many times x comes after x+1
+    // Each such case increases the number of rounds
+    for (int x = 1; x < n; x++) {
+        if (isBreak(x)) {
+            rounds++;
+        }
+    }
+
+    // Process each swap query
     while (m--) {
         int a, b;
         cin >> a >> b;
-        int x = p[a], y = p[b];
+        a--; 
+        b--;   // Convert to 0-based indexing
 
-        vector<int> vals = {x - 1, x, y - 1, y};
-        for (int v : vals) rounds -= contributes(v);
+        int u = arr[a];
+        int v = arr[b];
 
-        swap(p[a], p[b]);
-        pos[x] = b;
-        pos[y] = a;
+        // Only these values can affect the number of breaks
+        // because other relative orders remain unchanged
+        set<int> affected = {
+            u - 1, u, u + 1,
+            v - 1, v, v + 1
+        };
 
-        for (int v : vals) rounds += contributes(v);
+        // Remove old breaks before swapping
+        for (int x : affected) {
+            if (isBreak(x)) {
+                rounds--;
+            }
+        }
 
-        cout << rounds << "\n";
+        // Perform the swap in the array
+        swap(arr[a], arr[b]);
+
+        // Update positions of the swapped values
+        swap(pos[u], pos[v]);
+
+        // Add new breaks after swapping
+        for (int x : affected) {
+            if (isBreak(x)) {
+                rounds++;
+            }
+        }
+
+        // Output the current number of rounds
+        cout << rounds << '\n';
     }
+
     return 0;
 }
 ```
@@ -2450,9 +2496,44 @@ int main() {
 
 *Explanation* :
 
-For each distinct value with `occ` occurrences, we have `(occ + 1)` choices: exclude it (0 copies) or choose 1 of the `occ` identical copies to include.  
-Multiplying choices for all distinct numbers gives total possible combinations including the empty subsequence.  
+For each distinct value with `occ` occurrences, we have `(occc + 1)` choices: exclude it (0 copies) or choose 1 of the `occ` identical copies to include.
+Multiplying choices for all distinct numbers gives total possible combinations including the empty subsequence.
 Subtract 1 to remove the empty subsequence case, leaving the count of all distinct-value subsequences.
+
+*Example :*
+
+For the array [1, 3, 5, 2, 9, 3, 2]
+\
+\
+
+The frequency table stores - 
+\
+
+#table(
+  columns: 2,
+
+  fill: (x, y) => if (y == 0) { red.lighten(60%) },
+
+  [Key], [Value],
+  [1], [1],
+  [2], [2],
+  [3], [2],
+  [5], [1],
+  [9], [1],
+)
+
+The number of distinct value subsequences 
+
+$ 
+&= (1 + 1) dot (2 + 1) dot (2 + 1) dot (1 + 1) dot (1 + 1)
+\
+
+&= 2 dot 3 dot 3 dot 2 dot 2
+\
+
+&= 72
+$
+
 
 \
 *Code :*
@@ -3583,7 +3664,7 @@ int main() {
 
 *Explanation* :
 
-The code finds the maximum subarray sum whose length lies between a and b. It first builds a prefix sum array so any subarray sum can be computed in O(1). A multiset stores candidate prefix sums that can serve as valid subarray starts. As the right end moves forward, new valid prefixes are added to the set.
+The code finds the maximum subarray sum whose length lies between `a` and `b`. It first builds a prefix sum array so any subarray sum can be computed in O(1). A multiset stores candidate prefix sums that can serve as valid subarray starts. As the right end moves forward, new valid prefixes are added to the set.
 Prefixes that would make the subarray longer than b are removed. The smallest prefix in the set gives the maximum possible subarray ending at the current index. The answer is updated by comparing all such valid subarrays efficiently.
 
 \

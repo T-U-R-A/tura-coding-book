@@ -1,11 +1,9 @@
 Questions Left to Complete:
 
-3.  Grid Path Description
-4.  Collecting Numbers II
-5.  Distinct Values Subsequences
-6. Josephus Problem II
-7. Nested Ranges Check
-8. Distinct Values Subarrays II
+1. Grid Path Description
+3. Josephus Problem II
+4. Nested Ranges Check
+5. Distinct Values Subarrays II
 
 
 Assigned to Apurva:
