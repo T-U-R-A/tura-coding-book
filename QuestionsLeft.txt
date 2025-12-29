@@ -1,16 +1,15 @@
 Questions Left to Complete:
 
-3.  Grid Path Description
-4.  Collecting Numbers II
-5.  Distinct Values Subsequences
-6. Josephus Problem II
-7. Nested Ranges Check
-8. Distinct Values Subarrays II
+1.  Grid Path Description
+2.  Collecting Numbers II
+3.  Distinct Values Subsequences
+4. Josephus Problem II
+5. Nested Ranges Check
+6. Distinct Values Subarrays II
 
 
 Assigned to Apurva:
-1. Gray code
-2. Two Knights
-3. Tower of Hanoi
-4. Mex Grid Construction
-5. Nested Ranges Count
+1. Two Knights
+2. Tower of Hanoi
+3. Mex Grid Construction
+4. Nested Ranges Count
