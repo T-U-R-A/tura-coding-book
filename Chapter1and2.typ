@@ -3847,4 +3847,1673 @@ int main() {
 ```
 #pagebreak()
 
+= Dynamic Programming
+
+\
+== Dice Combinations
+
+\
+#link("https://cses.fi/problemset/task/1633")[Question - Dice Combinations]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1633")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Minimizing Coins
+
+\
+#link("https://cses.fi/problemset/task/1634")[Question - Minimizing Coins]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1634")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Coin Combinations I
+
+\
+#link("https://cses.fi/problemset/task/1635")[Question - Coin Combinations I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1635")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Coin Combinations II
+
+\
+#link("https://cses.fi/problemset/task/1636")[Question - Coin Combinations II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1636")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Removing Digits
+
+\
+#link("https://cses.fi/problemset/task/1637")[Question - Removing Digits]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1637")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Grid Paths I
+
+\
+#link("https://cses.fi/problemset/task/1638")[Question - Grid Paths I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1638")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Book Shop
+
+\
+#link("https://cses.fi/problemset/task/1158")[Question - Book Shop]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1158")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Array Description
+
+\
+#link("https://cses.fi/problemset/task/1746")[Question - Array Description]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1746")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Counting Towers
+
+\
+#link("https://cses.fi/problemset/task/2413")[Question - Counting Towers]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2413")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Edit Distance
+
+\
+#link("https://cses.fi/problemset/task/1639")[Question - Edit Distance]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1639")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Longest Common Subsequence
+
+\
+#link("https://cses.fi/problemset/task/3403")[Question - Longest Common Subsequence]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3403")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Rectangle Cutting
+
+\
+#link("https://cses.fi/problemset/task/1744")[Question - Rectangle Cutting]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1744")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Minimal Grid Path
+
+\
+#link("https://cses.fi/problemset/task/3359")[Question - Minimal Grid Path]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3359")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Money Sums
+
+\
+#link("https://cses.fi/problemset/task/1745")[Question - Money Sums]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1745")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Removal Game
+
+\
+#link("https://cses.fi/problemset/task/1097")[Question - Removal Game]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1097")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Two Sets II
+
+\
+#link("https://cses.fi/problemset/task/1093")[Question - Two Sets II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1093")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Mountain Range
+
+\
+#link("https://cses.fi/problemset/task/3314")[Question - Mountain Range]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3314")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Increasing Subsequence
+
+\
+#link("https://cses.fi/problemset/task/1145")[Question - Increasing Subsequence]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1145")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Projects
+
+\
+#link("https://cses.fi/problemset/task/1140")[Question - Projects]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1140")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Elevator Rides
+
+\
+#link("https://cses.fi/problemset/task/1653")[Question - Elevator Rides]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1653")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Counting Tilings
+
+\
+#link("https://cses.fi/problemset/task/2181")[Question - Counting Tilings]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2181")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Counting Numbers
+
+\
+#link("https://cses.fi/problemset/task/2220")[Question - Counting Numbers]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2220")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Increasing Subsequence II
+
+\
+#link("https://cses.fi/problemset/task/1748")[Question - Increasing Subsequence II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1748")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+= Graph Algorithms
+
+\
+== Labyrinth
+
+\
+#link("https://cses.fi/problemset/task/1193")[Question - Labyrinth]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1193")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Building Roads
+
+\
+#link("https://cses.fi/problemset/task/1666")[Question - Building Roads]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1666")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Message Route
+
+\
+#link("https://cses.fi/problemset/task/1667")[Question - Message Route]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1667")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Building Teams
+
+\
+#link("https://cses.fi/problemset/task/1668")[Question - Building Teams]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1668")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Round Trip
+
+\
+#link("https://cses.fi/problemset/task/1669")[Question - Round Trip]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1669")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Monsters
+
+\
+#link("https://cses.fi/problemset/task/1194")[Question - Monsters]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1194")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Shortest Routes I
+
+\
+#link("https://cses.fi/problemset/task/1671")[Question - Shortest Routes I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1671")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Shortest Routes II
+
+\
+#link("https://cses.fi/problemset/task/1672")[Question - Shortest Routes II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1672")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== High Score
+
+\
+#link("https://cses.fi/problemset/task/1673")[Question - High Score]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1673")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Flight Discount
+
+\
+#link("https://cses.fi/problemset/task/1195")[Question - Flight Discount]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1195")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Cycle Finding
+
+\
+#link("https://cses.fi/problemset/task/1197")[Question - Cycle Finding]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1197")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Flight Routes
+
+\
+#link("https://cses.fi/problemset/task/1196")[Question - Flight Routes]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1196")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Round Trip II
+
+\
+#link("https://cses.fi/problemset/task/1678")[Question - Round Trip II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1678")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Course Schedule
+
+\
+#link("https://cses.fi/problemset/task/1679")[Question - Course Schedule]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1679")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Longest Flight Route
+
+\
+#link("https://cses.fi/problemset/task/1680")[Question - Longest Flight Route]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1680")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Game Routes
+
+\
+#link("https://cses.fi/problemset/task/1681")[Question - Game Routes]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1681")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Investigation
+
+\
+#link("https://cses.fi/problemset/task/1202")[Question - Investigation]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1202")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Planets Queries I
+
+\
+#link("https://cses.fi/problemset/task/1750")[Question - Planets Queries I]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1750")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Planets Queries II
+
+\
+#link("https://cses.fi/problemset/task/1160")[Question - Planets Queries II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1160")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Planets Cycles
+
+\
+#link("https://cses.fi/problemset/task/1751")[Question - Planets Cycles]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1751")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Road Reparation
+
+\
+#link("https://cses.fi/problemset/task/1675")[Question - Road Reparation]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1675")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Road Construction
+
+\
+#link("https://cses.fi/problemset/task/1676")[Question - Road Construction]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1676")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Flight Routes Check
+
+\
+#link("https://cses.fi/problemset/task/1682")[Question - Flight Routes Check]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1682")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Planets and Kingdoms
+
+\
+#link("https://cses.fi/problemset/task/1683")[Question - Planets and Kingdoms]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1683")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Giant Pizza
+
+\
+#link("https://cses.fi/problemset/task/1684")[Question - Giant Pizza]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1684")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Coin Collector
+
+\
+#link("https://cses.fi/problemset/task/1686")[Question - Coin Collector]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1686")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Mail Delivery
+
+\
+#link("https://cses.fi/problemset/task/1691")[Question - Mail Delivery]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1691")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== De Bruijn Sequence
+
+\
+#link("https://cses.fi/problemset/task/1692")[Question - De Bruijn Sequence]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1692")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Teleporters Path
+
+\
+#link("https://cses.fi/problemset/task/1693")[Question - Teleporters Path]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1693")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Hamiltonian Flights
+
+\
+#link("https://cses.fi/problemset/task/1690")[Question - Hamiltonian Flights]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1690")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Knight's Tour
+
+\
+#link("https://cses.fi/problemset/task/1689")[Question - Knight's Tour]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1689")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Download Speed
+
+\
+#link("https://cses.fi/problemset/task/1694")[Question - Download Speed]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1694")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Police Chase
+
+\
+#link("https://cses.fi/problemset/task/1695")[Question - Police Chase]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1695")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== School Dance
+
+\
+#link("https://cses.fi/problemset/task/1696")[Question - School Dance]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1696")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Distinct Routes
+
+\
+#link("https://cses.fi/problemset/task/1711")[Question - Distinct Routes]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1711")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+= Range Queries
+
+\
+== Static Range Sum Queries
+
+\
+#link("https://cses.fi/problemset/task/1646")[Question - Static Range Sum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1646")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Static Range Minimum Queries
+
+\
+#link("https://cses.fi/problemset/task/1647")[Question - Static Range Minimum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1647")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Dynamic Range Sum Queries
+
+\
+#link("https://cses.fi/problemset/task/1648")[Question - Dynamic Range Sum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1648")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Dynamic Range Minimum Queries
+
+\
+#link("https://cses.fi/problemset/task/1649")[Question - Dynamic Range Minimum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1649")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Range Xor Queries
+
+\
+#link("https://cses.fi/problemset/task/1650")[Question - Range Xor Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1650")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Range Update Queries
+
+\
+#link("https://cses.fi/problemset/task/1651")[Question - Range Update Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1651")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Forest Queries
+
+\
+#link("https://cses.fi/problemset/task/1652")[Question - Forest Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1652")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Hotel Queries
+
+\
+#link("https://cses.fi/problemset/task/1143")[Question - Hotel Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1143")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== List Removals
+
+\
+#link("https://cses.fi/problemset/task/1749")[Question - List Removals]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1749")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Salary Queries
+
+\
+#link("https://cses.fi/problemset/task/1144")[Question - Salary Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1144")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Prefix Sum Queries
+
+\
+#link("https://cses.fi/problemset/task/2166")[Question - Prefix Sum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2166")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Pizzeria Queries
+
+\
+#link("https://cses.fi/problemset/task/2206")[Question - Pizzeria Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2206")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Visible Buildings Queries
+
+\
+#link("https://cses.fi/problemset/task/3304")[Question - Visible Buildings Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3304")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Range Interval Queries
+
+\
+#link("https://cses.fi/problemset/task/3163")[Question - Range Interval Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3163")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Subarray Sum Queries
+
+\
+#link("https://cses.fi/problemset/task/1190")[Question - Subarray Sum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1190")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Subarray Sum Queries II
+
+\
+#link("https://cses.fi/problemset/task/3226")[Question - Subarray Sum Queries II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3226")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Distinct Values Queries
+
+\
+#link("https://cses.fi/problemset/task/1734")[Question - Distinct Values Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1734")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Distinct Values Queries II
+
+\
+#link("https://cses.fi/problemset/task/3356")[Question - Distinct Values Queries II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/3356")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Increasing Array Queries
+
+\
+#link("https://cses.fi/problemset/task/2416")[Question - Increasing Array Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2416")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Movie Festival Queries
+
+\
+#link("https://cses.fi/problemset/task/1664")[Question - Movie Festival Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1664")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Forest Queries II
+
+\
+#link("https://cses.fi/problemset/task/1739")[Question - Forest Queries II]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1739")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Range Updates and Sums
+
+\
+#link("https://cses.fi/problemset/task/1735")[Question - Range Updates and Sums]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1735")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Polynomial Queries
+
+\
+#link("https://cses.fi/problemset/task/1736")[Question - Polynomial Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1736")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Range Queries and Copies
+
+\
+#link("https://cses.fi/problemset/task/1737")[Question - Range Queries and Copies]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/1737")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
+== Missing Coin Sum Queries
+
+\
+#link("https://cses.fi/problemset/task/2184")[Question - Missing Coin Sum Queries]
+#h(0.5cm)
+#link("https://web.archive.org/web/20251230000000/https://cses.fi/problemset/task/2184")[Backup Link]
+
+\
+*Explanation* :
+
+[To be added]
+
+\
+*Code :*
+
+```cpp
+// To be added
+```
+#pagebreak()
+
 
