@@ -3422,7 +3422,7 @@ int main() {
 ```
 #pagebreak()
 
-== Subarray Distinct Values
+== Distinct Values Subarrays II
 
 \
 #link("https://cses.fi/problemset/task/2428")[Question - Subarray Distinct Values]
@@ -3444,33 +3444,37 @@ Use a sliding window with a frequency map. Expand the right end; if the number o
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, k;
+    long long n, k;
     cin >> n >> k;
-    vector<int> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
 
-    unordered_map<int, int> freq;
-    freq.reserve(2 * n);
-    freq.max_load_factor(0.7);
+    vector<long long> v(n);
+    for (int i = 0; i < n; i++) {
+        cin >> v[i];
+    }
 
-    int left = 0, distinct = 0;
-    long long ans = 0;
+    map<long long, int> freq;          // frequency of each element in current window
+    long long left = 0, ans = 0, distinct = 0;
+
     for (int right = 0; right < n; right++) {
-        if (freq[a[right]] == 0) distinct++;
-        freq[a[right]]++;
+        // add right element to window
+        if (++freq[v[right]] == 1) {
+            distinct++;
+        }
 
+        // shrink window until we have at most k distinct elements
         while (distinct > k) {
-            freq[a[left]]--;
-            if (freq[a[left]] == 0) distinct--;
+            freq[v[left]]--;
+            if (freq[v[left]] == 0) {
+                distinct--;
+            }
             left++;
         }
-        ans += right - left + 1;
+
+        // all subarrays ending at right with start in [left, right] are valid
+        ans += (right - left + 1);
     }
+
     cout << ans << "\n";
-    return 0;
 }
 ```
 #pagebreak()
