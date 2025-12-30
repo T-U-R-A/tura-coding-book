@@ -3860,13 +3860,44 @@ int main() {
 \
 *Explanation* :
 
-[To be added]
+There is exactly one way to get a 0, by not throwing. Now, to reach any sum, we imagine the last move we took. If the last move was `dice`, then we must have already reached `sum − dice`. All the ways to reach `sum − dice` automatically become valid ways to reach sum. By adding these possibilities for all dice values from 1 to 6, we grow the solution from smaller sums to larger ones. This approach avoids repeated work and makes the counting process both efficient and intuitive, while the modulo simply prevents numbers from growing too large.
+
+
+
+
 
 \
 *Code :*
 
 ```cpp
-// To be added
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+const int MOD = 1e9 + 7;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+
+    // dp[i] = number of ways to reach sum i
+    vector<int> dp(n + 1, 0);
+    dp[0] = 1;  // Base case: one way to make sum 0
+
+    for (int sum = 1; sum <= n; sum++) {
+        for (int dice = 1; dice <= 6; dice++) {
+            if (sum - dice >= 0) {
+                dp[sum] = (dp[sum] + dp[sum - dice]) % MOD;
+            }
+        }
+    }
+
+    cout << dp[n] << '\n';
+    return 0;
+}
 ```
 #pagebreak()
 

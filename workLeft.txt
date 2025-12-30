@@ -12,15 +12,13 @@ Apurva:
 
 Release 2 :
 
-step1 -> first generation
+step1 -> first writing
 step2 -> first review
 step 3 -> formatting
 step 4 -> final review
 
 Taksh -
 
-
-1. Dice Combinations step1
 2. Minimizing Coins step1
 3. Coin Combinations I step1
 4. Coin Combinations II step1
@@ -109,4 +107,5 @@ Apurva -
 
 1. Mex Grid Construction xor approach step1
 2. Counting rooms step4
+3. Dice Combinations step2
 
