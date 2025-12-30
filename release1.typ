@@ -26,18 +26,11 @@
 #set text(
   font: "New Computer Modern Math",
 )
+
 #set page(
   numbering: "1",
 )
-#set heading(
-  numbering: "1.",
-)
-#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
-#show link: underline
-
-#outline()
-#pagebreak()
 
 #align(
   center+horizon, 
@@ -57,6 +50,18 @@
     Mentored by Vinit Ajgaonkar
   ],
 )
+#pagebreak()
+
+#set heading(
+  numbering: "1.",
+)
+#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
+
+#show link: underline
+
+#outline()
+#pagebreak()
+
 
 
 
