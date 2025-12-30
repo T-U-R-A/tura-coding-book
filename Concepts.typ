@@ -850,13 +850,14 @@ As you can see, we start with an empty board, then we place a queen in all posit
 To write the code for this. We need 4 arrays, one for every row, columns, and both diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place a queen there. The indexes of the two diagonals will be a follows:
 
 
-
-#grid(
-  columns: (1fr, 1fr),
-  align: center,
-  column-gutter: -7cm,
-  table1, table2,
-)
+#align(center)[
+  #grid(
+    columns: 2,
+    align: center,
+    column-gutter: 2cm,
+    table1, table2,
+  )
+]
 
 If a queen is on row `i` and column `j`, then it will be on `row[i]`, `column[j]`, `diag1[i + j]` and on `diag[(n-1) - j + i]`. Then for the next row, a queen can't be placed on this row, columns, and diagonal.
 
