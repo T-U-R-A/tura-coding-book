@@ -6,9 +6,8 @@ Taksh:
 5. Distinct Values Subarrays II
 
 Apurva:
-1. Two Knights
-2. Tower of Hanoi
-3. Nested Ranges Count
+1. Tower of Hanoi
+2. Nested Ranges Count
 
 Release 2 :
 
