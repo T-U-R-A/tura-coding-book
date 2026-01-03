@@ -101,6 +101,20 @@
   "}"
 }
 
+#let arrayToImage(arr) = {
+  cetz.canvas({
+    import cetz.draw: *
+
+    let i = 0
+    while i < arr.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      content((name: "box", anchor: "center"), box(fill: white, text[#arr.at(i)]))
+      i = i + 1
+    }
+  })
+}
+
 #let bracketIfNegative(num) = {
   if num.signum() == -1 {
     "("
@@ -1636,6 +1650,130 @@ int search(int idx){
 In the code of the search function, you start with `k = floor(log2(n))` where $2^k$ is the largest power of 2 less than or equal to $n$. Then for each value, you check to see if it's index (`fenw[ans + 1 << k]`) is less than the `idx`. If it is, you add $2^k$ to the answer and then subtract `idx` by the indexes covered (`fenw[ans]`). 
 
 Since `ans` store the number that is definitely before index, `ans + 1` tells you what number is exactly at `idx`. The reason why you can't find the index directly is because the Fenwick tree frequency table can have multiple of the same numbers, so you can't guarantee that you will find what value is there at your exact `idx`.
+
+Finally there is one more thing required to make a Fenwick tree useful as an indexed set. A normal sets size is based on the amount of input $n$ which makes its space complexity $O(n)$. However, a Fenwick tree is build on the frequency table of the data, which makes it have a space complexity of $O(a)$ where $a$ is the largest input. Usually $n <= 2 times 10^5$ however $a$ can be as large as $10^9$! This would require around *30 gigabytes* of data, which is way past the memory limits of a question. The solution to this problem is do *index compression*. Because the amount of data is going to be small, we simply remap all the large numbers down to smaller numbers.
+
+For example, say you have the following array:
+#let arr4 = (3, 10, 4, 5, 2, 2)
+#let comp = arr4.sorted().dedup()
+
+$
+  #arrayToMath(arr4)
+$
+
+If we were to store this array as an indexed set, it would require the storage of 10 + 1(because 1 indexed) `int`s of storage. Notice how that are are only 5 unique numbers in this entire vector $(2,3,4,5,10)$. If we were to resign these numbers to just $(1,2,3,4,5)$, our indexed set would only take 5 + 1(because 1 indexed) `int`s of memory. This technique is called *index compression*. 
+
+=== Index compression
+
+To perform index compression, you need to sort the original vector of values stored in a different vector. Let's call this other vector `comp`. Then remove all the duplicate elements from `comp`. Then to compress the indices, find at what index values from the original vector appear in `comp`. This can be done efficiently with `lower_bound()` because `comp` is sorted. For the above example, comp would look like:
+
+#align(center)[
+  #arrayToImage(comp)
+]
+
+Because of `comp`, #comp.at(0) will get mapped to $0 + 1 = 1$(Because 1 indexing for the Fenwick tree), #comp.at(1) gets mapped to $1 + 1 = 2$ and so on.
+
+Here's the code for the implementation of index compression:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+  vector<int> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> comp = v;
+  sort(comp.begin(), comp.end());
+  comp.erase(unique(comp.begin(),comp.end()), comp.end());
+  for(int i = 0; i < n; i++)
+    v[i] = lower_bound(comp.begin(), comp.end(), v[i]) - comp.begin() + 1;//lower_bound - comp.begin() gives you the index and +1 makes sure it's one indexed.
+  return 0;
+}
+```
+
+Sample Input:
+
+#no-codly[
+  ```
+  3 10 4 5 2 2
+
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  2 5 2 3 1 1
+  ```
+]
+
+The code uses the `std::unique()` function, which in a sorted vector, moves all duplicate elements to the end and returns a pointer at the start of the duplicate elements. When then use this pointer and erase all the duplicate elements till the end to generate `comp` correctly.
+
+To compress all the values in `v`, we get an iterator to their position in `comp` using `lower_bound()` and then subtract it with `comp.begin()` to get it's position 0-indexed. We then add 1 to get the compressed value such that it is 1-indexed.
+
+Here's a code will fully summarizes the process of an indexed set:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> fenw;
+
+void add(int x, int k){
+  for(; x <= n ; x += x & -x)// x & -x is the LSSB(x)
+    fenw[x] += k;
+}
+
+int sum(int x){
+  int ans = 0;
+  for(; x > 0; x -= x & -x)// x & -x is the LSSB(x)
+    ans += fenw[x];
+  return ans;
+}
+
+int sum(int a, int b){
+  return sum(b) - sum(a - 1);
+}
+
+int search(int idx){
+  int ans = 0;
+
+  for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
+    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+      ans += 1 << k;//update the answer.
+      idx -= fenw[ans];//account for all indices upto fenw[ans].
+    }
+  }
+
+  return ans + 1;//ans was the value that was before idx, so one value ahead of that is at idx.
+
+int main(){
+  int n;
+  cin >> n;
+  vector<int> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> comp = v;
+  sort(comp.begin(), comp.end());
+  comp.erase(unique(comp.begin(),comp.end()), comp.end());
+  for(int i = 0; i < n; i++)
+    v[i] = lower_bound(comp.begin(), comp.end(), v[i]) - comp.begin() + 1;
+  
+  for(int i = 0; i < n; i++)
+    add(v[i], 1);
+  
+  //Now the fen vector is fully ready to behave as an indexed set.
+
+  return 0;
+}
+```
 
 == Linked List
 
