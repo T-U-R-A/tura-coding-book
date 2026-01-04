@@ -1350,7 +1350,20 @@ int main() {
 
 *Explanation* :
 
-This is a clear implementation of a Breadth-First Search (BFS#footnote[Breadth-First Search Algorithim was previously explained and is used in multiple areas in competitive programming]) algorithm to find the minimum number of knight moves required to reach a target position on a chessboard from the starting position (0, 0). The BFS algorithm ensures that we explore all possible moves level by level, guaranteeing the shortest path to the target.
+The program calculates the minimum number of knight moves needed to reach every square on an `n x n` chessboard starting from the top-left corner.
+
+It keeps a grid where each cell stores how many moves are required to reach it, marking unreachable cells as -1.
+The knight starts at position (0, 0) with zero moves taken.
+From each position, all eight legal knight moves are tried.
+Whenever a new square is reached for the first time, its move count is recorded as one more than the current square.
+Each newly reached position is added so its moves can be explored later.
+
+This process continues until all reachable squares have been processed.
+Finally, the grid of minimum move counts is printed.
+
+
+\
+
 
 A visual understanding of the algorithm can be found in the image below:
 
@@ -1385,43 +1398,52 @@ int main() {
     int n;
     cin >> n;
 
-    // Initialize distance matrix with -1 (unvisited)
+    // dist[x][y] will store the minimum number of moves needed to reach cell (x, y)
+    // a value of -1 means that cell has not been reached yet
     vector<vector<int>> dist(n, vector<int>(n, -1));
 
-    // Queue for BFS traversal
+    // This queue stores board positions that still need to be explored
     queue<pair<int, int>> q;
 
-    // Knight move offsets (8 possible L-shaped moves)
+    // These arrays describe how a knight moves on a chessboard
+    // Each (dx[k], dy[k]) pair represents one possible knight move
     vector<int> dx = {-2, -1, 2, 1, 2, 1, -1, -2};
     vector<int> dy = {-1, -2, 1, 2, -1, -2, 2, 1};
 
-    // Check if position is within bounds and unvisited
+    // This function checks whether a position is inside the board
+    // and whether it has not been visited before
     auto isValid = [&](int x, int y) {
         return x >= 0 && y >= 0 && x < n && y < n && dist[x][y] == -1;
     };
 
-    // Start BFS from top-left corner
+    // We begin from the top-left cell (0, 0)
+    // Reaching the starting cell takes 0 moves
     dist[0][0] = 0;
     q.push({0, 0});
 
-    // BFS traversal
+    // As long as there are positions left to explore, keep processing them
     while (!q.empty()) {
+        // Take the oldest unexplored position from the queue
         auto [x, y] = q.front();
         q.pop();
 
-        // Explore all 8 knight moves
+        // Try moving the knight in all 8 possible ways from this position
         for (int k = 0; k < 8; k++) {
             int nx = x + dx[k];
             int ny = y + dy[k];
 
+            // If the new position is valid and not visited yet
             if (isValid(nx, ny)) {
+                // The distance to this cell is one more than the current cell
                 dist[nx][ny] = dist[x][y] + 1;
+
+                // Add the new position to the queue to explore later
                 q.push({nx, ny});
             }
         }
     }
 
-    // Output the distance matrix
+    // Print the minimum number of moves needed to reach each cell
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             cout << dist[i][j] << " ";
@@ -1431,11 +1453,11 @@ int main() {
 
     return 0;
 }
+}
 ```
 
 \
 #pagebreak()
-
 
 == Grid Coloring I
 
@@ -1678,8 +1700,6 @@ int main() {
 
 \
 #pagebreak()
-
-
 == Grid Path Description
 
 \
@@ -1692,57 +1712,73 @@ int main() {
 
 *Intuitive Explanation* :
 
-We explore all possible paths consistent with the string by recursive backtracking. Pruning is essential: whenever the path hits a cell where it would split the grid into two disconnected regions, we can stop exploring that branch immediately. The classic CSES pruning checks for forced turns by verifying whether moving vertically or horizontally would trap us.
+The program counts how many valid ways exist to move through a `7×7` grid using exactly 48 moves.
+You start at the top-left cell and must end at the bottom-left cell without visiting any cell twice. Each move must follow the given string, where `?` allows any direction and other characters force a specific move. The code tries all allowed moves step by step while marking visited cells.
+
+Paths that get trapped or split the grid into unreachable regions are stopped early. Every complete path that reaches the destination at exactly 48 steps is counted.
 
 *Code :*
 
 ```cpp
-#include <bits/stdc++.h>
 using namespace std;
 
-string pattern;
-bool visited[7][7];
-int answer = 0;
-const int dr[4] = {0, 0, -1, 1};
-const int dc[4] = {1, -1, 0, 0};
-const char moves[4] = {'R', 'L', 'U', 'D'};
+string path;
+bool visited[7][7];          // Marks cells already used in the current path
+int ans = 0;
 
-bool blocked(int r, int c) {
-    return r < 0 || r >= 7 || c < 0 || c >= 7 || visited[r][c];
+const int dx[] = {1, -1, 0, 0};   // Change in row for each move
+const int dy[] = {0, 0, 1, -1};   // Change in column for each move
+const char dir[] = {'D', 'U', 'R', 'L'};  // Corresponding move letters
+
+bool inside(int x, int y) {
+    return x >= 0 && x < 7 && y >= 0 && y < 7;   // Checks grid boundaries
 }
 
-void dfs(int step, int r, int c) {
-    if (r == 6 && c == 0) {
-        if (step == 48) answer++;
+bool is_blocked(int x, int y) {
+    if (!inside(x, y) || visited[x][y]) return true; // Outside grid or already used
+    return false;
+}
+
+void dfs(int x, int y, int step) {
+    // If we reached the target cell
+    if (x == 6 && y == 0) {
+        if (step == 48) ans++;  // Count only if all moves were used
         return;
     }
-    if (step == 48) return;
-    bool up = blocked(r - 1, c);
-    bool down = blocked(r + 1, c);
-    bool left = blocked(r, c - 1);
-    bool right = blocked(r, c + 1);
-    if ((up && down && !left && !right) || (left && right && !up && !down)) return;
-    char want = pattern[step];
-    for (int dir = 0; dir < 4; ++dir) {
-        if (want != '?' && want != moves[dir]) continue;
-        int nr = r + dr[dir];
-        int nc = c + dc[dir];
-        if (blocked(nr, nc)) continue;
-        visited[nr][nc] = true;
-        dfs(step + 1, nr, nc);
-        visited[nr][nc] = false;
+
+    // Stop early if movement is forced into a dead split
+    if ((is_blocked(x + 1, y) && is_blocked(x - 1, y) &&
+         !is_blocked(x, y + 1) && !is_blocked(x, y - 1)) ||
+        (!is_blocked(x + 1, y) && !is_blocked(x - 1, y) &&
+         is_blocked(x, y + 1) && is_blocked(x, y - 1)))
+        return;
+
+    visited[x][y] = true;   // Mark this cell as used
+
+    for (int d = 0; d < 4; ++d) {
+        int nx = x + dx[d];
+        int ny = y + dy[d];
+
+        // Enforce the given path character if it is not '?'
+        if (path[step] != '?' && path[step] != dir[d]) continue;
+
+        // Move only to valid and unused cells
+        if (inside(nx, ny) && !visited[nx][ny])
+            dfs(nx, ny, step + 1);
     }
+
+    visited[x][y] = false;  // Undo the move before trying other possibilities
 }
 
 int main() {
-    cin >> pattern;
-    visited[0][0] = true;
-    dfs(0, 0, 0);
-    cout << answer << "\n";
+    cin >> path;
+    dfs(0, 0, 0);           // Start from top-left with zero moves taken
+    cout << ans << endl;
     return 0;
 }
 ```
 
 \
 #pagebreak()
+
 
