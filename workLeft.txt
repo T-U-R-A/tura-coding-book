@@ -1,7 +1,6 @@
 Taksh:
 
-1. Grid Path Description
-2. Nested Ranges Check
+Nested Ranges Check
 
 Release 2 :
 
