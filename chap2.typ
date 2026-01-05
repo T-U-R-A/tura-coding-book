@@ -1135,20 +1135,69 @@ int main() {
 
 *Explanation* :
 
-Here `k` children are skipped (or we remove the `(k+1)`-th child). Since `k` is large, simple simulation is too slow. We use an Order Statistic Tree (Policy-Based Data Structure) which supports `find_by_order` (find the element at a specific index) and `erase` in O(log n) time.
-We maintain the children in the tree. We track the current removal index, updating it as `idx = (idx + k) % current_size` at each step to determine who gets removed next.
+
+Solution Overview:
+- Uses a Fenwick Tree (Binary Indexed Tree) to efficiently track which positions are still active
+- Each position is initially marked as "1" (active), and changed to "0" when removed
+
+*Key Operations*:
+1. update(idx, delta): Marks a position as active (+1) or removed (-1)
+2. query(idx): Returns count of active elements from position 1 to idx
+3. findKth(k): Uses binary search on the Fenwick Tree to find the k-th active element in O(log n) time
+
+*Algorithm Flow*:
+- Start with all n positions active
+- In each iteration, move k steps forward in the circular list of remaining elements
+- Use `findKth` to map from the circular index to the actual position
+- Output that position and mark it as removed
+- Repeat until all elements are removed
+
+*Complexity*: O(n log n) - n removals, each taking O(log n) for finding and updating
 
 \
 *Code :*
 
 ```cpp
 #include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
 using namespace std;
-using namespace __gnu_pbds;
 
-typedef tree<int, null_type, less<int>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+class FenwickTree {
+    vector<int> tree;
+    int n;
+public:
+    FenwickTree(int n) : n(n), tree(n + 1, 0) {}
+    
+    // Add delta to position idx (used to mark elements as active/inactive)
+    void update(int idx, int delta) {
+        for (; idx <= n; idx += idx & -idx)
+            tree[idx] += delta;
+    }
+    
+    // Get count of active elements in range [1, idx]
+    int query(int idx) {
+        int sum = 0;
+        for (; idx > 0; idx -= idx & -idx)
+            sum += tree[idx];
+        return sum;
+    }
+    
+    // Binary search to find the k-th active element (1-indexed)
+    int findKth(int k) {
+        int pos = 0, bit = 1;
+        // Find the highest power of 2 <= n
+        while (bit <= n) bit <<= 1;
+        bit >>= 1;
+        
+        // Binary search from highest bit to lowest
+        for (; bit > 0; bit >>= 1) {
+            if (pos + bit <= n && tree[pos + bit] < k) {
+                k -= tree[pos + bit];
+                pos += bit;
+            }
+        }
+        return pos + 1;
+    }
+};
 
 int main() {
     ios::sync_with_stdio(false);
@@ -1156,22 +1205,96 @@ int main() {
 
     int n, k;
     cin >> n >> k;
-    ordered_set s;
-    for (int i = 1; i <= n; i++) s.insert(i);
-
-    int idx = 0;
-    while (!s.empty()) {
-        idx = (idx + k) % s.size();
-        auto it = s.find_by_order(idx);
-        cout << *it << " ";
-        s.erase(it);
+    
+    // Initialize Fenwick Tree and mark all positions as active
+    FenwickTree ft(n);
+    for (int i = 1; i <= n; i++) 
+        ft.update(i, 1);
+    
+    int remaining = n;  // Track how many elements are still active
+    int idx = 0;        // Current position in the circular arrangement
+    
+    while (remaining > 0) {
+        // Move k steps forward in circular manner
+        idx = (idx + k) % remaining;
+        
+        // Find the actual position of the (idx+1)-th active element
+        int pos = ft.findKth(idx + 1);
+        cout << pos << " ";
+        
+        // Mark this position as removed
+        ft.update(pos, -1);
+        remaining--;
     }
+    
     cout << "\n";
     return 0;
 }
 ```
 
 #pagebreak()
+
+== Nested Ranges Check
+
+\
+#link("https://cses.fi/problemset/task/2168/")[Question - Nested Ranges Check]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250125134618/https://cses.fi/problemset/task/2168/")[Backup Link]
+
+\
+
+*Solution: *
+
+The algorithm uses a clever sorting trick: ranges are stored as ((l, -r), index) so that when sorted, ranges with the same left endpoint have larger right endpoints first. This ordering is crucial for the sweep line approach.
+
+For detecting "contained" ranges, it sweeps left to right tracking the maximum right endpoint seen so far. If the current range's right endpoint is ≤ maxRight, it means this range is contained by a previous one (since they have l_current ≥ l_previous and r_current ≤ r_previous).
+
+For detecting "contains" ranges, it sweeps right to left tracking the minimum right endpoint. If the current range's right endpoint is ≥ minRight, it contains at least one subsequent range (the range extends at least as far right as some range with a greater or equal left endpoint).
+
+The time complexity is O(n log n) due to sorting, and space complexity is O(n). The key insight is that the special sorting allows both containment checks to be done in linear time after sorting.
+
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin >> n;
+    vector<pair<pair<int,int>, int>> ranges(n);
+    for (int i = 0; i < n; i++) {
+        int l, r;
+        cin >> l >> r;
+        ranges[i] = {{l, -r}, i};
+    }
+    sort(ranges.begin(), ranges.end());
+    vector<int> contains(n, 0), contained(n, 0);
+    int maxRight = INT_MIN;
+    for (auto &[p, idx] : ranges) {
+        int r = -p.second;
+        if (r <= maxRight)
+            contained[idx] = 1;
+        maxRight = max(maxRight, r);
+    }
+    int minRight = INT_MAX;
+    for (int i = n - 1; i >= 0; i--) {
+        int r = -ranges[i].first.second;
+        int idx = ranges[i].second;
+        if (r >= minRight)
+            contains[idx] = 1;
+        minRight = min(minRight, r);
+    }
+    for (int x : contains) cout << x << " ";
+    cout << "\n";
+    for (int x : contained) cout << x << " ";
+    cout << "\n";
+}
+
+```
+
+#pagebreak()
+
 
 == Nested Ranges Count
 
