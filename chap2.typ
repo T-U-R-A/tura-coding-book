@@ -2,6 +2,7 @@
 #import "@preview/board-n-pieces:0.7.0": *
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
+
 #show: codly-init.with()
 #codly(languages: codly-languages)
 #codly(display-icon: false)
@@ -9,23 +10,1323 @@
 #set text(
   font: "New Computer Modern Math",
 )
+
 #set page(
   numbering: "1",
 )
+
 #set heading(
   numbering: "1.",
 )
-#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 
+#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 #show link: underline
+
+#let arrayToMath(arr) = { // This function should be used only inside math blocks for it's intended effect.
+  "{"
+  let i = 0
+  while i < arr.len() {
+    str(arr.at(i))
+    if i != arr.len() - 1{ 
+    ", " 
+    }
+    i = i + 1
+  }
+  "}"
+}
+
+#let arrayToImage(arr) = {
+  cetz.canvas({
+    import cetz.draw: *
+
+    let i = 0
+    while i < arr.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      content((name: "box", anchor: "center"), box(fill: white, text[#arr.at(i)]))
+      i = i + 1
+    }
+  })
+}
+
+#let bracketIfNegative(num) = {
+  if num.signum() == -1 {
+    "("
+    str(num)
+    ")"
+  } else {
+    str(num)
+  }
+}
 
 #outline()
 #pagebreak()
 
-
 = Sorting and Searching
 
-== Distinct Numbers
+== Concepts
+
+=== Bit Operations //chap 2
+
+In `c++`, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
+
+==== Negative Numbers
+
+In a computer, all numbers are stored in binary. For an `int`, the computer allocated 32 bits. The number 5 stored in an `int` actually looks like:
+
+$
+  00000000000000000000000000000101
+$
+
+Now for an `unsigned int`, the largest number you can store would be $2^32 - 1 = 4,294,967,295$, which in binary would be:
+
+$
+  11111111111111111111111111111111
+$
+
+However regular `int` need the capability to store negative numbers. If we start from 0 and then subtract 1, we roll back and reach -1 which would be:
+
+$
+  11111111111111111111111111111111
+$
+
+Going back one more place give's -2:
+
+
+$
+  11111111111111111111111111111110
+$
+
+And so on. until $-2^31 = -2147483648$:
+
+$
+  10000000000000000000000000000000
+$
+
+if you subtract one from this you go to $2^31 -1 = 2147483647$
+
+$
+  01111111111111111111111111111111
+$
+
+The way to convert from binary to decimal using this signed format is the realised the rightmost bit represents $-2^31$ instead of positive $2^31$. So to write a negative number in binary, you can set the rightmost bit to 1 and then find what number to add to $-2^31$ to get $-n$. This would be $2^31 - n$. Finding this is a pain however, so there's a much better way:
+
+
+Say we want to find out what is -9 in binary. First we must take the *1's complement* of positive 9. This simply means we flip every bit (0's become 1's and 1's become 0's):
+
+$
+  9 = & 00000000000000000000000000001001 \
+      & 11111111111111111111111111110110 = -10
+$
+
+If you positive number was $n$, this will give you $-n-1$. To get $-n$, you must add 1. This is called taking the *2's complement*. This would give you:
+
+$
+  -9 = 11111111111111111111111111110111
+$
+
+==== AND `(&)`
+
+Let's say I have the numbers 5 and 7. The question is what would be the output to `cout << (5 & 7);`?
+
+First we write 5 and 6 in binary, which become 0101 and 0110. Then we perform the `and` operation on each bit to get a new number in binary:
+
+$
+             & 0101 \
+  #text[`&`] & 0110 \
+             & #line(length: 2em) \
+             & 0100
+$
+
+Finally convert 0100 back to decimal, which is 4
+
+So the code
+`cout << (5 & 6);` would output `4`
+
+==== OR (|)
+
+Now we want to find out the output of `cout << (5 | 6) << endl`. We now perform the `or` operation on each bit
+
+
+$
+             & 0101 \
+  #text[`|`] & 0110 \
+             & #line(length: 2em) \
+             & 0111
+$
+
+Which is 3 in decimal.
+
+==== XOR (^)
+
+Now we want to find out the output of `cout << (5 ^ 6) << endl`. We now perform the `xor` operation on each bit
+
+
+$
+             & 0101 \
+  #text[`^`] & 0110 \
+             & #line(length: 2em) \
+             & 0011
+$
+
+Which is 7 in decimal.
+
+==== NOT(\~)
+
+The `not(~)` operator flips all the bits of a number. In the earlier examples, we we're only showing 4 bits because the numbers were small. However, the `int` type has a total of 32 bits. So if you want to find the output of `cout << (~5) << endl` The answer would be:
+
+$
+  \~ & 00000000000000000000000000000101 \
+     & #line(length: 16em) \
+     & 11111111111111111111111111111010
+$
+
+Which is #strike[`4294967290`] `-6`. This is because `~` generates the 1's complement which for some positive $n$ will give you $-n-1$.
+
+==== Left shift(`<<`) and right shift(`>>`)
+
+Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$ which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011001 -> 001100 -> 000110 = 6$.
+
+==== Lowest Set Bit (LSB) <lsb>
+
+The lowest set bit is the value of the rightmost bit of a binary number that is set to 1. This bit contributes the least to the number. For example, the number 20 in binary is 10100. The right most bit is in the second position from the left (0-indexed). The value it represents is $100 = 2^2 = 4$ which means the LSB(20) = 4.
+
+If you want to find the $"LSB"(n)$, all you have to do is `n & -n`.
+
+Why does this work? For that, you must first break up `-n` into `~(n+1)` because that's taking the 2's complement. When you take the 1's complement of $n$ (`~n`) the rightmost 1 becomes the rightmost 0. All bit to the right of this 0 are 1's.
+
+If you now add 1 to get the 2's complement. All the ones up to the rightmost 0 become 0's and the rightmost 0 become a 1. So now when you take the `and` of `n` and `-n`, the bits just before the rightmost one have all been flipped, so `&` will make them all 0's. Only the rightmost bit is 1 in both `n` and `-n` so it will be preserved. This will give you a new number in binary which is the $"LSB"(n)$.
+
+Here's how it looks on 20:
+
+$
+      20 = & 00000000000000000000000000010#text(fill: red)[1]00 \
+  \& -20 = & 11111111111111111111111111101#text(fill: red)[1]00 \
+           & #line(length: 16em) \
+           & 00000000000000000000000000000#text(fill: red)[1]00
+$
+
+=== Bitmask
+
+Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
+
+Say your given an array and want to return all possible subsets of that array. Here's the code on how to do that and then we'll go through the code:
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n = 3;
+  vector<int> v = {5, 4, 7};
+
+  for(int mask = 0; mask < (1 << n); mask++){//mask takes all values from 0 - 2^n-1.
+
+    cout << "{ ";
+
+    for(int i = 0; i < n; i++){
+      if(mask & (1 << i)//checking if the ith of the mask is 1
+        cout << v[i] << " ";
+    }
+
+    cout << "}" << endl;
+  }
+
+  return 0;
+}
+```
+
+In the code, the variable `mask` goes through all subsets, where each subset is numbered from 0 to $2^n-1$. In this case $n = 3$ so `mask` goes from 0 to 7. Then for each value of mask, you output all the elements `v[i]` where the `i`th bit(from right to left) is true. This will generate the following output.
+
+```
+{ }
+{ 5 }
+{ 4 }
+{ 5 4 }
+{ 7 }
+{ 5 7 }
+{ 4 7 }
+{ 5 4 7 }
+```
+
+=== Prefix sum//chap 2
+//Variables required for Prefix sum.
+
+// #let arr2 = (5, 6, 4, 3, 9, 6, 1, 3) positive only variation in case of spacing issues
+#let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
+#let arr3 = ((4, 7), (2, 5), (1, 3))
+
+#let pref = ()
+
+#let i = 0
+#while i < arr2.len() {
+  pref.push(arr2.at(i))
+  if i > 0 {
+    pref.at(i) = pref.at(i) + pref.at(i - 1)
+  }
+  i = i + 1
+}
+
+Let's say your asked this question. You're given an array of numbers, and then your given some queries. Each query will give you a range. Your goal is to output the sum of all numbers in that range. For example, let's say you have the following array:
+
+$
+  arrayToMath(arr2)
+$
+
+// And now you're told to find the sum of elements from index #arr3.at(0).at(0)-#arr3.at(0).at(1), index #arr3.at(1).at(0)-#arr3.at(1).at(1), index #arr3.at(2).at(0)-#arr3.at(2).at(1). The answers to that would be:
+And now you're told to find the sum of elements from index
+#for (l, r) in arr3{
+  "index "
+  str(l)
+  "-"
+  str(r)
+  if(l != arr3.last().at(0)){
+  ", "
+  } else {
+    "."
+  }
+}
+The answers to that would be:
+
+$
+  #for (l, r) in arr3{
+    let i = l
+    let total = 0
+    while i <= r{
+      total = total + arr2.at(i)
+      str(arr2.at(i)) 
+      if(i != r) {
+        " + "
+      } else {
+        " = "
+      }
+      i = i + 1
+    }
+    str(total)
+    linebreak()
+  }
+$
+
+Note that indices are 0-indexed.
+
+You could solve this questions by simply iterating through all elements in each range and then adding them up. However, each of these operations is amortized $O(n)$. If there are $q$ queries, your complexity would be $O(n q)$. If $n$ and $q$'s limits are $2 times 10^5$, $O(n q)$ would be too slow.
+
+The must faster way would be to compute a *prefix sum* array. This means that every element `pref[i]` sore the sum of all elements from `v[0]` to `v[i]`. Now let's say you want to know the sum from index `a` to `b`. You only have to compute `pref[b] - pref[a-1]` to get the answer. Using our example, the prefix sum array would be:
+
+
+$
+    "original array" & arrayToMath(arr2) \
+  "prefix sum array" & arrayToMath(pref)
+$
+
+Now the answers to the 3 queries are:
+
+$
+  #for (l, r) in arr3{
+    bracketIfNegative(pref.at(r))
+    $ - $
+    bracketIfNegative(pref.at(l - 1))
+    $ = $
+    str(pref.at(r) - pref.at(l - 1))
+    linebreak()
+  }
+$
+
+You get the correct answer by only having to subtract 2 numbers rather than having to add an entire array.
+
+Here's the code for the implementation of prefix sum:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> pref(n);
+  pref[0] = v[0];
+
+  for(int i = 1; i < n; i++)
+    pref[i] = v[i] + pref[i-1];
+
+  for(int i = 0; i < q; i++){
+    int a, b;
+    cin >> a >> b;
+
+    if(a != 0)
+      cout << (pref[b] - pref[a-1]) << endl;
+  }
+
+  return 0;
+}
+
+```
+
+Sample input:
+
+#no-codly[
+  #raw(
+    str(arr2.len()) + " " + str(arr3.len()) 
++ 
+" 
+" 
++ 
+    for x in arr2 {
+      str(x) + " " 
+    } 
+    +
+    for (l, r) in arr3{
+"
+"
+    str(l) + " " + str(r)
+  }, 
+
+    block: true,
+  )
+]
+
+
+Output:
+
+#no-codly[
+#raw(
+  for (l, r) in arr3{
+    str(pref.at(r) - pref.at(l - 1))
+    if l != arr3.last().at(0) {
+"
+"
+    }
+  },
+  block: true,
+)
+]
+
+The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
+
+
+=== Binary Indexed Tree//chap 2
+
+Let's say for the question in the previous section, we not only want the ability to find the sum in a given range, we also want to update an element in the array. This means that we need to be able to both change values in the array and output the sum in any given range quickly.
+
+Our earlier approach of maintaining a prefix sum fails, because even though we can output the sum of elements in a range in $O(1)$. If we even change a single value, the time it takes to generate the whole array is amortized $O(n)$. For the constraints of $n <= 2*10^5, q <= 2*10^5$, this is too slow.
+
+There is a data structure which can help us do updates and sums in $O(n log(n))$. This is called a *binary indexed tree(BIT)* or a *Fenwick tree*. In a Fenwick tree, each element is 1-indexed. The $i$th value in the Fenwick tree stores the sum of all elements in the original array from $i - "LSSB(i)" + 1$ to $i$. (see @lsb for meaning of LSSB).
+
+
+To understand this better, let's look at the array from our previous example and the Fenwick tree that's made from the array.
+
+
+$
+arrayToMath(arr2)
+$
+
+
+#let fenw = () 
+
+/*
+#let add(x, k) = {
+  while x < fenw.len() {
+    fenw.at(x) = fenw.at(x) + k
+    x = x + x.bit-and(-x)
+  }
+}
+
+#let prefSum(x) = {
+  let ans = 0
+  while x > 0 {
+    ans = ans + fenw.at(x)
+    x =  x - x.bit-and(-x)
+  } 
+  ans
+}
+
+  #let build() = {
+    fenw.push(0)
+    
+    let i = 0
+    while i <= arr2.len(){
+      fenw.push(0)
+      i = i + 1
+    } 
+    
+    i = 0
+    while i < arr2.len(){
+      add(i + 1, arr2.at(i))  
+      i = i + 1
+    }
+  } 
+*/
+
+#fenw.push(0)
+
+#let i = 0
+#while i < arr2.len(){
+  fenw.push(0)
+  i = i + 1
+} 
+
+#let i = 0
+#while i < arr2.len(){
+  let x = i+1
+  while x < fenw.len() {
+    fenw.at(x) = fenw.at(x) + arr2.at(i)
+    x = x + x.bit-and(-x)
+  }
+  i = i + 1
+}
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = 1
+    while i < fenw.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      i = i + 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = 1
+    while i <= arr2.len(){
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            str(arr2.at(j))
+            if j != i - 1 {
+              " + "
+            }
+            j = j + 1 
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i + 1
+    }
+
+  })
+]
+
+Note that the values in a Fenwick tree are one-indexed, so there we be an empty element at `fenw[0]`.
+
+#let idx1 = 5
+#let val = 4
+#let idx2 = 7 
+#let i = idx1
+
+Hopefully the image made it clearer on how data is stored. The reason for storing data like this is because if you want to add a value to 1 element in the original array, you only need to update $O(log n)$ values in the Fenwick tree. And after doing this, you can find the sum in $O(log n)$. Say we wish to add #val to the #str(idx1)th index (one-indexed), we only need to update the
+#while i <= fenw.len(){
+  str(i)+"th"
+  if i + i.bit-and(-i) <= fenw.len() {
+    ", "
+  }
+  i = i + i.bit-and(-i)
+}
+
+#let i = idx2
+
+index. If you now want to compute the prefix sum of the array from index #idx2, you only need to add the values in the
+#while i > 0{
+  str(i)+"th"
+  if i - i.bit-and(-i) > 0 {
+    ", "
+  }
+  i = i - i.bit-and(-i)
+}
+index.
+
+Here's a diagram to illustrate the changes:
+
+Add #val to the #str(idx1)th index:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = 1
+    let check = idx1
+    while i < fenw.len() {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      if i == check {
+        content((name: "box", anchor: "center"), box(fill: white, text(fill: red)[#(fenw.at(i) + 4)]))
+        check = check + check.bit-and(-check)
+      }
+      else {
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      }
+      i = i + 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = 1
+    while i <= arr2.len(){
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            if j == idx1 - 1 {
+              text(fill:red)[#(arr2.at(j) + 4)] 
+            } else {
+              str(arr2.at(j))
+            }
+            if j != i - 1 {
+              " + "
+            }
+            j = j + 1 
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i + 1
+    }
+
+  })
+]
+
+Prefix sum at the #str(idx2)th index:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let i = fenw.len() - 1
+    let check = idx2
+    while i > 0 {
+      content((0.35 + 0.7 * (i - 1), 0.3), [#i])
+      rect((0.7*(i - 1),0),(0.7*i,-0.7), name: "box")
+      if i == check {
+        content((name: "box", anchor: "center"), box(fill: white, text(fill: red)[#fenw.at(i)]))
+        check = check - check.bit-and(-check)
+      }
+      else {
+      content((name: "box", anchor: "center"), box(fill: white, text[#fenw.at(i)]))
+      }
+      i = i - 1
+    }
+
+    set-style(mark: (end: ">"))
+
+    i = 1
+    while i <= arr2.len() {
+      let lssb = i.bit-and(-i)
+      line((0.35 + 0.7 * (i - 1),-0.7 - 0.7*(calc.log(lssb,base:2) + 1)),(0.35 + 0.7 * (i - 1),-0.7))
+      i = i + 1
+    }
+
+    i = arr2.len()
+    check = idx2
+    while i > 0{
+      let lssb = i.bit-and(-i)
+      rect((0.7 * i, -1.4 - 0.7*(calc.log(lssb,base:2) + 1)),(0.7 * (i - lssb), -0.7 - 0.7*(calc.log(lssb,base:2) + 1)), stroke: none, name: "box")
+      content((name: "box", anchor: "center"), 
+        {
+          let j = i - lssb
+          while j < i {
+            if i == check {
+              text(fill:red)[#arr2.at(j)]
+              if j != i - 1 {
+                text(fill:red)[ \+ ] 
+              }
+            }
+            else {
+              str(arr2.at(j))
+              if j != i - 1 {
+                " + "
+              }
+            }
+            j = j + 1 
+          }
+          if(i == check){
+            check = check - check.bit-and(-check)  
+          }
+        },
+        frame: "rect",
+        padding: 0.15cm,
+        fill: luma(240),
+      )
+      i = i - 1
+    }
+
+  })
+]
+
+If you can calculate the prefix sum at some index $i$ in $O(log n )$, you can then do `sum(b) - sum(a-1)` to find the sum of numbers in the subarray `a` to `b`.
+
+Here's the code for the Fenwick tree implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> fenw;
+
+void add(int x, int k){
+  for(; x <= n ; x += x & -x)// x & -x is the LSSB(x)
+    fenw[x] += k;
+}
+
+int sum(int x){
+  int ans = 0;
+  for(; x > 0; x -= x & -x)// x & -x is the LSSB(x)
+    ans += fenw[x];
+  return ans;
+}
+
+int sum(int a, int b){
+  return sum(b) - sum(a - 1);
+}
+
+int main(){
+  int q;
+  cin >> n >> q;
+  fenw.resize(n + 1, 0);
+  for(int i = 1; i <= n; i++){
+    int x;
+    cin >> x;
+    add(i, x);
+  }
+  
+  for(int i = 0; i < q; i++){
+    int t;
+    cin >> t;
+    if(t == 1){// addition queries
+      int x, k;
+      cin >> x >> k;
+      add(x, k);
+    }
+    else if(t == 2){// range sum queries
+      int a, b;
+      cin >> a >> b;
+      int ans = sum(a, b);
+      cout << sum(a, b) << endl;
+    }
+  }
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+```
+8 6
+5 -6 4 3 12 6 -7 -3
+2 4 7
+1 5 4
+2 4 7
+2 1 3
+1 3 -8
+2 2 7
+```
+]
+
+Output:
+
+#no-codly[
+```
+14
+18
+3
+8
+```
+]
+
+==== Fenwick Tree's as Indexed Sets
+
+A Fenwick tree can also be used as an indexed set. In @set, a set was explained to be a data structure that lets you insert, find, and erase elements in $O(log n)$ time. It was also sorted and contained unique elements. However, it's not possible to simply access the 2nd, or 5th, or 12th, value in a set unless you iterate all the way from the beginning to that position. That makes accessing elements at a specific index $O(n)$.
+
+If you also want to be able to access elements at specific indexes in a set, you can use a Fenwick tree as a frequency table. This means that at `fewn[x]`, you store the of times element `x` occurs in your original data. Of course `fewn[x]` will actually store the sum of frequencies from `x - LSSB(x) + 1` to `x` but you get the point. This makes is sorted by default because it describes how many times 1 appears, followed by how many times 2 appears and so on. 
+
+Now if you want to add an element `a` to the set, you simply do `add(a,1)` in the Fenwick tree to increase its frequency by 1. If you want to remove an element `b`, you do `add(b, -1)` to decrease its frequency by 1. If you want to find the index of the last occurrence of an element `c`, do `sum(c)`, if you want to find the index of the first occurrence of `c` do `sum(c-1) + 1`. And finally, the main difference is the ability to find what element is at position `i`. This requires a new function.
+
+Here's the code of the search function:
+
+```cpp
+int search(int idx){
+  int ans = 0;
+
+  for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
+    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+      ans += 1 << k;//update the answer.
+      idx -= fenw[ans];//account for all indices upto fenw[ans].
+    }
+  }
+
+  return ans + 1;//ans was the value that was before idx, so one value ahead of that is at idx.
+}
+```
+
+In the code of the search function, you start with `k = floor(log2(n))` where $2^k$ is the largest power of 2 less than or equal to $n$. Then for each value, you check to see if it's index (`fenw[ans + 1 << k]`) is less than the `idx`. If it is, you add $2^k$ to the answer and then subtract `idx` by the indexes covered (`fenw[ans]`). 
+
+Since `ans` store the number that is definitely before index, `ans + 1` tells you what number is exactly at `idx`. The reason why you can't find the index directly is because the Fenwick tree frequency table can have multiple of the same numbers, so you can't guarantee that you will find what value is there at your exact `idx`.
+
+Finally there is one more thing required to make a Fenwick tree useful as an indexed set. A normal sets size is based on the amount of input $n$ which makes its space complexity $O(n)$. However, a Fenwick tree is build on the frequency table of the data, which makes it have a space complexity of $O(a)$ where $a$ is the largest input. Usually $n <= 2 times 10^5$ however $a$ can be as large as $10^9$! This would require around *30 gigabytes* of data, which is way past the memory limits of a question. The solution to this problem is do *index compression*. Because the amount of data is going to be small, we simply remap all the large numbers down to smaller numbers.
+
+For example, say you have the following array:
+#let arr4 = (3, 10, 4, 5, 2, 2)
+#let comp = arr4.sorted().dedup()
+
+$
+  #arrayToMath(arr4)
+$
+
+If we were to store this array as an indexed set, it would require the storage of 10 + 1(because 1 indexed) `int`s of storage. Notice how that are are only 5 unique numbers in this entire vector $(2,3,4,5,10)$. If we were to resign these numbers to just $(1,2,3,4,5)$, our indexed set would only take 5 + 1(because 1 indexed) `int`s of memory. This technique is called *index compression*. 
+
+==== Index compression
+
+To perform index compression, you need to sort the original vector of values stored in a different vector. Let's call this other vector `comp`. Then remove all the duplicate elements from `comp`. Then to compress the indices, find at what index values from the original vector appear in `comp`. This can be done efficiently with `lower_bound()` because `comp` is sorted. For the above example, comp would look like:
+
+#align(center)[
+  #arrayToImage(comp)
+]
+
+Because of `comp`, #comp.at(0) will get mapped to $0 + 1 = 1$(Because 1 indexing for the Fenwick tree), #comp.at(1) gets mapped to $1 + 1 = 2$ and so on.
+
+Here's the code for the implementation of index compression:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+  vector<int> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> comp = v;
+  sort(comp.begin(), comp.end());
+  comp.erase(unique(comp.begin(),comp.end()), comp.end());
+  for(int i = 0; i < n; i++)
+    v[i] = lower_bound(comp.begin(), comp.end(), v[i]) - comp.begin() + 1;//lower_bound - comp.begin() gives you the index and +1 makes sure it's one indexed.
+  return 0;
+}
+```
+
+Sample Input:
+
+#no-codly[
+  ```
+  3 10 4 5 2 2
+
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  2 5 2 3 1 1
+  ```
+]
+
+The code uses the `std::unique()` function, which in a sorted vector, moves all duplicate elements to the end and returns a pointer at the start of the duplicate elements. When then use this pointer and erase all the duplicate elements till the end to generate `comp` correctly.
+
+To compress all the values in `v`, we get an iterator to their position in `comp` using `lower_bound()` and then subtract it with `comp.begin()` to get it's position 0-indexed. We then add 1 to get the compressed value such that it is 1-indexed.
+
+Here's a code will fully summarizes the process of an indexed set:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> fenw;
+
+void add(int x, int k){
+  for(; x <= n ; x += x & -x)// x & -x is the LSSB(x)
+    fenw[x] += k;
+}
+
+int sum(int x){
+  int ans = 0;
+  for(; x > 0; x -= x & -x)// x & -x is the LSSB(x)
+    ans += fenw[x];
+  return ans;
+}
+
+int sum(int a, int b){
+  return sum(b) - sum(a - 1);
+}
+
+int search(int idx){
+  int ans = 0;
+
+  for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
+    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+      ans += 1 << k;//update the answer.
+      idx -= fenw[ans];//account for all indices upto fenw[ans].
+    }
+  }
+
+  return ans + 1;//ans was the value that was before idx, so one value ahead of that is at idx.
+
+int main(){
+  int n;
+  cin >> n;
+  vector<int> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  vector<int> comp = v;
+  sort(comp.begin(), comp.end());
+  comp.erase(unique(comp.begin(),comp.end()), comp.end());
+  for(int i = 0; i < n; i++)
+    v[i] = lower_bound(comp.begin(), comp.end(), v[i]) - comp.begin() + 1;
+  
+  for(int i = 0; i < n; i++)
+    add(v[i], 1);
+  
+  //Now the fen vector is fully ready to behave as an indexed set.
+
+  return 0;
+}
+```
+
+=== Linked List//chap 2
+
+A linked list is a data structure, where ever element in a list list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one, point to the element after the erased one. The same is true for inserting an element in a given position.
+
+Linked list can either be made linear or circular. In a linear linked list, the last element points to the `nullptr`. In a circular linked list, the last element points back to the first element.
+
+Here's the implementation of a linear linked list:
+
+```cpp
+
+struct Node{
+  int val;// the value in the current element
+  Node* nxt;//a pointer to the next element
+  Node(const int& val = 0, Node* nxt = nullptr){//constructor
+    this->val = val;
+    this->nxt = nxt;
+  }
+};
+
+struct List{
+  Node* head;
+
+  List(const int& size = 0, const int& val = 0){//creaing the linked list. The list will have "size" elements filled with val.
+    head = new Node();
+    Node* cur = head;
+    for(int i = 1; i <= size; i++){
+      cur->val = val;
+      cur = cur->nxt = new Node();
+    }
+  }
+
+  void insert(Node* pos, const int& val){//inserts a new node after poss
+  Node* nxt = pos->nxt; 
+    pos->nxt = new Node(val,nxt);
+  }  
+
+  void erase(Node* pos){//Erases the next node after pos
+    if(pos->nxt == nullptr)
+      return;
+    Node* nxt = pos->nxt;
+    pos->nxt = nxt->nxt;
+    delete(nxt);
+  }
+}
+```
+
+Of course this Is a very poor implementation with not much memory safety leading to memory leaks. Fortunately `c++` has it's own implementation of a linked list.
+
+==== `std::list`
+
+Here's a cod examples on how the `c++` implementation of a linked list is used:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+
+  list<int> l(n, 0);
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++){
+    int x;
+    cin >> x;
+    *it = x;
+  }
+  
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)// loop to erase every odd element(1-indexed).
+    it = l.erase(it);
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    l.insert(it, *it-1);//before each element insert the value of that element-1.
+
+  for(list<int>::iterator it = l.begin(); it != l.end(); it++)
+    cout << *it << " ";
+
+  return 0;
+}
+```
+
+Sample input:
+#no-codly[
+```
+6
+4 -6 3 8 7 -2
+```
+]
+
+Output:
+#no-codly[
+```
+-5 -6 9 8 -1 -2 
+```
+]
+
+As you can see from the code, if you want to store a value you simple update `*it`. If you want to insert a value before the current iterator, do `l.insert(it, val)`. Lastly if you want to erase the current iterator, do `l.erase(it)`. `erase()` also return the position to the next iterator so that you don't invalidate your current iterator.
+
+For the `std::list` documentation, click #link("https://en.cppreference.com/w/cpp/container/list.html")[here].
+
+=== Queue//chap 2
+
+A *queue* behaves very similarly to a queue in real life. Say you wish to buy tickets for a movie. You must first join the back of the queue, then the people who joined before you must all receive their tickets and then you can buy your own ticket and then leave the front of the queue.
+
+In c++, joining the queue is called *pushing* an element into the queue. Leaving the front of the queue is called being *popped* from the queue.
+
+The data structure of a *queue* has already been implemented in `c++` as `std::queue`.
+
+Some of the operations a `queue` is:
+
++ `push()` adds an element to the back of the queue in $O(1)$ time.
++ `pop()`: removes the element from the front of the queue in $O(1)$ time.
++ `front()` gets the value of the element at the front without removing it in $O(1)$ time.
+
+Let's look at a practical problem that demonstrates how queues work:
+
+Problem: You are managing a ticket counter. People arrive and join the queue. Every person has a name and the number of tickets they want. Process each person in the order they arrived, and print their information when serving them.
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Person{
+  string name;
+  int tickets;
+  
+  Person();// default constructor
+
+  Person(string name, int tickets){
+    this->name = name;
+    this->tickets = tickets;
+  }
+};
+
+int main(){
+  int n;
+  cin >> n;
+
+  queue<Person> q;
+
+  // Adding people to the queue
+  for(int i = 0; i < n; i++){
+    string name;
+    int tickets;
+    cin >> name >> tickets;
+
+    q.push(Person(name, tickets));// Add person to the back of the queue
+  }
+
+  cout << "Serving customers:" << endl;
+
+  // Process the queue
+  while(!q.empty()){// While the queue is not empty
+    Person cur = q.front();// Get the person at the front
+    q.pop();// Remove them from the queue
+
+    cout << "Serving " << cur.name << " " << cur.tickets;
+    if(cur.tickets = 1)
+      cout << " ticket." << endl;
+    else
+      cout << " tickets." << endl;
+  }
+
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+```
+5
+Alice 2
+Bob 1
+Charlie 3
+Diana 2
+Eve 1
+```
+]
+
+Output:
+
+#no-codly[
+```
+Serving customers:
+Serving Alice 2 tickets.
+Serving Bob 1 ticket.
+Serving Charlie 3 tickets.
+Serving Diana 2 tickets.
+Serving Eve - 1 ticket.
+```
+]
+
+As you can see, the people are served in exactly the same order they joined the queue. Alice joined first, so she was served first, and Eve joined last, so she was served last.
+
+While this example could've been achieved with a `vector`, you'll find that there are better uses for queue in the graph algorithm section.
+
+For the `std::queue` documentation, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
+
+=== Greedy algorithms//chap 2
+
+//Variables required for Greedy.
+#let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
+
+A greedy algorithm is a type of algorithm where the solution for a smaller subpart of the question also applies to the whole question. A greedy algorithm never goes back and corrects it's previous decision. Let's take a look at a question that can be solve with a greedy algorithm:
+
+Question: You are given a list of events. Every event has a start time and an end time. You can only attend one event at a time. Your goal is to pick events in such a way so that you can attend the maximum number of events.
+
+The algorithm to solve this question is to pick an event which ends the earliest and then pick the next non overlapping event that ends the earliest and so on. This always ensures that you can pick the largest number of events.
+
+The reason for this is to think of the opposite. If you were to pick an event the ends later, at best case you can still pick the same number of new events. However at worst you will overlap some events that you could have picked. Let's look at the following example:
+
+
+#align(center)[
+  #table(
+    columns: 2,
+    [start], [end],
+    ..for interval in arr1{
+      interval
+    }
+  )
+]
+
+Here's the visualization of all the events:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+    line((0, 0), (10, 0), name: "numline")
+    let i = 0
+    while i <= 10{
+      content((name: "numline", anchor: i), box(fill: white, text[#i]))
+      i = i + 1
+    }
+    
+    i = 0
+    while i < arr1.len() {
+      rect((int(arr1.at(i).at(0)), -0.5-i), (int(arr1.at(i).at(1)), -1-i), fill: luma(240))
+      i = i + 1
+    }
+  })
+]
+
+These events are currently sorted in ascending order of their end times. Let's say instead of following the strategy by picking the first event ${1,3}$, you were to pick the second event ${2,5}$ which has a later start time. The only new event you can also attend is ${7,10}$. If you were to pick ${1,3}$, you can pick ${7,10}$, but can also pick ${4,6}$. This is why it's always better to pick event's which end earlier because you have nothing to loose and everything to gain.
+
+There are many other questions where you can use a greedy approach and you'll understand how to use them by solving such questions.
+
+(Add tag to Tasks and deadlines when documents are merged)
+
+=== Sets <set>//chap 2
+
+A `set` in a data structure in `c++`, which has the following properties:
+
++ A new element can be added to a `set` in $O(log n)$ time.
++ An element can be found in $O(log n)$ time.
++ An element can be removed in $O(log n)$ time.
++ All elements are sorted in ascending order.
++ All elements in a `set` are unique
+
+Here's a quick problem, whose solution will explain how to use sets:-
+
+
+Accept numbers from a user. Then check if a number exists in the list, if it does, print `YES` followed by removing that number from the list, otherwise print `NO`. At the end print the new list in ascending order.
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+  set<int> s;
+
+  for(int i = 0; i < n; i++){
+    int x;
+    cin >> x;
+    s.insert(x);//Inserts a value into the set.
+  }
+
+  for(int i = 0; i < q; i++){
+    int x;
+    cin >> x;
+    if(s.find(x) != s.end()){//s.find(x) returns the position of x in the set.
+      cout << "YES" << endl;
+      s.erase(x);//s.erase(x) removes x from the set
+    }
+    else
+      cout << "NO" << endl;
+  }
+
+  for(set<int>::iterator it = s.begin(); it != s.end(); it++){
+    cout << *it << " ";
+  }
+  return 0;
+}
+```
+
+In the solution, we can see that
+- `s.insert(x)` inserts `x` into the `set s`. This will ensure that `s` will remain sorted by inserting it into the correct place.
+- `s.find(x)` returns the position of `x` in `s`. If `x` doesn't exist, it will return `s.end()` which is a pointer at one place past the position of the last element in the set.
+- `s.erase(x)` removes `x` from `s`.
+
+Finally we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increase, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used the go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary.
+
+==== `lower_bound` and `upper_bound`
+
+Unlike for vectors, if you try to use the `lower_bound()` and `upper_bound()` functions, it won't execute binary search and will instead search through them in linear time. The reason for this is that set iterators are not random access, i.e. you can't just say `it + 5` and get the element 5 places ahead of `it`. Instead, you must run a loop to do `it++` 5 times. Fortunately, `set's` have their own implementation of `lower_bound()` and `upper_bound()`. If you have a `set<int> s`, then s.lower_bound(t) will return an iterator to the lower bound of `t` and `s.upper_bound(t)` will return an iterator to the upper bound of `t`.
+
+==== `multiset`
+
+A `multiset` is exactly like a set except that it can store multiple of the same elements, whereas a `set` does not store duplicates. The syntax for using a `multiset` is identical to a `set`, just write `multiset` instead of set
+
+==== `unordered_set`
+
+An `unordered_set` works a bit different then a set. It supports the following operations
+
++ A new element can be added to a `unordered_set` in $O(1)$\* time.
++ An element can be found in $O(1)$\* time.
++ An element can be removed in $O(1)$\* time.
++ The order of elements are random.
++ All elements in a `unordered_set` are unique
+
+Notice how it almost identical to a set other than the fact that it faster with the downside of no sorted order. This looks as if it would be useful to use an `unordered_set` instead of a `set` if you just want to check if elements exists or not due to their $O(1)$ vs the much slower $O(log n)$. However, this $O(1)$ is not guaranteed and for large test cases that you may expect during questions, it usually ends being the much worse $O(n)$ which will lead to a Time Limit Exceeded(TLE). This is why you should always use a `set` over an `unordered_set` even if you don't care about the sorting order.
+
+==== `unordered_multiset`
+Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
+
+=== Lambda expressions//chap 2 extra
+
+Lambda expressions are a way to write functions in line without having to write them separately. For example:
+
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n;
+  cin >> n;
+
+  function<int (int)> fact = [&] (int num){ // defining the lambda expression
+    if(num == 1)
+      return 1;
+    return num * fact(num-1);
+  };
+
+  cout << fact(n) << endl;
+
+  return 0;
+}
+```
+As you can see we've defined a function within the main function. The first part `function<int (int)>` says that you're making a function with return type int and one int parameter. Then after the equal to the `[&]` part allows you to access variables in the scope of the outer function by reference. `[=]` would allow you to access them by value and `[]` wouldn't allow any access. Then you write the actual contents of the function inside the braces.
+
+Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
+
+=== Sorting with a custom sorting order.//chap 2
+
+Say you with to sort a `vector` in descending order, or you have something more complicated in mind. Well the `sort()` function has an extra parameter to supply your own sorting order.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int arr[] = {3,4,6,2,5,1};
+  vector<int> v = {6,2,4,5,1,3};
+
+  sort(arr, arr+6, greater<int>());//Sorts the array {6,5,4,3,2,1}
+  sort(v.begin(), v.end(), greater<int>());//Sorts the vector {6,5,4,3,2,1}
+
+  return 0;
+}
+```
+
+The `greater<int>()` function returns true when for the 2 inputs `a` and `b`, `a > b`. Using sort this way ensure that all elements make your comparator function `true`.
+
+Let's say you want to sort a `vector<pair<int,int>>` such that the second element is sorted in ascending order and only if they are equal are the first elements sorted in descending order. Here's how you could go about it, this will also demonstrate how to use lambda expressions:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n;
+  cin >> n;
+  vector<pair<int,int>> v;
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+
+  sort(v.begin(), v.end(), [](const pair<int,int> &a, const pair<int,int> &b){
+    return a.second < b.second || a.second == b.second && a.first > b.first)
+  });
+
+  return 0;
+}
+```
+
+== CSES Practice Questions
+
+=== Distinct Numbers
 
 *Question*
 
@@ -65,7 +1366,7 @@ int main(){
 }
 ```
 #pagebreak()
-== Apartments
+=== Apartments
 
 \
 #link("https://cses.fi/problemset/task/1084")[Question - Apartments]
@@ -135,7 +1436,7 @@ int main() {
 ```
 #pagebreak()
 
-== Ferris Wheel
+=== Ferris Wheel
 
 \
 #link("https://cses.fi/problemset/task/1090")[Question - Ferris Wheel]
@@ -193,7 +1494,7 @@ int main() {
 
 ```
 #pagebreak()
-== Concert Tickets
+=== Concert Tickets
 
 \
 #link("https://cses.fi/problemset/task/1091")[Question - Concert Tickets]
@@ -259,7 +1560,7 @@ int main() {
 }
 ```
 #pagebreak()
-== Restaurant Customers
+=== Restaurant Customers
 
 \
 #link("https://cses.fi/problemset/task/1619")[Question - Restaurant Customers]
@@ -314,7 +1615,7 @@ int main() {
 
 ```
 #pagebreak()
-== Movie Festival
+=== Movie Festival
 
 \
 #link("https://cses.fi/problemset/task/1629")[Question - Movie Festival]
@@ -371,7 +1672,7 @@ int main() {
 
 ```
 #pagebreak()
-== Sum of Two Values
+=== Sum of Two Values
 
 \
 #link("https://cses.fi/problemset/task/1640")[Question - Sum of Two Values]
@@ -433,7 +1734,7 @@ int main() {
 
 ```
 #pagebreak()
-== Maximum Subarray
+=== Maximum Subarray
 
 \
 #link("https://cses.fi/problemset/task/1643")[Question - Maximum Subarray Sum]
@@ -486,7 +1787,7 @@ int main() {
 
 ```
 #pagebreak()
-== Stick Lengths
+=== Stick Lengths
 
 \
 #link("https://cses.fi/problemset/task/1074")[Question - Stick Lengths]
@@ -537,7 +1838,7 @@ int main() {
 
 ```
 #pagebreak()
-== Missing Coin Sum
+=== Missing Coin Sum
 
 \
 #link("https://cses.fi/problemset/task/2183")[Question - Missing Coin Sum]
@@ -605,7 +1906,7 @@ int main() {
 ```
 #pagebreak()
 
-== Collecting Numbers
+=== Collecting Numbers
 
 \
 #link("https://cses.fi/problemset/task/2216")[Question - Collecting Numbers]
@@ -650,7 +1951,7 @@ int main() {
 ```
 #pagebreak()
 
-== Collecting Numbers II
+=== Collecting Numbers II
 
 \
 #link("https://cses.fi/problemset/task/2217")[Question - Collecting Numbers II]
@@ -758,7 +2059,7 @@ int main() {
 ```
 #pagebreak()
 
-== Playlist
+=== Playlist
 
 \
 #link("https://cses.fi/problemset/task/1141")[Question - Playlist]
@@ -823,7 +2124,7 @@ int main() {
 ```
 #pagebreak()
 
-== Towers
+=== Towers
 
 \
 #link("https://cses.fi/problemset/task/1073")[Question - Towers]
@@ -879,7 +2180,7 @@ int main() {
 ```
 #pagebreak()
 
-== Traffic Lights
+=== Traffic Lights
 
 \
 #link("https://cses.fi/problemset/task/1163")[Question - Traffic Lights]
@@ -929,7 +2230,7 @@ int main() {
 ```
 #pagebreak()
 
-== Distinct Values Subarrays
+=== Distinct Values Subarrays
 
 \
 #link("https://cses.fi/problemset/task/2162")[Question - Distinct Values Subarrays]
@@ -983,7 +2284,7 @@ int main() {
 ```
 #pagebreak()
 
-== Distinct Values Subsequences
+=== Distinct Values Subsequences
 
 \
 #link("https://cses.fi/problemset/task/3421")[Question - Distinct Values Subsequences]
@@ -1074,7 +2375,7 @@ int main() {
 ```
 #pagebreak()
 
-== Josephus Problem I
+=== Josephus Problem I
 
 \
 #link("https://cses.fi/problemset/task/1624")[Question - Josephus Problem I]
@@ -1124,7 +2425,7 @@ int main() {
 ```
 #pagebreak()
 
-== Josephus Problem II
+=== Josephus Problem II
 
 \
 #link("https://cses.fi/problemset/task/1625")[Question - Josephus Problem II]
@@ -1234,7 +2535,7 @@ int main() {
 
 #pagebreak()
 
-== Nested Ranges Check
+=== Nested Ranges Check
 
 \
 #link("https://cses.fi/problemset/task/2168/")[Question - Nested Ranges Check]
@@ -1296,7 +2597,7 @@ int main() {
 #pagebreak()
 
 
-== Nested Ranges Count
+=== Nested Ranges Count
 
 \
 #link("https://cses.fi/problemset/task/2169")[Question - Nested Ranges Count]
@@ -1444,7 +2745,7 @@ int main(){
 
 #pagebreak()
 
-== Room Allocation
+=== Room Allocation
 
 \
 #link("https://cses.fi/problemset/task/1164")[Question - Room Allocation]
@@ -1524,7 +2825,7 @@ int main() {
 ```
 #pagebreak()
 
-== Factory Machines
+=== Factory Machines
 
 \
 #link("https://cses.fi/problemset/task/1620")[Question - Factory Machines]
@@ -1593,7 +2894,7 @@ int main() {
 ```
 #pagebreak()
 
-== Tasks and Deadlines
+=== Tasks and Deadlines
 
 \
 #link("https://cses.fi/problemset/task/1630")[Question - Tasks and Deadlines]
@@ -1645,7 +2946,7 @@ int main() {
 ```
 #pagebreak()
 
-== Reading Books
+=== Reading Books
 
 \
 #link("https://cses.fi/problemset/task/1631")[Question - Reading Books]
@@ -1694,7 +2995,7 @@ int main() {
 ```
 #pagebreak()
 
-== Sum of Three Values
+=== Sum of Three Values
 
 \
 #link("https://cses.fi/problemset/task/1641")[Question - Sum of Three Values]
@@ -1761,7 +3062,7 @@ int main() {
 ```
 #pagebreak()
 
-== Sum of Four Values
+=== Sum of Four Values
 
 \
 #link("https://cses.fi/problemset/task/1642")[Question - Sum of Four Values]
@@ -1839,7 +3140,7 @@ int main() {
 ```
 #pagebreak()
 
-== Nearest Smaller Values
+=== Nearest Smaller Values
 
 \
 #link("https://cses.fi/problemset/task/1645")[Question - Nearest Smaller Values]
@@ -1893,7 +3194,7 @@ int main() {
 ```
 #pagebreak()
 
-== Subarray Sums I
+=== Subarray Sums I
 
 \
 #link("https://cses.fi/problemset/task/1660")[Question - Subarray Sums I]
@@ -1947,7 +3248,7 @@ int main() {
 ```
 #pagebreak()
 
-== Subarray Sums II
+=== Subarray Sums II
 
 \
 #link("https://cses.fi/problemset/task/1661")[Question - Subarray Sums II]
@@ -2004,7 +3305,7 @@ int main() {
 ```
 #pagebreak()
 
-== Subarray Divisibility
+=== Subarray Divisibility
 
 \
 #link("https://cses.fi/problemset/task/1662")[Question - Subarray Divisibility]
@@ -2057,7 +3358,7 @@ int main() {
 ```
 #pagebreak()
 
-== Distinct Values Subarrays II
+=== Distinct Values Subarrays II
 
 \
 #link("https://cses.fi/problemset/task/2428")[Question - Subarray Distinct Values]
@@ -2114,7 +3415,7 @@ int main() {
 ```
 #pagebreak()
 
-== Array Division
+=== Array Division
 
 \
 #link("https://cses.fi/problemset/task/1085")[Question - Array Division]
@@ -2196,7 +3497,7 @@ int main() {
 ```
 #pagebreak()
 
-== Sliding Median
+=== Sliding Median
 
 \
 #link("https://cses.fi/problemset/task/1076")[Question - Sliding Median]
@@ -2270,7 +3571,7 @@ int main() {
 ```
 #pagebreak()
 
-== Sliding Cost
+=== Sliding Cost
 
 \
 #link("https://cses.fi/problemset/task/1077")[Question - Sliding Cost]
@@ -2362,7 +3663,7 @@ int main() {
 ```
 #pagebreak()
 
-== Movie Festival II
+=== Movie Festival II
 
 \
 #link("https://cses.fi/problemset/task/1632")[Question - Movie Festival II]
@@ -2426,7 +3727,7 @@ int main() {
 ```
 #pagebreak()
 
-== Maximum Subarray Sum II
+=== Maximum Subarray Sum II
 
 \
 #link("https://cses.fi/problemset/task/1644")[Question - Maximum Subarray Sum II]
