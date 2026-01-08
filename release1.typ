@@ -769,7 +769,7 @@ Also observer that we didn't use a `row vector`, because the backtracking algori
 
 The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
-== CSES Practice Question
+== CSES Practice Questions
 
 \
 === Weird Algorithm
