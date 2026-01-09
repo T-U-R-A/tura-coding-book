@@ -914,12 +914,15 @@ $
 === Repetitions
 
 \
+
 #link("https://cses.fi/problemset/task/1069")[Question - Repetitions]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1069")[Backup Link]
 
 \
-*Explanation : *
+
+*Solution: *
+
 This program finds the longest stretch of the same character in a string.
 
 It goes through each character one by one:
@@ -947,10 +950,11 @@ int main() {
         // Check if current character matches the previous one
 
         // Increment current length of consecutive characters
-        if (s[i] == s[i - 1]) current++;
-
+        if (s[i] == s[i - 1]) 
+          current++;
         // Reset current to 1 if characters differ
-        else current = 1;
+        else 
+          current = 1;
 
         // Update maxLen if current is larger
         maxLen = max(maxLen, current);
