@@ -109,15 +109,17 @@
 
 This is a book meant for competitive programming. We wrote this book because we felt that other resources while good, lacked the ability to explain more complex topics well. Editorial written to questions that we used to practice were also not written well for the most complex problem. Sometimes even if an editorial is written well, we'd first spend hours trying to solve the question before looking up the solution and then realise we needed some well known concept. To solve this frustration and give you, the reader, the ability to solve as many questions on your own. We first go through all the concepts required to solve a bunch of questions and then provide hints and solutions to the questions.
 
-We're using the CSES Problem Set as our question bank and you can go and create an account there and start solving. Depending on how much programming and c++ you know, you can first skim through the concepts required for the section of the CSES Problem Set that you're working on and make sure you know them well enough. If you do get stuck despite knowing the concepts, there are hints to give you a little help and the full solution, well written and easy to understand there for you. 
+We're using the CSES Problem Set as our question bank and you can go and create an account there and start solving. Depending on how much programming and `c++` you know, you can first skim through the concepts required for the section of the CSES Problem Set that you're working on and make sure you know them well enough. If you do get stuck despite knowing the concepts, there are hints to give you a little help and the full solution, well written and easy to understand there for you. 
 
-This book does expect some basic knowledge about programming in at least 1 programming language even if that language isn't c++. If you are completely new to programmer, we have linked a resource in the first section where you can learn the basics.
+This book does expect some basic knowledge about programming in at least 1 programming language even if that language isn't `c++`. If you are completely new to programmer, we have linked a resource in the first section where you can learn the basics.
 
 We hope this will help you become a better competitive programmer.
 
 #align(right)[
   Taksh Kothari and Apurva Bhat.
 ]
+
+#pagebreak()
 
 = Introductory Problems
 
@@ -126,7 +128,8 @@ We hope this will help you become a better competitive programmer.
 === Basic `c++` syntax
 
 ==== Question
-Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage. We deliberately use C++ features useful for programming contests.
+
+Accept the number of students from user. Accept their names and marks. Print the Name(s) of students who scored the highest percentage. We deliberately use `c++` features useful for programming contests.
 
 Solution:
 ```cpp
@@ -218,13 +221,17 @@ A function is something that accepts parameters and returns a value. This includ
 
 More about `c++` syntax can be learned #link("https://www.w3schools.com/cpp/")[here].
 
-=== Time Complexity<time_complexity>//chap 1
+#pagebreak()
+
+=== Time Complexity <time_complexity>//chap 1
 
 Time Complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent by using something called Big-O Notation. For instance, say we have a program that is $O(n)$, this means that the function is linear, i.e. if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
 
 Whenever you are solving a question, always calculate the time complexity of your algorithm. When you plug in the maximum input sizes into your time complexity, the amount of time it should take should be less than $10^8$ because that's usually how many operations occur in one second.
 
-=== Pointers<pointers>//chap 1
+#pagebreak() 
+
+=== Pointers <pointers>//chap 1
 Unlike in other higher level programs languages which you may be familiar with, `c++` allows you to have full control over how to allocate memory. This is achieved by using `pointers`.
 
 A pointer is a variable that stores a memory location instead of the value. Here's an example of a code which uses pointers and we'll explain what it does:-
@@ -269,6 +276,8 @@ To summarize the new syntax of pointers:
 + `int &x` allows you to pass another variable by reference, i.e. Both variables share the same memory location.
 + `&x` gives the memory location of the variable `x`.
 
+#pagebreak()
+
 === Vectors in Depth//chap 1
 
 We're going to go into `vectors` in a little more depth. As stated before `vectors` are almost the same as arrays except they are dynamic, meaning the elements can be added and removed but only at the end. This is done by the `push_back()` and `pop_back()` functions.
@@ -280,6 +289,8 @@ Note that `vectors` constant factors are bigger than arrays, which means for que
 + When passing an array to a function, it *always* passes by reference. Passing by reference simply means that the function can make changes to the original array. Sometimes however we wish to pass by value, meaning that a new copy is made. With vectors we have such freedom to choose.
 
 More technical details about `vectors` can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
+
+#pagebreak()
 
 === Recursion//chap 1
 
@@ -311,6 +322,8 @@ Every recursive algorithm has 2 main things:
 + Recursion. This is the part where you call the original function on a smaller problem than the original. In this case we call `fact(n-1)` and then multiply it by `n` to get `fact(n)`.
 Fun fact: It's proven that any recursion function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop you should. However, some programs are too hard to convert to loops so you should stick to recursion.
 
+#pagebreak()
+
 === Sorting//chap 1
 
 To sort a data structure like an array of vector, `c++` has it's own sort function for this:
@@ -334,6 +347,8 @@ int main(){
 As you can see, the sort function accepts 2 pointers, the start position of the sort and one position after the end of where you want the elements sorted. `arr` is a pointer to the start of the array. You can add a number to this pointer to jump ahead that many places. `arr + 6` is one position past the end of the array because we want to sort the entire array in this case although you don't always have to. `v.begin()` is a pointer to the start of the vector and `v.end()` points one place after the last element of the vector. You can also add a value to `v.begin()` to jump to other positions in the vector to sort only a part of it.
 
 The time complexity of `std::sort` is $O(n log n)$.
+
+#pagebreak() 
 
 === Binary Search//chap 1
 
@@ -417,6 +432,8 @@ int main(){
   return 0;
 }
 ```
+
+#pagebreak()
 
 === Lower Bound and Upper Bound <lbub>//chap 1
 
@@ -511,6 +528,8 @@ Sometimes your `vector` may not be sorted in ascending order. Sometimes it might
 
 By default, the `comp()` function is `operator<()`, however this can be changed to `greater<int>()` which returns true if the first number is more than the second number, which is needed for it to work properly on a descending list. Note however that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use it on a descending list. Apply a correction factor as needed.
 
+#pagebreak()
+
 === Permutations//chap 1
 
 Let's say you are given a string, and you wish to list out all possible permutations of the string. For instance `"abcde"`. You could probably write out all 5! = 120 possibilities on your own but what rule could you do to make a computer do it? Try listing the permutations yourself and see if you come up with sometime before reading onwards.
@@ -590,6 +609,8 @@ int main(){
   return 0;
 }
 ```
+
+#pagebreak()
 
 === Backtracking//chap 1
 
@@ -769,9 +790,10 @@ Also observer that we didn't use a `row vector`, because the backtracking algori
 
 The complexity of this code is $O(n!)$ which grows very quickly. Solving the question for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$ and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
+#pagebreak()
+
 == CSES Practice Questions
 
-\
 === Weird Algorithm
 
 \
@@ -2673,6 +2695,8 @@ $
            & 00000000000000000000000000000#text(fill: red)[1]00
 $
 
+#pagebreak()
+
 === Bitmask
 
 Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
@@ -2717,6 +2741,8 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 4 7 }
 { 5 4 7 }
 ```
+
+#pagebreak()
 
 === Prefix sum//chap 2
 //Variables required for Prefix sum.
@@ -2878,6 +2904,8 @@ Output:
 
 The space complexity is $O(n)$ and both update and query operations run in $O(log n)$ time.
 
+
+#pagebreak()
 
 === Binary Indexed Tree//chap 2
 
@@ -3275,6 +3303,8 @@ $
 
 If we were to store this array as an indexed set, it would require the storage of 10 + 1(because 1 indexed) `int`s of storage. Notice how that are are only 5 unique numbers in this entire vector $(2,3,4,5,10)$. If we were to resign these numbers to just $(1,2,3,4,5)$, our indexed set would only take 5 + 1(because 1 indexed) `int`s of memory. This technique is called *index compression*. 
 
+#pagebreak()
+
 ==== Index compression
 
 To perform index compression, you need to sort the original vector of values stored in a different vector. Let's call this other vector `comp`. Then remove all the duplicate elements from `comp`. Then to compress the indices, find at what index values from the original vector appear in `comp`. This can be done efficiently with `lower_bound()` because `comp` is sorted. For the above example, comp would look like:
@@ -3386,6 +3416,7 @@ int main(){
   return 0;
 }
 ```
+#pagebreak()
 
 === Linked List//chap 2
 
@@ -3485,6 +3516,8 @@ Output:
 As you can see from the code, if you want to store a value you simple update `*it`. If you want to insert a value before the current iterator, do `l.insert(it, val)`. Lastly if you want to erase the current iterator, do `l.erase(it)`. `erase()` also return the position to the next iterator so that you don't invalidate your current iterator.
 
 For the `std::list` documentation, click #link("https://en.cppreference.com/w/cpp/container/list.html")[here].
+
+#pagebreak()
 
 === Queue//chap 2
 
@@ -3587,6 +3620,8 @@ While this example could've been achieved with a `vector`, you'll find that ther
 
 For the `std::queue` documentation, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
 
+#pagebreak()
+
 === Greedy algorithms//chap 2
 
 //Variables required for Greedy.
@@ -3636,6 +3671,8 @@ These events are currently sorted in ascending order of their end times. Let's s
 There are many other questions where you can use a greedy approach and you'll understand how to use them by solving such questions.
 
 (Add tag to Tasks and deadlines when documents are merged)
+
+#pagebreak()
 
 === Sets <set>//chap 2
 
@@ -3718,6 +3755,8 @@ Notice how it almost identical to a set other than the fact that it faster with 
 ==== `unordered_multiset`
 Again, it's the same as an `unordered_set` except that it can store multiple of the same element. This also has $O(1)$ operations with the caveat that its worse case is $O(n)$. So you should use `multiset` over `unordered_multiset`.
 
+#pagebreak()
+
 === Lambda expressions//chap 2 extra
 
 Lambda expressions are a way to write functions in line without having to write them separately. For example:
@@ -3746,6 +3785,8 @@ int main(){
 As you can see we've defined a function within the main function. The first part `function<int (int)>` says that you're making a function with return type int and one int parameter. Then after the equal to the `[&]` part allows you to access variables in the scope of the outer function by reference. `[=]` would allow you to access them by value and `[]` wouldn't allow any access. Then you write the actual contents of the function inside the braces.
 
 Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
+
+#pagebreak()
 
 === Sorting with a custom sorting order.//chap 2
 
@@ -3791,6 +3832,8 @@ int main(){
 }
 ```
 
+#pagebreak()
+
 == CSES Practice Questions
 
 === Distinct Numbers
@@ -3832,7 +3875,9 @@ int main(){
 	return 0;
 }
 ```
+
 #pagebreak()
+
 === Apartments
 
 \
@@ -3961,6 +4006,8 @@ int main() {
 
 ```
 #pagebreak()
+#pagebreak()
+
 === Concert Tickets
 
 \
