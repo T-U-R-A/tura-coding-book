@@ -852,7 +852,7 @@ int main() {
 \
 *Explanation* :
 
-We use a simple mathematical trick: calculate the expected sum of numbers from 1 to n using the arithmetic progression formula $ n(n+1)/2 $
+We use a simple mathematical trick: calculate the expected sum of numbers from 1 to n using either arithmetic progression formula to give $ n(n+1)/2 $.
 
 Then subtract the actual sum of the given numbers to reveal the missing number, as this difference represents the value that's absent, elegantly avoiding any searching or sorting in a fast way.
 
@@ -880,6 +880,36 @@ int main() {
 }
 ```
 #pagebreak()
+
+Here's a proof for why the sum of natural numbers from $1$ to $n$ is $n(n+1)/2$ that doesn't require prior knowledge of arithmetic progressions:
+
+$
+"Let" S = 1 + 2 + 3 + ... + n = n + (n-1) + (n-2) + .... + 1
+$
+
+Lets add L.H.S with itself but write in forward order and one of them in backwards order. This way we add the first and the last term, the second and the second last term etc... :
+\
+$
+#figure(
+  table(columns: 11, stroke: none,
+  [$S$],[=],[1],[+],[2],[+],[3],[+],[...],[+],[n],
+  [+],[],[+],[],[+],[],[+],[],[+],[],[+],
+  [$S$],[=],[$n$],[+],[$n-1$],[+],[$n-2$],[+],[...],[+],[1],
+  [=],[],[=],[],[=],[],[=],[],[=],[],[=],
+  [$2S$],[=],[$n+1$],[+],[$n+1$],[+],[$n+1$],[+],[...],[+],[$n+1$],
+  )
+)
+$
+
+When you add them together in this arrangment, you create pairs of terms that always add up to $n+1$. Since there are a total of $n$ such pairs:
+
+$
+2 S = n(n+1)
+\
+therefore S = (n(n+1))/2
+$
+
+#align(center)[*HENCE PROVED*]
 
 === Repetitions
 
