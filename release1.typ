@@ -802,15 +802,15 @@ The complexity of this code is $O(n!)$ which grows very quickly. Solving the que
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1068")[Backup Link]
 
 \
-*Explanation* :
 
-+ Modulus Function (%): Used to check the parity of n
-  - If (n % 2 == 0), n is even, so divide n by 2
-  - If (n % 2 == 1), n is odd, so multiply n by 3 and add 1
+*Solution* :
 
-+ While Loop: Continues the process until n becomes 1.
-  - The loop runs as long as n is not 1, applying the above rules in each iteration.
-  - Print each value of n to track the sequence.
+To solve this question, we need a way to check if a number is odd or even. This can be done with the modulo(remainder) operator.
+
+- If `n % 2 == 0`, n is even, so divide n by 2
+- If `n % 2 == 1`, n is odd, so multiply n by 3 and add 1
+
+Now just repeat this process in a while loop as long as `n != 1`
 
 \
 *Code :*
@@ -827,11 +827,11 @@ int main() {
 
     // Continue until n becomes 1
     while (n != 1) {
-      // Case 1: n is even → halve it
-      if (n % 2 == 0) n /= 2;
 
-      // Case 2: n is odd → apply 3n + 1
-      else n = 3 * n + 1;
+      if (n % 2 == 0) // Case 1: n is even → halve it
+        n /= 2;
+      else // Case 2: n is odd → apply 3n + 1
+        n = 3 * n + 1;
 
       // Print current value after operation
       cout << n << " ";
@@ -3674,7 +3674,7 @@ There are many other questions where you can use a greedy approach and you'll un
 
 #pagebreak()
 
-=== Sets <set>//chap 2
+=== Sets <set> //chap 2
 
 A `set` in a data structure in `c++`, which has the following properties:
 
