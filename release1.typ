@@ -794,7 +794,7 @@ The complexity of this code is $O(n!)$ which grows very quickly. Solving the que
 
 == CSES Practice Questions
 
-=== Weird Algorithm
+=== Weird Algorithm //reviwed
 
 \
 #link("https://cses.fi/problemset/task/1068")[Question - Weird Algorithm]
@@ -842,7 +842,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Missing Number
+=== Missing Number//reviwed
 
 \
 #link("https://cses.fi/problemset/task/1083")[Question - Missing Number]
@@ -875,7 +875,7 @@ int main() {
     long long sum = n * (n + 1) / 2;  // Expected sum of 1 to n
 
     // The missing number is the difference
-    cout << sum - total << endl;
+    cout << sum - total << '\n';
     return 0;
 }
 ```
@@ -911,7 +911,7 @@ $
 
 #align(center)[*HENCE PROVED*]
 
-=== Repetitions
+=== Repetitions //reviwed
 
 \
 
@@ -960,14 +960,15 @@ int main() {
         maxLen = max(maxLen, current);
     }
 
-    cout << maxLen << "\n";
+    cout << maxLen << '\n';
     return 0;
 }
 ```
 
 \
 #pagebreak()
-=== Increasing Array
+
+=== Increasing Array //reviwed
 
 \
 #link("https://cses.fi/problemset/task/1094")[Question - Increasing Array]
@@ -975,27 +976,27 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1094")[Backup Link]
 
 \
-*Explanation* :
 
-We need to make the given array non-decreasing — that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition a[i] ≥ a[i−1] holds. The problem asks for the total number of increments required to achieve this.
+*Solution:*
 
-\
-*Algorithm (Step by Step Flow):*
+We need to make the given array non-decreasing: that is, every element must be at least as large as the one before it. Whenever a number is smaller than the previous one, we must increase it until the condition `a[i]` ≥ `a[i−1]` holds. The problem asks for the total number of increments required to achieve this.
+
+Here's the approach step by step:
 
 + Read the first element and store it as prev.
-+ Iterate through the rest of the array:
-+ If current ≥ prev, move on — the order is fine.
-+ If current < prev, we need to increase it by (prev − current).
-+ Add this difference to the total count and update current = prev.
++ Iterate through the rest of the array.
++ If current $>=$ prev, move on because the order is fine.
++ If current $<$ prev, we need to increase it by (prev − current) so that the order is ascending.
++ Add this difference to the total count and update prev and current.
 + Continue until all elements are processed.
-+ Output the total count of increments. required.
++ Output the total count of increments required.
 
 \
 
 *Code :*
 
 ```cpp
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
 int main() {
