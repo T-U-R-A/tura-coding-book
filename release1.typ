@@ -794,7 +794,7 @@ The complexity of this code is $O(n!)$ which grows very quickly. Solving the que
 
 == CSES Practice Questions
 
-=== Weird Algorithm //reviwed
+=== Weird Algorithm //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1068")[Question - Weird Algorithm]
@@ -842,7 +842,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Missing Number//reviwed
+=== Missing Number//Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1083")[Question - Missing Number]
@@ -911,7 +911,7 @@ $
 
 #align(center)[*HENCE PROVED*]
 
-=== Repetitions //reviwed
+=== Repetitions //Reviewed
 
 \
 
@@ -968,7 +968,7 @@ int main() {
 \
 #pagebreak()
 
-=== Increasing Array //reviwed
+=== Increasing Array //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1094")[Question - Increasing Array]
@@ -1030,7 +1030,7 @@ int main() {
 
 #pagebreak()
 
-=== Permutations
+=== Permutations //Reviewed
 
 \
 
@@ -1082,7 +1082,7 @@ Note that if you first print every other number from $n$ and then $n-1$, $n = 4$
 
 #pagebreak()
 
-=== Number Spiral
+=== Number Spiral //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1071")[Question - Number Spiral]
@@ -1093,28 +1093,30 @@ Note that if you first print every other number from $n$ and then $n-1$, $n = 4$
 
 *Intuitive Explanation* :
 
-The spiral fills outward in square layers, where layer $L$ contains all cells with $max(x, y) = L$. Each layer's diagonal cell $(L, L)$ holds the value $L^2-(L-1)$ because at the $L$th layer, the value $L^2$ is at one of the edges and then to go from there to the diagonal, subtract $(L-1)$. This value serves as our anchor point.
-
-
+The spiral fills outward in square layers, where layer $L$ contains all cells with $max(x, y) = L$. Each layer's diagonal cell $(L, L)$ holds the value $L^2-(L-1)$ because at the $L$#super[th] layer, the value $L^2$ is at one of the edges and then to go from there to the diagonal, subtract $(L-1)$. This value serves as our anchor point.
 
 *The key insight:*
 
-- Even layers fill downward then leftward, while odd layers fill rightward then upward. So for even layers, if you're on the rightmost edge (x=L), you subtract how far down you are from the diagonal; otherwise you're on the top edge, so add how far left you are.
+- Even layers fill downward then leftward, while odd layers fill rightward then upward. So for even layers, if you're on the rightmost edge ($x=L$), you subtract how far down you are from the diagonal; otherwise you're on the top edge, so add how far left you are.
 
-- Odd layers work inversely: if you're on the top edge (y=L), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance.
+- Odd layers work inversely: if you're on the top edge ($y=L$), subtract your leftward distance; otherwise you're on the left edge, so add your downward distance.
 This directional pattern emerges because the spiral alternates its filling direction with each layer to maintain continuity.
 
 \
 
-*Example:* y = 5, x = 3
+*Example:* $y = 5, x = 3$
 
 
 #table(
-  columns: 5,
+  columns: 5, align: center,
 
-  fill: (x, y) => if (x == 2 and y == 4) { green.lighten(60%) } else if (x == 4 and y == 4) {
+  fill: (x, y) => if (x == 2 and y == 4) { 
+    green.lighten(60%) 
+  } else if (x == 4 and y == 4) {
     yellow.lighten(60%)
-  } else if x == 4 or y == 4 { red.lighten(60%) },
+  } else if x == 4 or y == 4 { 
+    red.lighten(60%) 
+  },
 
   [1], [2], [9], [10], [25],
   [4], [3], [8], [11], [24],
@@ -1122,17 +1124,18 @@ This directional pattern emerges because the spiral alternates its filling direc
   [16], [15], [14], [13], [22],
   [17], [18], [19], [20], [21],
 )
+
 \
 
-*Algorithm (Step by Step Flow):*
+Here's the approach step by step:
 
 + As $max(5, 3) = 5$, It is on the 5th layer.
 
-+ $L^2 - (L - 1)$ = $25 - (5 - 1)$ = $21$. 21 serves as our anchor point.
++ $L^2 - (L - 1)$ = $25 - (5 - 1)$ = $#(25 - (5 - 1))$. 21 serves as our anchor point.
 
-+ It is important to keep it mind that we are on an odd layer(as 5 is odd).
++ It is important to keep it mind that we are on an odd layer (as 5 is odd).
 
-+ And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer $= 21 - 2 = 19$.
++ And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer is $ 21 - 2 = #(25 - (5 - 1))$.
 
 
 \
