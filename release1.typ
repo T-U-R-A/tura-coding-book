@@ -590,12 +590,12 @@ bool permute(string &str){
       swap(str[i], str[ub_idx]);//swaps the ub and the element at the pivot
       reverse(str.begin() + (i + 1), str.end());//reverses the elements after the pivot
 
-      return true;//succesfully produced the next permutation
+      return true;//successfully produced the next permutation
 
     }
   }
 
-  return false;//failed to produce the next permutation. This happens when the string is in descending order because that the last permuatation.
+  return false;//failed to produce the next permutation. This happens when the string is in descending order because that the last permutation.
 }
 
 int main(){
@@ -901,7 +901,7 @@ $
 )
 $
 
-When you add them together in this arrangment, you create pairs of terms that always add up to $n+1$. Since there are a total of $n$ such pairs:
+When you add them together in this arrangement, you create pairs of terms that always add up to $n+1$. Since there are a total of $n$ such pairs:
 
 $
 2 S = n(n+1)
@@ -1290,16 +1290,23 @@ int main() {
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1092")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Hint:*
 
-The sum of the first n integers is given by : $n(n+1)/2$
+Try to make two sets for many different values of $n$. Try to find some patterns that emerge from the process and see if they apply generally.
 
-Only when this sum is even can the set be split evenly, i.e. $n * (n-1)$ should be divisble by four. Notice the the values of n which satisy the above condition are of the form 4n or 4n - 1 (eg : 3, 4, 7, 8, 11, 12 ....).
+*Solution:*
 
-Every time the numbers can be paired off symmetrically: {n, n−3} balancing {n−1, n−2}. Anything leftover (the magical trio 1,2,3) slots in with a final tidy arrangement. This pattern ensures the two sets always weigh the same, no matter how large n grows.
+If you attempted to make two sets for different values of $n$, you would notice the first value for $n$ when this is possible is $n = 3$. Then next value would be $n = 4$, then 7, 8, and so on. What's the patterns between these numbers?
+
+Well for $n = 3$, the 2 sets are ${1,2}$ and ${3}$. For $n = 4$ the two sets are ${1,4}$ and ${2,3}$. Notice how we paired the 1#super[st] with the 4#super[th] number and the 2#super[nd] and 3#super[rd] number. This holds true for any sequence of 4 ascending numbers. The proof for that is as follows:
+
+If you're given 4 ascending numbers $x, x+1, x+2, x+3$, the 1#super[st] and 4#super[th] numbers will add up to $(x) + (x + 3) = 2x + 3$ which is the same as the sum of the 2#super[nd] and 3#super[rd] numbers which is $(x + 1) + (x + 2) = 2 x + 3$.
+
+If $n$ is a multiple of $4$, you can always break up the numbers into two sets because for each group of 4, you can put one pair in one set and the other pair in another set.
+
+The only other case is when $n$ is 3 more than a multiple of $4$. This is because of the special case of $n = 3$. The first 3 numbers can be split into ${1, 2}$ and ${3}$ and the remaining are now a multiple of 4, allowing you to split them as shown previously.
 
 *Code :*
 
@@ -1310,12 +1317,13 @@ using namespace std;
 int main() {
     int n;
     cin >> n;
-
-    // Check if the total sum n*(n+1)/2 is even (i.e., divisible by 2 after halving),
-    // which requires n*(n+1) to be divisible by 4. If not, impossible to split.
-    if (n*(n+1) % 4 != 0) cout<<"NO";
+    
+    //if n is not a multiple of 4 or 3 more than a multiple of 4, output "NO".
+    if (n % 4 == 1 || n % 4 == 2) 
+      cout<<"NO";
 
     else {
+
         cout<<"YES"<<endl;
 
         // Vectors to store the two sets.
@@ -1342,13 +1350,15 @@ int main() {
         }
 
         // Output size and elements
-        cout << a.size()<<endl;
+        cout << a.size() << '\n';
         for (int num : a)
             cout << num << " ";
 
-        cout << b.size()<<endl;
+        cout << b.size() << '\n';
         for (int num : b)
             cout << num << " ";
+
+        return 0;
     }
 }
 ```
