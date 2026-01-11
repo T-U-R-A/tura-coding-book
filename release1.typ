@@ -1379,7 +1379,7 @@ int main() {
 
 *Intuitive Explanation* :
 
-Each of the n positions can be either 0 or 1, so the answer is simply $2^n$. We compute the power iteratively while taking remainders modulo 1e9+7 to avoid overflow.
+Each of the n positions has 2 values it can be, either 0 or 1. The answer is going to be $underbrace(2 times 2 times 2 times ... times 2, n "times")$ because its 2 values for each character. We compute the answer iteratively while taking remainders modulo $10^9+7$ to avoid overflow.
 
 \
 
@@ -1399,7 +1399,7 @@ int main() {
         answer = (answer * 2) % MOD;
     }
 
-    cout << answer << "\n";
+    cout << answer << '\n';
     return 0;
 }
 ```
