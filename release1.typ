@@ -1183,6 +1183,10 @@ int main() {
 
 \
 
+*Hint:*
+
+Think of all the possible ways to arrange 2 knights and then think of how many ways are there to place 2 knights so that they attack each other. You can then subtract the two values to get the final answer.
+
 *Solution:*
 
 The problem asks: for each board size $k times k$ (from $k = 1$ to $k = n$), count the number of ways to place two knights such that they do not attack each other.
@@ -1250,7 +1254,7 @@ $ "Answer" = (k^2 (k^2 - 1)) / 2 - 4(k-1)(k-2) $
 
 \
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
