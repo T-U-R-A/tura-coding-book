@@ -875,7 +875,7 @@ int main() {
     long long sum = n * (n + 1) / 2;  // Expected sum of 1 to n
 
     // The missing number is the difference
-    cout << sum - total << '\n';
+    cout << sum - total << "\n";
     return 0;
 }
 ```
@@ -960,7 +960,7 @@ int main() {
         maxLen = max(maxLen, current);
     }
 
-    cout << maxLen << '\n';
+    cout << maxLen << "\n";
     return 0;
 }
 ```
@@ -1021,7 +1021,7 @@ int main() {
         prev = current; // update 'prev' for the next iteration
     }
 
-    cout << operations << '\n';
+    cout << operations << "\n";
     return 0;
 }
 
@@ -1350,11 +1350,11 @@ int main() {
         }
 
         // Output size and elements
-        cout << a.size() << '\n';
+        cout << a.size() << "\n";
         for (int num : a)
             cout << num << " ";
 
-        cout << b.size() << '\n';
+        cout << b.size() << "\n";
         for (int num : b)
             cout << num << " ";
 
@@ -1399,7 +1399,7 @@ int main() {
         answer = (answer * 2) % MOD;
     }
 
-    cout << answer << '\n';
+    cout << answer << "\n";
     return 0;
 }
 ```
@@ -1460,23 +1460,24 @@ int main() {
 === Coin Piles
 
 \
-#link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
-#h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
 
+#link("https://cses.fi/problemset/task/1754")[Question - Coin Piles]
+#h(0.5cm)
+#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link Is Broken will fix later.]
 
 \
 
-*Explanation* :
+*Solution:*
 
-There are two key observations in this question :-
+The first observation is that each time you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles. 
+\
+*Therefore the sum of coins in the two piles must be divisible by 3.*
 
-The first key observation  is that each time you remove 2 coins from pile A and 1 coin from pile B or 1 coin from pile A and 2 coins from pile B, the total number of coins in both the towers always gets reduced by 3 so to empty both piles, the sum of coins in the two piles must be divisible by 3.
+The second observation is that if the number of coins in one pile is more than twice the number of coins in the other pile, you cannot empty the bigger pile even if you remove 2 coins from the bigger pile for each time you remove 1 coin from the smaller pile.
+\
+*Therefore the number of coins in the larger pile must be less than or equal to twice the number of coins in the smaller pile.*
 
-The second key observation is that the number of coins in one pile cannot exceed twice the number of coins in the other pile. Because in that case you cannot empty the bigger pile even if you remove 2 coins from the bigger pile for each time you remove 1 coin from the smaller pile.
-
-Using this we check if the above two conditions are met and accordingly output the result.
-
+We check if the above two conditions are met and accordingly output the result.
 
 *Code :*
 
@@ -1492,30 +1493,28 @@ int main() {
         int a, b;
         cin >> a >> b;
 
-        bool cond_1 = (a + b) % 3 == 0;
-        bool cond_2 = max(a, b) <= 2 * min(a, b);
+        bool condition1 = (a + b) % 3 == 0;//sum of coins in pile is a multiple of 3.
+        bool condition2 = max(a, b) <= 2 * min(a, b);//number of coins in bigger mile must be less than or equal to twice the number of coins in the smaller pile.
 
-        if(cond_1 && cond_2) {
-          cout<<"YES"<<endl;
-        }
-        else {
-          cout<<"NO";
-        }
+        if(condition1 && condition2) 
+          cout<< "YES" << "\n";
+        else
+          cout<< "NO" << "\n";
     }
 
     return 0;
 }
-
-
 ```
+
 #pagebreak()
+
 === Palindrome Reorder
 
 \
+
 #link("https://cses.fi/problemset/task/1755")[Question - Palindrome Reorder]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1755")[Backup Link]
-
 
 \
 
@@ -1671,7 +1670,7 @@ int main() {
     }
 
     for(int i = 0; i < gray.size(); i++)
-        cout << gray[i] << '\n';
+        cout << gray[i] << "\n";
 }
 ```
 
@@ -1738,7 +1737,7 @@ int main() {
         // Find position of lowest set bit and flip the corresponding bit
         int pos = n - 1 - __builtin_ctz(i & -i);
         s[pos] = (s[pos] == '0' ? '1' : '0');// Flip the bit.
-        cout << s << '\n';
+        cout << s << "\n";
     }
     return 0;
 }
@@ -2141,7 +2140,7 @@ int main() {
     // Output the grid
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            cout << grid[i][j] << (j + 1 < n ? ' ' : '\n');
+            cout << grid[i][j] << (j + 1 < n ? ' ' : "\n");
         }
     }
 
@@ -4167,7 +4166,7 @@ int main() {
         }
     }
 
-    cout << ans << '\n'; // maximum guests present at once
+    cout << ans << "\n"; // maximum guests present at once
     return 0;
 }
 
@@ -4610,7 +4609,7 @@ int main() {
         }
 
         // Output the current number of rounds
-        cout << rounds << '\n';
+        cout << rounds << "\n";
     }
 
     return 0;
@@ -4731,7 +4730,7 @@ int main() {
     }
 
     // Number of towers equals the number of distinct tops
-    cout << tops.size() << '\n';
+    cout << tops.size() << "\n";
 
     return 0;
 }
@@ -4927,7 +4926,7 @@ int main() {
 
     // Subtract 1 to exclude the empty subsequence
     ans = (ans - 1 + MOD) % MOD;
-    cout << ans << '\n';
+    cout << ans << "\n";
 
     return 0;
 }
@@ -5857,7 +5856,7 @@ int main() {
         prefixSumCount[currentSum]++;
     }
 
-    cout << subarrayCount << '\n';
+    cout << subarrayCount << "\n";
     return 0;
 }
 
@@ -6339,7 +6338,7 @@ int main() {
         bestSum = max(bestSum, prefix[right] - *candidates.begin());
     }
 
-    cout << bestSum << '\n';
+    cout << bestSum << "\n";
     return 0;
 }
 
