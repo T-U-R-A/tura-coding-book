@@ -292,7 +292,7 @@ More technical details about `vectors` can be found #link("https://en.cppreferen
 
 #pagebreak()
 
-=== Recursion//chap 1
+=== Recursion <recur>//chap 1
 
 Recursion is the concept of calling some function inside of itself. Say we want to compute the factorial of a number $n$. We can do:
 
@@ -1761,7 +1761,7 @@ Think about a recurrence relation that relates the solution of $n$ and $n-1$. Th
 
 The recurrence relation is as follows: to move a stack of n disks from a starting pillar to the ending pillar, you must first move n-1 disks from the starting pillar to the middle pillar, then move the $n$#super[th] disk from start to end, and then finally move the n-1 disks from the middle pillar to the end pillar. 
 
-Here's the simple recursion code which solves the question.
+Here's the simple recursion#footnote[See @recur] code which solves the question.
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1795,7 +1795,7 @@ int main() {
 }
 ```
 
-As an extra challenge to the reader, try writing the loop solution.
+As an extra challenge to the reader, try writing a solution with a loop instead of using recursion.
 
 \
 #pagebreak()
