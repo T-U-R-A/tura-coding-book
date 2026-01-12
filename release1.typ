@@ -1518,11 +1518,11 @@ int main() {
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 We start by counting the frequency of each letter. If there is an even number of characters, odd frequencies are not allowed, since a palindrome would be impossible. If there is an odd number of characters, only one letter with an odd frequency is allowed, as it can be placed in the center (for example, “aba”). Otherwise, the program builds the palindrome by placing characters symmetrically from both ends and putting any leftover odd-frequency character in the middle. The final constructed string is then printed, completing the rearrangement.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1532,7 +1532,7 @@ int main() {
     string s;
     cin >> s; // Read input string
 
-    int arr[26] = {}; // frequency array for letters A–Z (all initialized to 0)
+    vector<int> arr(26, 0); // frequency array for letters A–Z (all initialized to 0)
 
     // Count how many times each character appears
     for (char c : s)
@@ -1549,11 +1549,9 @@ int main() {
     // - If string length is odd  → exactly one odd frequency allowed
     if (oddCount > 1 && s.size() % 2 == 1) {
         cout << "NO SOLUTION"; // too many odd-count letters
-        return 0;
     }
     else if (oddCount > 0 && s.size() % 2 == 0) {
         cout << "NO SOLUTION"; // even-length string with odd-count letters
-        return 0;
     }
     else {
         // Container to build the palindrome result
@@ -1578,9 +1576,9 @@ int main() {
         s = string(str.begin(), str.end());
 
         // Print the final palindrome
-        cout << s << endl;
-        return 0;
+        cout << s << "\n";
     }
+    return 0;
 }
 ```
 
