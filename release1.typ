@@ -530,7 +530,7 @@ By default, the `comp()` function is `operator<()`, however this can be changed 
 
 #pagebreak()
 
-=== Permutations//chap 1
+=== Permutations <permute> //chap 1
 
 Let's say you are given a string, and you wish to list out all possible permutations of the string. For instance `"abcde"`. You could probably write out all 5! = 120 possibilities on your own but what rule could you do to make a computer do it? Try listing the permutations yourself and see if you come up with sometime before reading onwards.
 
@@ -1804,24 +1804,19 @@ As an extra challenge to the reader, try writing a solution with a loop instead 
 === Creating Strings
 
 \
+
 #link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:* 
 
-In c++ there is a very useful function called 'next_permutation' which helps us tackle this exact question. This function can be used to generate the next lexicographical sequence for a string or a vector.
+In `c++` there is a very useful function called `next_permutation()`#footnote[See @permute] which helps us tackle this exact question. This function can be used to generate the next lexicographical#footnote[Meaning in alphabetical order.] sequence for a string or a vector.
 
 It returns false when no other greater permutations exists, otherwise it rearranges the string or the vector.
 
-Note : Apurva add your explanation to the next permutation question...
-
-Note : explain meaning of lexicographical down below
-
-\
 *Code :*
 
 ```cpp
@@ -1844,22 +1839,25 @@ int main() {
     // returns false if no other permutation exists
     // otherwise it rearranges the string
 
-    cout<<v.size()<<"\n";
+    cout << v.size() << "\n";
     for (int i = 0; i < v.size(); i++) {
-        cout << v[i] << endl;
+        cout << v[i] << "\n";
     }
 }
 
 ```
+
 \
+
 #pagebreak()
+
 === Apple Division
 
 \
+
 #link("https://cses.fi/problemset/task/1623")[Question - Apple Division]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1623")[Backup Link]
-
 
 \
 
