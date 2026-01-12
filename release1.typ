@@ -1091,7 +1091,7 @@ Note that if you first print every other number from $n$ and then $n-1$, $n = 4$
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 The spiral fills outward in square layers, where layer $L$ contains all cells with $max(x, y) = L$. Each layer's diagonal cell $(L, L)$ holds the value $L^2-(L-1)$ because at the $L$#super[th] layer, the value $L^2$ is at one of the edges and then to go from there to the diagonal, subtract $(L-1)$. This value serves as our anchor point.
 
@@ -1139,7 +1139,7 @@ Here's the approach step by step:
 
 
 \
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1377,7 +1377,7 @@ int main() {
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 Each of the n positions has 2 values it can be, either 0 or 1. The answer is going to be $underbrace(2 times 2 times 2 times ... times 2, n "times")$ because its 2 values for each character. We compute the answer iteratively while taking remainders modulo $10^9+7$ to avoid overflow.
 
@@ -1416,7 +1416,7 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:* 
 
 The problem asks for the number of trailing zeros in n factorial. A trailing zero occurs if a number contains a factor of 10. A factor of 10 contains a pair of 2 and 5. There will be excess number of 2s because they occur every other number vs 5s which only occur every 5th number. Therefore the number of 5s alone determine the number of zeros.
 
@@ -1433,7 +1433,7 @@ For example, take $n = 27$:
 - Total: 5 + 1 + 0 = #(5 + 1 + 0) zeros.
 \
 
-*Code :*
+*Code:*
 
 
 ```cpp
@@ -1458,8 +1458,6 @@ int main() {
 #pagebreak()
 
 === Coin Piles
-
-
 
 \
 #link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
