@@ -1585,7 +1585,6 @@ int main() {
 \
 #pagebreak()
 
-
 === Gray Code
 
 \
@@ -1597,7 +1596,7 @@ int main() {
 
 Trying listing out the solution for $n = 1$, then for $n = 2$ and $n = 3$. Try to see if there is any pattern from the previous smaller sequences to the larger ones. You might even find a pattern just by looking at any one value of $n$. 
 
-==== Solution 1
+*Solution 1:*
 
 The first pattern you may have spotted when you attempt to solve the question was the way the sequences of a longer Gray code build up on the sequence of smaller Gray code. 
 
@@ -1678,7 +1677,7 @@ This process is repeated until you get the $n$th Gray Code which you then output
 
 The time complexity of this solution is $O(n dot 2^n)$ and the space complexity is $O(n)$. While this is pretty good and will pass all the test cases within the time limit, we can do a bit better.
 
-==== Solution 2
+*Solution 2:*
 
 Let's look again at the Gray code for $n = 3$ and highlight where the bit flips occur going from 000 to the end:
 
@@ -1707,11 +1706,8 @@ The numbers in gray at the top, represent the index of each bit. If we list the 
 This sequence has a pattern that can be expressed with the following expression:
 
 $
-  t_n  = log_2("lsb"(n)), #text[Where $t_n$ is the $n$#super[th] term. ]
+  t_n  = log_2("lsb"(n)), #text[Where $t_n$ is the $n$#super[th] term. ]#footnote[See @lsb for what LSB means.]
 $
-
-
-See /*@lsb(Inset this in the merged book.)*/ for what LSB means.
 
 We can use this formula to calculate the position of which bit we need to flip to generate the next string. The advantage of this method is that we don't need to compute the Gray codes for smaller values and we can just directly output the answer for the given $n$ value. 
 
@@ -1750,10 +1746,10 @@ The time complexity of this code is $O(2^n)$ which is a bit faster than the firs
 === Tower of Hanoi
 
 \
+
 #link("https://cses.fi/problemset/task/2165")[Question - Tower of Hanoi]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/2165")[Backup Link]
-
 
 \
 
