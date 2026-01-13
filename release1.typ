@@ -2092,16 +2092,13 @@ int main() {
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3419")[Backup Link]
 
-
-
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 We fill the grid row by row, left to right.
-For each cell, we collect all values already placed to its left in the same row and above it in the same column.The cell is assigned the *mex* (smallest non-negative integer not present in those values).
-Since all needed cells are already filled, this greedy process always works.
-
+For each cell, we collect all values already placed to its left in the same row and above it in the same column.
+The cell is assigned the *mex* (smallest non-negative integer not present in those values).
 
 *Code :*
 
@@ -2150,12 +2147,14 @@ int main() {
 
 ```
 
-\
+This question can actually be solved in $O(n^2)$ time instead of $O(n^3)$. We'll leave this as an exercise to you the reader. A future version for the book will contain the solution.
+
 #pagebreak()
 
 === Knight Moves Grid
 
 \
+
 #link("https://cses.fi/problemset/task/3217")[Question - Knight Moves Grid]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3217")[Backup Link]
