@@ -1174,7 +1174,7 @@ int main() {
 \
 #pagebreak()
 
-=== Two Knights
+=== Two Knights //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1072")[Question - Two Knights]
@@ -1283,7 +1283,7 @@ int main() {
 
 #pagebreak()
 
-=== Two Sets
+=== Two Sets //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1092")[Question - Two Sets]
@@ -1367,7 +1367,7 @@ int main() {
 #pagebreak()
 
 
-=== Bit Strings
+=== Bit Strings //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1617")[Question - Bit Strings]
@@ -1406,7 +1406,7 @@ int main() {
 \
 #pagebreak()
 
-=== Trailing Zeros
+=== Trailing Zeros //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
@@ -1457,7 +1457,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Coin Piles
+=== Coin Piles //Reviewed
 
 \
 
@@ -1508,7 +1508,7 @@ int main() {
 
 #pagebreak()
 
-=== Palindrome Reorder
+=== Palindrome Reorder //Reviewed
 
 \
 
@@ -1585,7 +1585,7 @@ int main() {
 \
 #pagebreak()
 
-=== Gray Code
+=== Gray Code //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/2205")[Question - Gray Code]
@@ -1743,7 +1743,7 @@ The time complexity of this code is $O(2^n)$ which is a bit faster than the firs
 
 #pagebreak()
 
-=== Tower of Hanoi
+=== Tower of Hanoi //Reviewed
 
 \
 
@@ -1801,7 +1801,7 @@ As an extra challenge to the reader, try writing a solution with a loop instead 
 #pagebreak()
 
 
-=== Creating Strings
+=== Creating Strings //Reviewed
 
 \
 
@@ -1851,7 +1851,7 @@ int main() {
 
 #pagebreak()
 
-=== Apple Division
+=== Apple Division //Reviewed
 
 \
 
@@ -1861,11 +1861,17 @@ int main() {
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
-The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks, you compute the sum of one group and compare it with the other using `abs(total − 2*sum)`. The smallest such difference across all subsets is the optimal answer.
+The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks#footnote[See @bitmask], you compute the sum of one subset and compare it with the other using `abs(total - 2*sum)`. The reason for this is as follows: 
 
-*Code :*
+Let $a$ and $b$ be the sum of the 2 subsets. Let $t$ be the total. Then $a + b = t => b = t - a$. 
+\
+$|b - a|$ can be written as $|(t - a) - a| = |t - 2 a|$ which is the same as `abs(total - 2*sum)`.
+
+The smallest such difference across all subsets gives the optimal answer.
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1912,12 +1918,14 @@ int main() {
 ```
 
 \
+
 #pagebreak()
 
 
 === Chessboard and Queens
 
 \
+
 #link("https://cses.fi/problemset/task/1624")[Question - Chessboard and Queens]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1624")[Backup Link]
@@ -2733,7 +2741,7 @@ $
 
 #pagebreak()
 
-=== Bitmask
+=== Bitmask <bitmask>
 
 Bitmasking is the technique of using the binary representation of numbers to represent subsets of the question. Let's look at a problem which can be solved using bitmasks.
 
