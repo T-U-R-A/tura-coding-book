@@ -1995,7 +1995,7 @@ int main(){
 #pagebreak()
 
 
-=== Raab Game I
+=== Raab Game I //Reviewed
 
 \
 
@@ -2084,7 +2084,7 @@ int main() {
 
 #pagebreak()
 
-=== Mex Grid Construction
+=== Mex Grid Construction //Reviewed
 
 \
 
@@ -2180,25 +2180,29 @@ Finally, the grid of minimum move counts is printed.
 
 A visual understanding of the algorithm can be found in the image below:
 
-#board(
-  fen("n1n5/2nn4/1n6/3n4/n1n5/8/8/8 w - - 0 1"),
+#align(center)[
+  #board(
+    fen("n1n5/2nn4/1n6/3n4/n1n5/8/8/8 w - - 0 1"),
 
-  arrows: ("a8 b6", "a8 c7", "b6 a4", "b6 c4", "b6 d5", "b6 d7", "b6 c8"),
-  display-numbers: true,
+    arrows: ("a8 b6", "a8 c7", "b6 a4", "b6 c4", "b6 d5", "b6 d7", "b6 c8"),
+    display-numbers: true,
 
-  white-square-fill: rgb("#e9f3ea"),
-  black-square-fill: rgb("#278bc4"),
-  white-mark: marks.cross(paint: rgb("#2bcbC6")),
-  black-mark: marks.cross(paint: rgb("#2bcbC6")),
-  arrow-fill: rgb("#f4a338df"),
-  arrow-thickness: 0.25cm,
+    white-square-fill: rgb("#e9f3ea"),
+    black-square-fill: rgb("#278bc4"),
+    white-mark: marks.cross(paint: rgb("#2bcbC6")),
+    black-mark: marks.cross(paint: rgb("#2bcbC6")),
+    arrow-fill: rgb("#f4a338df"),
+    arrow-thickness: 0.25cm,
 
-  stroke: 0.8pt + black,
-)
+    stroke: 0.8pt + black,
+  )
+]
 
-You move from the knight to all unvisited grid. This approach guarantess the shortest path to the target.
+You move from the knight to all unvisited grid that are a knight move away. This approach guarantees the shortest path to any cell.
 
 \
+
+The code does use a data structure called a queue, which you may be unfamiliar with. See @queue for what a queue is.
 
 *Code :*
 
@@ -2237,7 +2241,7 @@ int main() {
     // As long as there are positions left to explore, keep processing them
     while (!q.empty()) {
         // Take the oldest unexplored position from the queue
-        auto [x, y] = q.front();
+        int x = q.front().first, y = q.front().second;
         q.pop();
 
         // Try moving the knight in all 8 possible ways from this position
@@ -2261,15 +2265,15 @@ int main() {
         for (int j = 0; j < n; j++) {
             cout << dist[i][j] << " ";
         }
-        cout << endl;
+        cout << "\n";
     }
 
     return 0;
 }
-}
 ```
 
 \
+
 #pagebreak()
 
 === Grid Coloring I
@@ -3563,7 +3567,7 @@ For the `std::list` documentation, click #link("https://en.cppreference.com/w/cp
 
 #pagebreak()
 
-=== Queue//chap 2
+=== Queue <queue> //chap 1
 
 A *queue* behaves very similarly to a queue in real life. Say you wish to buy tickets for a movie. You must first join the back of the queue, then the people who joined before you must all receive their tickets and then you can buy your own ticket and then leave the front of the queue.
 
