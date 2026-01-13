@@ -612,7 +612,7 @@ int main(){
 
 #pagebreak()
 
-=== Backtracking//chap 1
+=== Backtracking <backtracking> //chap 1
 
 #let board1 = board.with(square-size: 0.5cm)(position(
   "....",
@@ -768,10 +768,9 @@ void findPositions(int i = 0){
 		col[j] = diag1[i+j] = diag2[(n-1)-j+i] = false;//Removing queen for the current spot
 	}
 }
+
 int main(){
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
+  //n was defined globally
 
   cin >> n;
   col.resize(n);
@@ -782,7 +781,6 @@ int main(){
 	cout << ans << endl;
 	return 0;
 }
-
 ```
 
 The `resize()` function of a vector is used when you wish to specify the size of a `vector` after its initialization. The `findPositions()` function has a default value of `i = 0`, so if the parameter isn't supplied it assumes the value to be `0`.
@@ -1861,6 +1859,11 @@ int main() {
 
 \
 
+*Hint*
+
+Notice the low $n <= 20$. This means the approach will likely have a time complexity of $O(2^n)$ or $O(n dot 2^n)$.
+See @bitmask as a useful concept needed for this question.
+
 *Solution:*
 
 The problem asks you to split the apples into two groups so that their total weights differ as little as possible. By checking every subset with bitmasks#footnote[See @bitmask], you compute the sum of one subset and compare it with the other using `abs(total - 2*sum)`. The reason for this is as follows: 
@@ -1922,7 +1925,7 @@ int main() {
 #pagebreak()
 
 
-=== Chessboard and Queens
+=== Chessboard and Queens //Reviewed
 
 \
 
@@ -1933,16 +1936,15 @@ int main() {
 
 \
 
-*Intuitive Explanation* :
+*Hint:*
 
-This solution uses backtracking#footnote[backtracking was explained here] to count all valid ways to place 8 queens on an 8×8 board with blocked cells.
-We place exactly one queen per row, moving row by row.
-For each cell, we first skip blocked positions marked by `*`.
-Three boolean arrays track conflicts: columns, main diagonals (`row + col`), and anti-diagonals (`row - col + 7`).
-If a position is safe, we mark these arrays and recurse to the next row.
-When all 8 rows are filled, one valid arrangement is found and counted.
-After recursion, we backtrack by unmarking the position to explore other possibilities.
+Please see @backtracking for an explain to a question very similar to this one. You should then be able to solve this question easily.
 
+*Solution:*
+
+This solution uses backtracking. Section @backtracking explains a problem very similar to this which was how do you place $n$ queens on an $n times n$ chess board such that no 2 queens attack each other. This question on the other hand has $n = 8$ but has an additional condition that any cell with `*` is blocked.
+
+The code is almost the same with just one extra condition that if a cell is `*`, you can't place a queen.
 
 *Code :*
 
@@ -1950,55 +1952,45 @@ After recursion, we backtrack by unmarking the position to explore other possibi
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 8;
+int n = 8, ans = 0;
+vector<bool> col, diag1, diag2;
+vector<vector<bool>> blocked;
 
-vector<string> board(N);
+void findPositions(int i = 0){
+	if(i == n){//If true, we successfully placed all the queens in an arrangement.
+		ans++;
+		return;
+	}
 
-// Tracking used columns and diagonals
-bool usedColumn[N];
-bool usedMainDiag[2 * N - 1];   // row + col
-bool usedAntiDiag[2 * N - 1];   // row - col + (N - 1)
-
-int totalWays = 0;
-
-void placeQueen(int row) {
-    // All rows filled → one valid arrangement
-    if (row == N) {
-        totalWays++;
-        return;
-    }
-
-    for (int col = 0; col < N; col++) {
-        if (board[row][col] == '*') continue;
-
-        int mainDiag = row + col;
-        int antiDiag = row - col + (N - 1);
-
-        if (usedColumn[col] || usedMainDiag[mainDiag] || usedAntiDiag[antiDiag])
-            continue;
-
-        // Place queen
-        usedColumn[col] = usedMainDiag[mainDiag] = usedAntiDiag[antiDiag] = true;
-
-        placeQueen(row + 1);
-
-        // Backtrack
-        usedColumn[col] = usedMainDiag[mainDiag] = usedAntiDiag[antiDiag] = false;
-    }
+	for(int j = 0; j < n; j++){
+		if(blocked[i][j] || col[j] || diag1[i+j] || diag2[(n-1)-j+i]) //The new queen would be blocked or attacked
+      continue;
+		col[j] = diag1[i+j] = diag2[(n-1)-j+i] = true;//Placing the queen on the current spot
+		findPositions(i+1);
+		col[j] = diag1[i+j] = diag2[(n-1)-j+i] = false;//Removing queen for the current spot
+	}
 }
 
-int main() {
-    for (int i = 0; i < N; i++) {
-        cin >> board[i];
+int main(){
+  //n was defined globally as 8
+  
+  for(int i = 0; i < n; i++){
+    for(int j = 0; j < n; j++){
+      char ch;
+      cin >> ch;
+      blocked[i][j] = (ch == '*');
     }
+  }
+      
+  col.resize(n);
+  diag1.resize(2*n-1);
+  diag2.resize(2*n-1);
+  findPositions();
 
-    placeQueen(0);
-    cout << totalWays << "\n";
-    return 0;
+	cout << ans << endl;
+	return 0;
 }
-
 ```
-
 \
 #pagebreak()
 
