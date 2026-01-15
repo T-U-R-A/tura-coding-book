@@ -2203,7 +2203,7 @@ We fill the grid row by row, left to right.
 For each cell, we collect all values already placed to its left in the same row and above it in the same column.
 The cell is assigned the *mex* (smallest non-negative integer not present in those values).
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2254,7 +2254,7 @@ This question can actually be solved in $O(n^2)$ time instead of $O(n^3)$. We'll
 
 #pagebreak()
 
-=== Knight Moves Grid
+=== Knight Moves Grid //Reviewed
 
 \
 
@@ -2264,7 +2264,7 @@ This question can actually be solved in $O(n^2)$ time instead of $O(n^3)$. We'll
 
 \
 
-*Explanation* :
+*Solution:*
 
 The program calculates the minimum number of knight moves needed to reach every square on an `n x n` chessboard starting from the top-left corner.
 
@@ -2307,7 +2307,7 @@ You move from the knight to all unvisited grid that are a knight move away. This
 
 The code does use a data structure called a queue, which you may be unfamiliar with. See @queue for what a queue is.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2379,26 +2379,24 @@ int main() {
 
 #pagebreak()
 
-=== Grid Coloring I
+=== Grid Coloring I //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/3311")[Question - Grid Coloring I]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/3311")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
-For each cell maintain an array of 4 booleans tracking which colors (A-D) are available. Now there are three conditions:
+Observe that there are a maximum of 3 colours which we can't use for the current cell in our `ans` grid:
 
-+ Mark the current cell's original color as invalid.
-+ Mark the color of the cell above it in the `ans` grid as invalid.
-+ Mark the color of the cell to the left of it in the `ans` grid as invalid.
++ The current cell's original color.
++ The color of the cell above it in the `ans` grid if it exists.
++ The color of the cell to the left of it in the `ans` grid if it exists.
 
-Now we can greedily assign the first available color to the ans grid. As there are 4 colors and
-only 3 conditions, we can always find a valid color.
+Now, we can assign the first available color to the `ans` grid because there will always be at least 1 valid colour. We can store a boolean array which marks all available colours `true` and then marks the illegal ones as `false`. Then assign the first `true` colour in the boolean array.
 
 *Code :*
 
@@ -2458,6 +2456,7 @@ int main() {
 ```
 
 \
+
 #pagebreak()
 
 
