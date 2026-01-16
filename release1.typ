@@ -3804,7 +3804,7 @@ Finally we end up printing all values that are currently in `s`. However, you ma
 
 Unlike for vectors, if you try to use the `lower_bound()` and `upper_bound()` functions, it won't execute binary search and will instead search through them in linear time. The reason for this is that set iterators are not random access, i.e. you can't just say `it + 5` and get the element 5 places ahead of `it`. Instead, you must run a loop to do `it++` 5 times. Fortunately, `set's` have their own implementation of `lower_bound()` and `upper_bound()`. If you have a `set<int> s`, then s.lower_bound(t) will return an iterator to the lower bound of `t` and `s.upper_bound(t)` will return an iterator to the upper bound of `t`.
 
-==== `multiset`
+==== `multiset` <multiset>
 
 A `multiset` is exactly like a set except that it can store multiple of the same elements, whereas a `set` does not store duplicates. The syntax for using a `multiset` is identical to a `set`, just write `multiset` instead of set
 
@@ -4079,16 +4079,13 @@ int main() {
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810225423/https://cses.fi/problemset/task/1091")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
-Store all ticket prices in a multiset to keep them sorted and allow duplicates. Each customer gives an offer, and you use `upper_bound` to find the first price strictly greater than that offer, then step one step back to get the best affordable ticket. If such a ticket exists, print it and remove it; otherwise print –1. This algorithm neatly handles each request without iterating through the whole list.
+Store all ticket prices in a `multiset`#footnote[See @multiset] to keep them sorted and allow duplicates. Each customer gives an offer, and you use `upper_bound()`#footnote[See @lbub] to find the first price strictly greater than that offer, then step one step back to get the best affordable ticket. If such a ticket exists, print it and remove it; otherwise print –1. This algorithm neatly handles each request without iterating through the whole list.
 
-
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4118,12 +4115,11 @@ int main() {
     for (int i = 0; i < m; i++) {
 
         // Find the first price strictly greater than the offer
-        auto it = prices.upper_bound(offers[i]);
+        auto it = prices.upper_bound(offers[i]);//auto gets set to multiset<int>::iterator
 
         // If upper_bound points to begin(), no ticket <= offer exists
-        if (it == prices.begin()) {
+        if (it == prices.begin())
             cout << "-1" << endl;
-        }
         else {
             // Move iterator to the largest price <= offer
             --it;
@@ -4135,9 +4131,13 @@ int main() {
             prices.erase(it);
         }
     }
+
+    return 0;
 }
 ```
+
 #pagebreak()
+
 === Restaurant Customers
 
 \
