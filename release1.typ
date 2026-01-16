@@ -4017,20 +4017,20 @@ int main() {
 === Ferris Wheel
 
 \
+
 #link("https://cses.fi/problemset/task/1090")[Question - Ferris Wheel]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810185820/https://cses.fi/problemset/task/1090")[Backup Link]
 
+\
+
+*Solution:*
+
+The algorithm sorts all weights, then uses two pointer, one at the lightest and one at the heaviest person, to form pairs without exceeding the limit. If they can share a gondola, both of them ride it; otherwise, the heavier one goes alone. This greedy pairing minimizes the total number of gondolas.
 
 \
 
-*Explanation : *
-
-The algorithm sorts all weights, then uses two pointer, one at the lightest and one at the heaviest person, to form pairs without exceeding the limit. If they can share a gondola, both are removed; otherwise, the heavier one goes alone. This greedy pairing minimizes the total number of gondolas.
-
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4054,8 +4054,8 @@ int main() {
     while (left <= right) {
         // If heaviest and lightest can share a gondola
         if (weights[left] + weights[right] <= x) {
-            left++;
-            right--;
+            left++;//go to the next lightest
+            right--;//go to the next heaviest
         }
         // Otherwise, heaviest gets their own gondola
         else {
@@ -4068,10 +4068,8 @@ int main() {
 
     return 0;
 }
-
-
 ```
-#pagebreak()
+
 #pagebreak()
 
 === Concert Tickets
