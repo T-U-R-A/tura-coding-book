@@ -3906,20 +3906,15 @@ int main(){
 
 === Distinct Numbers
 
-*Question*
-
 #link("https://cses.fi/problemset/task/1621")[Question - Distinct Numbers]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250717130805/https://www.cses.fi/problemset/task/1621/")[Backup Link]
 
-*Explanation*
+*Solution:*
 
-Accept all the numbers and insert them into a set. Then report the size of the set. This works due to the fact that a set only stores unique elements and removes duplicates.
+Accept all the numbers and insert them into a set#footnote[See @set]. Then report the size of the set. This works due to the fact that a set only stores unique elements and removes duplicates.
 
-//TODO: Add link to more about sets in the context part
-More about sets can be found here.
-
-*Solution*
+*Code:*
 
 ```cpp
 
@@ -3927,19 +3922,20 @@ More about sets can be found here.
 using namespace std;
 
 int main(){
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
 
 	int n;
 	cin >> n;
+
 	set<int> s;
+
 	for(int i = 0; i < n; i++){
 		int x;
 		cin >> x;
-		s.insert(x);
+		s.insert(x);// Accepting and inserting the values into the set.
 	}
-	cout << s.size() << endl;
+
+	cout << s.size() << endl;// Outputs the number of unique elements.
+
 	return 0;
 }
 ```
@@ -3949,10 +3945,10 @@ int main(){
 === Apartments
 
 \
+
 #link("https://cses.fi/problemset/task/1084")[Question - Apartments]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250805032036/https://cses.fi/problemset/task/1084")[Backup Link]
-
 
 \
 
