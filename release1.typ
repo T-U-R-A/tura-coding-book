@@ -3952,15 +3952,19 @@ int main(){
 
 \
 
-*Explanation : *
+*Solution:*
 
-The algorithm sorts both applicants and apartments, then uses a two pointer approach to match each applicant with the smallest available apartment whose size differs by at most `k`.
-If an apartment is too small, move to the next apartment; if it’s too large, move to the next applicant.
-This greedy method ensures the maximum number of matches efficiently.
+We can sort both applicants and apartments, then uses a two pointer approach to match each applicant with the smallest available apartment whose size differs by at most $k$.
 
+The two pointer approach is when you either move both pointers, or one of the pointers based on a condition.
+
+In this case if an apartment is too small for the current applicant, we move to the next apartment which is larger.
 \
+If an apartment is too large for the current applicant, we move to the applicant who wants a large apartment.
+\
+Lastly if an apartment is of the right size, we increase the answer by 1 and go to the next apartment and next applicant.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -3991,18 +3995,16 @@ int main() {
     while (i < n && j < m) {
         // Check if current apartment fits current applicant's preference
         if (abs(applicants[i] - apartments[j]) <= k) {
-            count++;
-            i++;
+            count++;//increase the answer
+            i++;//move to next applicant
+            j++;//move to next largest appartment
+        }
+        // If apartment is too small, try the next larger apartment
+        else if (applicants[i] - apartments[j] > k)
             j++;
-        }
-        // If apartment is too small, try next apartment
-        else if (applicants[i] - apartments[j] > k) {
-            j++;
-        }
-        // If apartment is too big, try next applicant
-        else {
+        // If apartment is too big, try the next applicant who wants a bigger appartment
+        else
             i++;
-        }
     }
 
     cout << count << endl;
