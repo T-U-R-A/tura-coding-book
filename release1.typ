@@ -4141,26 +4141,24 @@ int main() {
 === Restaurant Customers
 
 \
+
 #link("https://cses.fi/problemset/task/1619")[Question - Restaurant Customers]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810190946/https://cses.fi/problemset/task/1619/")[Backup Link]
 
 \
-*Explanation* :
+
+*Solution:*
 
 The algorithm sorts all arrival and departure times, then uses two pointers to simulate guests entering and leaving. Each arrival increases the current count, and each departure decreases it. The maximum value reached during this sweep gives the peak number of guests present simultaneously.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
 
     int n;
     cin >> n;
@@ -4189,10 +4187,10 @@ int main() {
     cout << ans << "\n"; // maximum guests present at once
     return 0;
 }
-
-
 ```
+
 #pagebreak()
+
 === Movie Festival
 
 \
