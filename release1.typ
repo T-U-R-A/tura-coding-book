@@ -4194,21 +4194,20 @@ int main() {
 === Movie Festival
 
 \
+
 #link("https://cses.fi/problemset/task/1629")[Question - Movie Festival]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810185808/https://cses.fi/problemset/task/1629")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 We store each movie as a pair of (end_time, start_time) and sort by end_time so we can always consider the earliest finishing movie first. The greedy approach works because picking the movie that ends earliest leaves maximum time for future movies.
 
 We iterate through all movies, watching one only if it starts after the previous one ends. Each time we do, we increment our count and update the latest end time, ensuring the optimal number of movies are chosen.
 
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4233,7 +4232,7 @@ int main() {
     int currentEnd = 0;  // The end time of the last watched movie
 
     // Iterate through all movies
-    for (auto [end, start] : movies) {
+    for (pair<int, int> [end, start] : movies) {
         // If the current movie starts after or exactly when the previous one ended
         if (start >= currentEnd) {
             maxMovies++;       // Watch this movie
