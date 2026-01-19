@@ -3904,7 +3904,7 @@ int main(){
 
 == CSES Practice Questions
 
-=== Distinct Numbers
+=== Distinct Numbers //Reviewed
 
 #link("https://cses.fi/problemset/task/1621")[Question - Distinct Numbers]
 #h(0.5cm)
@@ -3942,7 +3942,7 @@ int main(){
 
 #pagebreak()
 
-=== Apartments
+=== Apartments //Reviewed
 
 \
 
@@ -4014,7 +4014,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Ferris Wheel
+=== Ferris Wheel //Reviewed
 
 \
 
@@ -4072,7 +4072,7 @@ int main() {
 
 #pagebreak()
 
-=== Concert Tickets
+=== Concert Tickets //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1091")[Question - Concert Tickets]
@@ -4138,7 +4138,7 @@ int main() {
 
 #pagebreak()
 
-=== Restaurant Customers
+=== Restaurant Customers //Reviewed
 
 \
 
@@ -4191,7 +4191,7 @@ int main() {
 
 #pagebreak()
 
-=== Movie Festival
+=== Movie Festival //Reviewed
 
 \
 
@@ -4243,13 +4243,14 @@ int main() {
     cout << maxMovies << endl; // Output the result
     return 0;
 }
-
-
 ```
+
 #pagebreak()
-=== Sum of Two Values
+
+=== Sum of Two Values //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1640")[Question - Sum of Two Values]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810185011/https://cses.fi/problemset/task/1640")[Backup Link]
@@ -4257,14 +4258,11 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:*
 
-The algorithm sorts all numbers, then uses two pointers—one starting at the smallest and one at the largest value—to find a pair that sums to the target. If the sum is too small, the left pointer moves right; if too large, the right pointer moves left.
-This efficiently finds the correct pair in linear time after sorting.
+The algorithm sorts all numbers, then uses two pointers, one starting at the smallest and one at the largest value, to find a pair that sums to the target. If the sum is too small, the left pointer moves right to a larger number; if too large, the right pointer moves left to a smaller number.
 
-
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4297,18 +4295,20 @@ int main() {
             return 0;
         }
         // Move pointers based on comparison with target
-        else if (sum < target) left++;
-        else right--;
+        else if (sum < target) 
+          left++;// make the sum larger
+        else 
+          right--;// make the sum smaller
     }
 
     // If no valid pair found
     cout << "IMPOSSIBLE";
     return 0;
 }
-
-
 ```
+
 #pagebreak()
+
 === Maximum Subarray
 
 \
