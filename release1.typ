@@ -4309,7 +4309,7 @@ int main() {
 
 #pagebreak()
 
-=== Maximum Subarray
+=== Maximum Subarray //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1643")[Question - Maximum Subarray Sum]
@@ -4320,7 +4320,7 @@ int main() {
 
 *Intuitive Explanation* :
 
-The algorithm finds the maximum possible sum of a continuous sequence in an array. It begins by assuming the first element is the best sum. Then, as it moves through the array, it decides whether to keep adding to the current streak or start fresh from the current number. At each step, it updates the overall best sum found so far, ensuring the final answer is the largest contiguous total.
+The algorithm finds the maximum possible sum of a continuous sequence in an array. It begins by assuming the first element is the best sum. Then, as it moves through the array, it decides whether to add the current element to the current sum or start the sum fresh from the current number. At each step, it updates the overall best sum found so far, ensuring the final answer is the largest contiguous total.
 
 \
 
@@ -4357,14 +4357,14 @@ int main() {
     cout << max_global << endl;
     return 0;
 }
-
-
-
 ```
+
 #pagebreak()
+
 === Stick Lengths
 
 \
+
 #link("https://cses.fi/problemset/task/1074")[Question - Stick Lengths]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810205806/https://cses.fi/problemset/task/1074")[Backup Link]
