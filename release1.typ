@@ -4834,12 +4834,13 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:*
 
-This code uses a sliding window to count subarrays with all distinct elements. The right pointer expands the window, while a frequency map tracks duplicates. If a duplicate appears, the left pointer shrinks the window until all elements are unique again.At each position, the number of valid subarrays ending there is added to the answer.
+This code uses a sliding window to count subarrays with all distinct elements. The right pointer expands the window, while a frequency map tracks duplicates. If a duplicate appears, the left pointer shrinks the window until all elements are unique again. At each position, the number of valid subarrays ending there is added to the answer.
 
 \
-*Code :*
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4875,8 +4876,47 @@ int main() {
 
     cout << answer;
 }
-
 ```
+
+*Alternate Solution:*
+
+You can use a `set` instead of a `map`. This works by storing all elements in the current window in the `set`, when a duplicate of the element at the right pointer is found, you move the left pointer of the window and keep removing elements from the `set` until the duplicate element is removed, then add the element at the right pointer to the window.
+
+*Code:*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+ 
+int main(){
+  //Accepting Input:
+
+  int n;
+  cin >> n;
+
+  vector<int> v(n);
+  for(int i = 0; i < n; i++)
+    cin >> v[i];
+  
+  //Computing Answer:
+  long long ans = 0;
+  set<int> s; //stores the elements in the current window
+  for(int l = 0, r = 0; r < n; r++){
+    //The while removes keeps removing elements from the window until the duplicate of v[r] is removed.
+    while(s.find(v[r]) != s.end()){
+      s.erase(v[l]);
+      l++;
+    }
+
+    s.insert(v[r]);//and the current element to the window
+    ans += r-l+1;//number of subarrays ending at r 
+  }
+
+  cout << ans << endl;
+  return 0;
+}
+```
+
 #pagebreak()
 
 === Distinct Values Subsequences
