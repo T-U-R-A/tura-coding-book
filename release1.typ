@@ -3589,7 +3589,7 @@ int main(){
 ```
 #pagebreak()
 
-=== Linked List//chap 2
+=== Linked List <list> //chap 2
 
 A linked list is a data structure, where ever element in a list list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one, point to the element after the erased one. The same is true for inserting an element in a given position.
 
@@ -5010,18 +5010,18 @@ int main() {
 === Josephus Problem I
 
 \
+
 #link("https://cses.fi/problemset/task/1624")[Question - Josephus Problem I]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1624")[Backup Link]
 
 \
 
-*Explanation* :
+*Solution:*
 
-We store all people in a linked list, for efficient deletions while moving forward. An iterator walks through the list, skipping one person each time. When the iterator reaches the end, it wraps back to the beginning. Each erased element is printed in order.
+We store all people in a linked list#footnote[See @list], for efficient deletions while moving forward. An iterator walks through the list, skipping one person each time. When the iterator reaches the end, it wraps back to the beginning. Each erased element is printed in order.
 
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5035,12 +5035,12 @@ int main() {
     for (int i = 1; i <= n; i++)
         circle.push_back(i);
 
-    auto it = circle.begin();
+    auto it = circle.begin();//auto is list<int>::iterator
 
     while (!circle.empty()) {
         // move to the next person (skip one)
         it++;
-        if (it == circle.end())
+        if (it == circle.end())//circle back
             it = circle.begin();
 
         cout << *it << " ";
@@ -5048,13 +5048,14 @@ int main() {
         // erase returns iterator to next element
         it = circle.erase(it);
 
-        if (it == circle.end() && !circle.empty())
+        if (it == circle.end() && !circle.empty())//circle back
             it = circle.begin();
     }
 
     return 0;
 }
 ```
+
 #pagebreak()
 
 === Josephus Problem II
