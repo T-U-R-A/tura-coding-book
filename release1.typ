@@ -4318,13 +4318,13 @@ int main() {
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
 The algorithm finds the maximum possible sum of a continuous sequence in an array. It begins by assuming the first element is the best sum. Then, as it moves through the array, it decides whether to add the current element to the current sum or start the sum fresh from the current number. At each step, it updates the overall best sum found so far, ensuring the final answer is the largest contiguous total.
 
 \
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4361,7 +4361,7 @@ int main() {
 
 #pagebreak()
 
-=== Stick Lengths
+=== Stick Lengths //Reviewed
 
 \
 
@@ -4436,31 +4436,32 @@ int main() {
 ```
 #pagebreak()
 
-=== Missing Coin Sum
+=== Missing Coin Sum // Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/2183")[Question - Missing Coin Sum]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250810195049/https://cses.fi/problemset/task/2183")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Hint:*
 
 
-Sorting the Coins: By sorting the coins in non-decreasing order, we can process them greedily.
+*Solution:*
 
-Greedy Approach:
+By sorting the coins in non-decreasing order, we can process them greedily. The greedy approach is as follows:
+
 Initialize a variable `sumSoFar` to 0, representing the maximum sum we can create with the coins processed so far.
 
 For each coin value `currCoin` :
-If `currCoin` is greater than `sumSoFar + 1`, it means we cannot create the sum `sumSoFar + 1` (since all remaining coins are too large). Thus, `sumSoFar` + 1 is the answer. Otherwise, add `currCoin to sumSoFar`, as we can now create all sums up to `sumSoFar + currCoin` by including or excluding `currCoin` in subsets.
+If `currCoin` is greater than `sumSoFar + 1`, it means we cannot create the sum `sumSoFar + 1` (since all remaining coins are too large). Thus, `sumSoFar + 1` is the answer. Otherwise, add `currCoin to sumSoFar`, as we can now create all sums up to `sumSoFar + currCoin` by including or excluding `currCoin` in subsets.
 
-If we process all coins without finding a gap, the smallest sum we cannot create is current_max + 1.
+If we process all coins without finding a gap, the smallest sum we cannot create is `sumSoFar + 1`.
 
-Why This Works:
-If we can create all sums from 0 to `sumSoFar`, and the next coin `currCoin` is at most `sumSoFar + 1`, we can extend the range of creatable sums to `sumSoFar + currCoin`.
+This works because  we can create all sums from 0 to `sumSoFar`, and f the next coin `currCoin` is at most `sumSoFar + 1`, we can extend the range of creatable sums to `sumSoFar + currCoin`.
+
 A gap occurs when a coin is too large to fill the next sum (`sumSoFar + 1`), making that sum impossible to form.
 
 \
@@ -4471,8 +4472,6 @@ A gap occurs when a coin is too large to fill the next sum (`sumSoFar + 1`), mak
 using namespace std;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
     int n;
     cin >> n;
@@ -4500,8 +4499,8 @@ int main() {
     cout << sumSoFar + 1 << "\n";
     return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Collecting Numbers
