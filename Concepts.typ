@@ -307,6 +307,39 @@ A function is something that accepts parameters and returns a value. This includ
 
 These basic concepts are meant to serve as a revision or as an introduction to C++ syntax for those of you recently switching to C++. This is just the tip of the iceberg, and there is much more to learn about C++ as you go along.#footnote[More about C++ syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
 
+= Input Output Optimization
+
+== `ios_base::sync_with_stdio(false)`
+#v(0.5em)
+By default, C++ streams (cin, cout) are synchronized with C's stdio (scanf, printf) to allow interleaved use. This synchronization adds overhead. Calling `ios_base::sync_with_stdio(false)` disables this synchronization, making C++ streams significantly faster—often 2-3x faster for large inputs. However, once disabled, you cannot mix C++ streams with C-style I/O in the same program. This is particularly useful in competitive programming where performance matters and you only use cin/cout.
+
+#v(0.5em)
+
+```cpp
+ios_base::sync_with_stdio(false);
+cin.tie(NULL);  // Often paired with this
+```
+
+#v(0.5em)
+
+== endl vs \n
+
+#v(0.5em)
+#v(0.5em)
+
+The `endl` manipulator does two things: inserts a newline character and flushes the output buffer. Flushing is an expensive operation that forces immediate write to the output device. In contrast, `"\n"` only inserts a newline without flushing. For programs with many output lines, using `"\n"` instead of `endl` can dramatically improve performance since the buffer is flushed automatically when full or when the program ends. Use `endl` only when you need immediate output (like interactive programs); otherwise, prefer `"\n"`.
+
+#v(0.5em)
+
+```cpp
+// Slow
+cout << "Result: " << x << endl;
+// Fast
+cout << "Result: " << x << "\n";
+```
+
+#v(0.5em)
+
 = Time Complexity
 
 Time complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent it by using something called Big-O Notation. For instance, say we have a program that is $O(n)$; this means that the function is linear, i.e., if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.

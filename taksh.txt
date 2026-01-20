@@ -1,83 +1,83 @@
-2. Minimizing Coins step1
-3. Coin Combinations I step1
-4. Coin Combinations II step1
-5. Removing Digits step1
-6. Grid Paths I step1
-7. Book Shop step1
-8. Array Description step1
-9. Counting Towers step1
-10. Edit Distance step1
-11. Longest Common Subsequence step1
-12. Rectangle Cutting step1
-13. Minimal Grid Path step1
-14. Money Sums step1
-15. Removal Game step1
-16. Two Sets II step1
-17. Mountain Range step1
-18. Increasing Subsequence step1
-19. Projects step1
-20. Elevator Rides step1
-21. Counting Tilings step1
-22. Counting Numbers step1
-23. Increasing Subsequence II step1
-24. Graph Algorithms step1
-26. Labyrinth step1
-27. Building Roads step1
-28. Message Route step1
-29. Building Teams step1
-30. Round Trip step1
-31. Monsters step1
-32. Shortest Routes I step1
-33. Shortest Routes II step1
-34. High Score step1
-35. Flight Discount step1
-36. Cycle Finding step1
-37. Flight Routes step1
-38. Round Trip II step1
-39. Course Schedule step1
-40. Longest Flight Route step1
-41. Game Routes step1
-42. Investigation step1
-43. Planets Queries I step1
-44. Planets Queries II step1
-45. Planets Cycles step1
-46. Road Reparation step1
-47. Road Construction step1
-48. Flight Routes Check step1
-49. Planets and Kingdoms step1
-50. Giant Pizza step1
-51. Coin Collector step1
-52. Mail Delivery step1
-53. De Bruijn Sequence step1
-54. Teleporters Path step1
-55. Hamiltonian Flights step1
-56. Knight's Tour step1
-57. Download Speed step1
-58. Police Chase step1
-59. School Dance step1
-60. Distinct Routes step1
-61. Static Range Sum Queries step1
-62. Static Range Minimum Queries step1
-63. Dynamic Range Sum Queries step1
-64. Dynamic Range Minimum Queries step1
-65. Range Xor Queries step1
-66. Range Update Queries step1
-67. Forest Queries step1
-68. Hotel Queries step1
-69. List Removals step1
-70. Salary Queries step1
-71. Prefix Sum Queries step1
-72. Pizzeria Queries step1
-73. Visible Buildings Queries  step1
-74. Range Interval Queries step1
-75. Subarray Sum Queries step1
-76. Subarray Sum Queries II step1
-77. Distinct Values Queries step1
-78. Distinct Values Queries II step1
-79. Increasing Array Queries step1
-80. Movie Festival Queries step1
-81. Forest Queries II step1
-82. Range Updates and Sums step1
-83. Polynomial Queries step1
-84. Range Queries and Copies step1
-85. Missing Coin Sum Queries step1
+Minimizing Coins step1
+Coin Combinations I step1
+Coin Combinations II step1
+Removing Digits step1
+Grid Paths I step1
+Book Shop step1
+Array Description step1
+Counting Towers step1
+Edit Distance step1
+Longest Common Subsequence step1
+Rectangle Cutting step1
+Minimal Grid Path step1
+Money Sums step1
+Removal Game step1
+Two Sets II step1
+Mountain Range step1
+Increasing Subsequence step1
+Projects step1
+Elevator Rides step1
+Counting Tilings step1
+Counting Numbers step1
+Increasing Subsequence II step1
+Graph Algorithms step1
+Labyrinth step1
+Building Roads step1
+Message Route step1
+Building Teams step1
+Round Trip step1
+Monsters step1
+Shortest Routes I step1
+Shortest Routes II step1
+High Score step1
+Flight Discount step1
+Cycle Finding step1
+Flight Routes step1
+Round Trip II step1
+Course Schedule step1
+Longest Flight Route step1
+Game Routes step1
+Investigation step1
+Planets Queries I step1
+Planets Queries II step1
+Planets Cycles step1
+Road Reparation step1
+Road Construction step1
+Flight Routes Check step1
+Planets and Kingdoms step1
+Giant Pizza step1
+Coin Collector step1
+Mail Delivery step1
+De Bruijn Sequence step1
+Teleporters Path step1
+Hamiltonian Flights step1
+Knight's Tour step1
+Download Speed step1
+Police Chase step1
+School Dance step1
+Distinct Routes step1
+Static Range Sum Queries step1
+Static Range Minimum Queries step1
+Dynamic Range Sum Queries step1
+Dynamic Range Minimum Queries step1
+Range Xor Queries step1
+Range Update Queries step1
+Forest Queries step1
+Hotel Queries step1
+List Removals step1
+Salary Queries step1
+Prefix Sum Queries step1
+Pizzeria Queries step1
+Visible Buildings Queries  step1
+Range Interval Queries step1
+Subarray Sum Queries step1
+Subarray Sum Queries II step1
+Distinct Values Queries step1
+Distinct Values Queries II step1
+Increasing Array Queries step1
+Movie Festival Queries step1
+Forest Queries II step1
+Range Updates and Sums step1
+Polynomial Queries step1
+Range Queries and Copies step1
+Missing Coin Sum Queries step1
