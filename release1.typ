@@ -4548,17 +4548,17 @@ int main() {
 
 #pagebreak()
 
-=== Collecting Numbers II
+=== Collecting Numbers II //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/2217")[Question - Collecting Numbers II]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2217")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution*
 
 This problem works with a permutation of numbers from 1 to n and asks how many rounds are needed to collect the numbers in increasing order. A new round is required whenever the position of a number x appears after the position of x+1 in the array. Initially, we scan the array and count how many such “breaks” exist to compute the number of rounds.
 
@@ -4567,7 +4567,8 @@ For each query, two positions in the array are swapped. A full recount after eve
 By maintaining an array that stores the current position of each value, each check can be done in constant time. This allows every query to be processed efficiently, keeping the total complexity fast even for large inputs.
 
 \
-*Code :*
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4585,8 +4586,6 @@ bool isBreak(int x) {
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
     cin >> n >> m;
 
@@ -4654,6 +4653,7 @@ int main() {
     return 0;
 }
 ```
+
 #pagebreak()
 
 === Playlist
