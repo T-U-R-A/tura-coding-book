@@ -4517,7 +4517,7 @@ int main() {
 
 The program stores the index of each number in the order it appears. It then scans numbers from 1 to n and checks whether a number appears before its predecessor. Whenever this happens, a new round is required. The final count represents the total number of rounds needed.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4656,23 +4656,23 @@ int main() {
 
 #pagebreak()
 
-=== Playlist
+=== Playlist //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1141")[Question - Playlist]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1141")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:*
 
 The trick is to slide a window across the array while keeping all its elements distinct. A set tracks which songs are currently inside the window: if the next song is already present, we shrink the window from the left until the duplicate disappears. Otherwise we extend the window to include it. As the window grows and shrinks, we keep updating the maximum length, which becomes the length of the longest playlist with all unique songs.
 
-
 \
-*Code :*
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4717,27 +4717,25 @@ int main() {
     cout << bestLen;
     return 0;
 }
-
 ```
+
 #pagebreak()
 
-=== Towers
+=== Towers //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1073")[Question - Towers]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1073")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:*
 
-The idea is to maintain the top blocks of all towers in a multiset. For each new block, place it on the leftmost tower whose top is strictly greater; if no such tower exists, you start a new one. This greedy strategy works because always using the smallest possible valid tower keeps future placements flexible. The number of towers equals the size of the multiset.
+The idea is to maintain the top blocks of all towers in a `multiset`. For each new block, place it on the leftmost tower whose top is strictly greater; if no such tower exists, you start a new one. This greedy strategy works because always using the smallest possible valid tower keeps future placements flexible. The number of towers equals the size of the `multiset`.
 
-
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4745,8 +4743,6 @@ using namespace std;
 using ll = long long;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
     int n;
     cin >> n;
@@ -4758,7 +4754,7 @@ int main() {
         cin >> x;
 
         // Find first tower whose top > x (we can place x on that tower)
-        auto it = tops.upper_bound(x);
+        auto it = tops.upper_bound(x);// multiset<int>::iterator is the type of auto
 
         if (it != tops.end()) {
             // Reuse this tower: remove old top and replace with x
@@ -4773,8 +4769,8 @@ int main() {
 
     return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Traffic Lights
