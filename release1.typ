@@ -4773,20 +4773,21 @@ int main() {
 
 #pagebreak()
 
-=== Traffic Lights
+=== Traffic Lights //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1163")[Question - Traffic Lights]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1163")[Backup Link]
 
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
-The program simulates cutting a stick of length `a` at `b` given positions. It uses a multiset ms to store all cut points and another multiset lens to track segment lengths. After each cut, it removes the old segment and adds two new ones. Finally, it prints the length of the largest segment remaining after each cut.
+The program simulates cutting a stick of length `a` at `b` given positions. It uses a `set` to store all the positions of the traffic lights and a `multiset` to track road segment lengths without a traffic light. After each cut that a traffic light makes, it removes the old segment and adds two new ones. Finally, it prints the length of the largest segment remaining after each cut.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4795,37 +4796,38 @@ using namespace std;
 int main() {
     int a, b, x;
     cin >> a >> b;
-
-    multiset<int> ms, lens; // ms stores all cut positions, lens stores all segment lengths
-    ms.insert(a); // rightmost boundary
-    ms.insert(0); // leftmost boundary
-    lens.insert(a); // initially one segment of length 'a'
+    
+    set<int> trafficLights; // trafficLights stores the positions of the traffic Lights
+    multiset<int> lengths; //  lengths stores all the road segment lengths without a traffic light
+    trafficLights.insert(a); // rightmost boundary
+    trafficLights.insert(0); // leftmost boundary
+    lengths.insert(a); // initially one segment of length 'a'
 
     for (int i = 0; i < b; i++) {
         cin >> x;
 
         // Insert the new cut position and find its neighbors
-        auto mid = ms.insert(x);
-        auto first = prev(mid);
-        auto last = next(mid);
+        auto mid = trafficLights.insert(x);//auto is set<int>::iterator
+        auto first = prev(mid);//auto is multiset<int>::iterator
+        auto last = next(mid);//auto is multiset<int>::iterator
 
         // Remove the old segment and add the two new smaller segments
-        lens.erase(lens.find(*last - *first));
-        lens.insert(*last - *mid);
-        lens.insert(*mid - *first);
+        lengths.erase(lengths.find(*last - *first));
+        lengths.insert(*last - *mid);
+        lengths.insert(*mid - *first);
 
         // Output the largest segment length after each cut
-        cout << *lens.rbegin() << " ";
+        cout << *lengths.rbegin() << " ";//rbegin() is a reverse iterator at the last element.
     }
 }
-
-
 ```
+
 #pagebreak()
 
 === Distinct Values Subarrays
 
 \
+
 #link("https://cses.fi/problemset/task/2162")[Question - Distinct Values Subarrays]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2162")[Backup Link]
