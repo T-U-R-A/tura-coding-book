@@ -35,17 +35,15 @@ BASIC TEMPLATE FOR ANY QUESTION :
 
 \
 
-*Intuitive Explanation* : 
+*Hint:*
 
+*Solution:*
 
-*Code :*
+*Code:*
 
 ```cpp  
 // code goes here
-}
-
 ```
 
-#outline()
-
 #pagebreak()
+
