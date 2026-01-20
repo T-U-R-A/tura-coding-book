@@ -4503,21 +4503,20 @@ int main() {
 
 #pagebreak()
 
-=== Collecting Numbers
+=== Collecting Numbers //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/2216")[Question - Collecting Numbers]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2216")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:*
 
 The program stores the index of each number in the order it appears. It then scans numbers from 1 to n and checks whether a number appears before its predecessor. Whenever this happens, a new round is required. The final count represents the total number of rounds needed.
 
-\
 *Code :*
 
 ```cpp
@@ -4525,6 +4524,7 @@ The program stores the index of each number in the order it appears. It then sca
 using namespace std;
 
 int main() {
+
     int n;
     cin >> n;
 
@@ -4537,15 +4537,15 @@ int main() {
 
     int rounds = 1;
     for (int i = 2; i <= n; i++) {
-        if (position[i] < position[i - 1]) {
+        if (position[i] < position[i - 1]) {//if the larger number
             rounds++;
         }
     }
 
     cout << rounds;
-}
 
 ```
+
 #pagebreak()
 
 === Collecting Numbers II
