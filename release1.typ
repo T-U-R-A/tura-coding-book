@@ -4874,7 +4874,7 @@ int main() {
         answer += (right - left + 1);
     }
 
-    cout << answer;
+    cout << answer << "\n";
 }
 ```
 
@@ -4912,7 +4912,7 @@ int main(){
     ans += r-l+1;//number of subarrays ending at r 
   }
 
-  cout << ans << endl;
+  cout << ans << "\n";
   return 0;
 }
 ```
@@ -4928,35 +4928,35 @@ int main(){
 
 \
 
-*Explanation* :
+*Solution:*
 
-For each distinct value with `occ` occurrences, we have `(occc + 1)` choices: exclude it (0 copies) or choose 1 of the `occ` identical copies to include.
+For each distinct value with `occ` occurrences, we have `(occ + 1)` choices: exclude it (0 copies) or choose 1 of the `occ` identical copies to include.
 Multiplying choices for all distinct numbers gives total possible combinations including the empty subsequence.
 Subtract 1 to remove the empty subsequence case, leaving the count of all distinct-value subsequences.
 
-*Example :*
+*Example:*
 
-For the array [1, 3, 5, 2, 9, 3, 2]
+For the array {1, 3, 5, 2, 9, 3, 2}
 \
 \
 
-The frequency table stores - 
+The frequency table stores: 
 \
 
-#table(
-  columns: 2,
+#align(center)[
+  #table(
+    columns: 2, align: center,
 
-  fill: (x, y) => if (y == 0) { red.lighten(60%) },
+    [*Key*], [*Value*],
+    [1], [1],
+    [2], [2],
+    [3], [2],
+    [5], [1],
+    [9], [1],
+  )
+]
 
-  [Key], [Value],
-  [1], [1],
-  [2], [2],
-  [3], [2],
-  [5], [1],
-  [9], [1],
-)
-
-The number of distinct value subsequences 
+The number of distinct value subsequences is: 
 
 $ 
 &= (1 + 1) dot (2 + 1) dot (2 + 1) dot (1 + 1) dot (1 + 1)
@@ -4968,9 +4968,7 @@ $
 &= 72
 $
 
-
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -4980,8 +4978,6 @@ using ll = long long;
 const int MOD = 1e9 + 7;
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
     int n;
     cin >> n;
@@ -4997,11 +4993,12 @@ int main() {
     // For each distinct value, we can include 0, 1, 2, ..., or occ copies
     // This gives (occ + 1) choices per value; multiply all choices together
     ll ans = 1;
-    for (auto [num, occ] : freq) {
+    for (pair<ll, ll> [num, occ] : freq) {
         ans = (ans * (occ + 1)) % MOD;
     }
 
     // Subtract 1 to exclude the empty subsequence
+    // The reason for adding MOD before taking the modulo is because in c++, a number less than 0 can give a negative remainder which is bad for future calculation. Hence you make sure it's possible by adding MOD.
     ans = (ans - 1 + MOD) % MOD;
     cout << ans << "\n";
 
