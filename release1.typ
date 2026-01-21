@@ -3078,7 +3078,7 @@ The space complexity is $O(n)$ and both update and query operations run in $O(lo
 
 #pagebreak()
 
-=== Binary Indexed Tree//chap 2
+=== Binary Indexed Tree <fenw>//chap 2
 
 Let's say for the question in the previous section, we not only want the ability to find the sum in a given range, we also want to update an element in the array. This means that we need to be able to both change values in the array and output the sum in any given range quickly.
 
@@ -3448,7 +3448,7 @@ int search(int idx){
   int ans = 0;
 
   for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
-    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+    if(ans + (1 << k) <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
       ans += 1 << k;//update the answer.
       idx -= fenw[ans];//account for all indices upto fenw[ans].
     }
@@ -3558,7 +3558,7 @@ int search(int idx){
   int ans = 0;
 
   for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
-    if(1 << k <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+    if(ans + (1 << k) <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
       ans += 1 << k;//update the answer.
       idx -= fenw[ans];//account for all indices upto fenw[ans].
     }
@@ -4824,13 +4824,13 @@ int main() {
 
 #pagebreak()
 
-=== Distinct Values Subarrays
+=== Distinct Values Subarrays //Reviewed
 
 \
 
-#link("https://cses.fi/problemset/task/2162")[Question - Distinct Values Subarrays]
+#link("https://cses.fi/problemset/task/3420")[Question - Distinct Values Subarrays]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2162")[Backup Link]
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2162")[Backup Link(Fix Later)]
 
 \
 
@@ -4919,7 +4919,7 @@ int main(){
 
 #pagebreak()
 
-=== Distinct Values Subsequences
+=== Distinct Values Subsequences //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/3421")[Question - Distinct Values Subsequences]
@@ -5007,13 +5007,13 @@ int main() {
 ```
 #pagebreak()
 
-=== Josephus Problem I
+=== Josephus Problem I //Reviewed
 
 \
 
-#link("https://cses.fi/problemset/task/1624")[Question - Josephus Problem I]
+#link("https://cses.fi/problemset/task/2162")[Question - Josephus Problem I]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1624")[Backup Link]
+#link("https://web.archive.org/web/20250810193208/https://cses.fi/problemset/task/2162")[Backup Link]
 
 \
 
@@ -5058,112 +5058,85 @@ int main() {
 
 #pagebreak()
 
-=== Josephus Problem II
+=== Josephus Problem II //Reviewed
 
 \
-#link("https://cses.fi/problemset/task/1625")[Question - Josephus Problem II]
+
+#link("https://cses.fi/problemset/task/2163")[Question - Josephus Problem II]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1625")[Backup Link]
+#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1625")[Backup Link (Fix Later)]
 
 \
 
-*Explanation* :
+*Hint:*
 
+If you've thought about the question for a while, you would have realised that you need the ability to the following operations efficiently (i.e $O(log n)$):
 
-Solution Overview:
-- Uses a Fenwick Tree (Binary Indexed Tree) to efficiently track which positions are still active
-- Each position is initially marked as "1" (active), and changed to "0" when removed
++ Jump from a certain number to the next number $k$ places ahead.
++ Delete the element at the current index. 
 
-*Key Operations*:
-1. update(idx, delta): Marks a position as active (+1) or removed (-1)
-2. query(idx): Returns count of active elements from position 1 to idx
-3. findKth(k): Uses binary search on the Fenwick Tree to find the k-th active element in O(log n) time
+@fenw explains the data structure known as a Fenwick tree which gives you to ability to do these operations.
 
-*Algorithm Flow*:
-- Start with all n positions active
-- In each iteration, move k steps forward in the circular list of remaining elements
-- Use `findKth` to map from the circular index to the actual position
-- Output that position and mark it as removed
-- Repeat until all elements are removed
+*Solution:*
 
-*Complexity*: O(n log n) - n removals, each taking O(log n) for finding and updating
+We can use the Fenwick Tree (Binary Indexed Tree)#footnote[See @fenw] as an indexed set to efficiently jump by any amount $k$ and remove elements. 
 
-\
-*Code :*
+Set every element from 1 to $n$ in the fenwick tree to 1 to indicate they are all in the list 1 time.
+Start at index 0, then jump $k$ places mod n so its circular, use the `search()` function to find what number is at that index + 1 (Fenwick Trees are 1 indexed) and remove it by subtracting it's frequency by 1.
+
+The time complexity is $O(n log n)$: $n$ removals, each taking $O(log n)$ for searching and removing.
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-class FenwickTree {
-    vector<int> tree;
-    int n;
-public:
-    FenwickTree(int n) : n(n), tree(n + 1, 0) {}
-    
-    // Add delta to position idx (used to mark elements as active/inactive)
-    void update(int idx, int delta) {
-        for (; idx <= n; idx += idx & -idx)
-            tree[idx] += delta;
-    }
-    
-    // Get count of active elements in range [1, idx]
-    int query(int idx) {
-        int sum = 0;
-        for (; idx > 0; idx -= idx & -idx)
-            sum += tree[idx];
-        return sum;
-    }
-    
-    // Binary search to find the k-th active element (1-indexed)
-    int findKth(int k) {
-        int pos = 0, bit = 1;
-        // Find the highest power of 2 <= n
-        while (bit <= n) bit <<= 1;
-        bit >>= 1;
-        
-        // Binary search from highest bit to lowest
-        for (; bit > 0; bit >>= 1) {
-            if (pos + bit <= n && tree[pos + bit] < k) {
-                k -= tree[pos + bit];
-                pos += bit;
-            }
-        }
-        return pos + 1;
-    }
-};
+int n;
+vector<int> fenw;
 
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int n, k;
-    cin >> n >> k;
-    
-    // Initialize Fenwick Tree and mark all positions as active
-    FenwickTree ft(n);
-    for (int i = 1; i <= n; i++) 
-        ft.update(i, 1);
-    
-    int remaining = n;  // Track how many elements are still active
-    int idx = 0;        // Current position in the circular arrangement
-    
-    while (remaining > 0) {
-        // Move k steps forward in circular manner
-        idx = (idx + k) % remaining;
-        
-        // Find the actual position of the (idx+1)-th active element
-        int pos = ft.findKth(idx + 1);
-        cout << pos << " ";
-        
-        // Mark this position as removed
-        ft.update(pos, -1);
-        remaining--;
-    }
-    
-    cout << "\n";
-    return 0;
+void add(int x, int k){
+  for(; x <= n ; x += x & -x)// x & -x is the LSSB(x)
+    fenw[x] += k;
 }
+
+int search(int idx){
+  int ans = 0;
+
+  for(int k = floor(log2(n)); k >= 0; k--){//go through the powers of 2.
+    if(ans + (1 << k) <= n && fenw[ans + (1 << k)] < idx){//this element is before the idx.
+      ans += 1 << k;//update the answer.
+      idx -= fenw[ans];//account for all indices upto fenw[ans].
+    }
+  }
+
+  return ans + 1;//ans was the value that was before idx, so one value ahead of that is at idx.
+}
+
+int main(){
+
+  int k;
+  cin >> n >> k;
+  fenw.resize(n + 1);//allocating memory to the fenwick tree;
+
+  for (int i = 1; i <= n; i++) 
+    add(i, 1);//increase the frequency of all numbers by 1
+
+  for(int rem = n, idx = 0; rem > 0; rem--){//rem is the people remaining in the circle
+    // Move k steps forward in circular manner
+    idx = (idx + k) % rem;
+
+    // Find the number at index idx + 1 (+1 because a fenwick tree 1 one indexed) 
+    int pos = search(idx + 1);
+    cout << pos << " ";
+
+    // Mark this number as removed by decreasing frequency to 0
+    add(pos, -1);
+  }
+
+  return 0;
+}
+
 ```
 
 #pagebreak()
