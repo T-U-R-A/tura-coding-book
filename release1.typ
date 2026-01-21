@@ -1564,7 +1564,7 @@ int main() {
 
 #link("https://cses.fi/problemset/task/1754")[Question - Coin Piles]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link Is Broken will fix later.]
+#link("https://web.archive.org/web/20250729225736/https://cses.fi/problemset/task/1754")[Backup Link]
 
 \
 
@@ -4830,7 +4830,7 @@ int main() {
 
 #link("https://cses.fi/problemset/task/3420")[Question - Distinct Values Subarrays]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2162")[Backup Link(Fix Later)]
+#link("https://web.archive.org/web/20250805032036/https://cses.fi/problemset/task/3420")[Backup Link]
 
 \
 
@@ -5064,7 +5064,7 @@ int main() {
 
 #link("https://cses.fi/problemset/task/2163")[Question - Josephus Problem II]
 #h(0.5cm)
-#link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1625")[Backup Link (Fix Later)]
+#link("https://web.archive.org/web/20260113033045/https://cses.fi/problemset/task/2163")[Backup Link]
 
 \
 
