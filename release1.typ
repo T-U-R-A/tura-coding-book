@@ -5216,7 +5216,7 @@ int main() {
 #pagebreak()
 
 
-=== Nested Ranges Count
+=== Nested Ranges Count //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/2169")[Question - Nested Ranges Count]
@@ -5225,11 +5225,11 @@ int main() {
 
 \
 
-*Hint: *
+*Hint:*
 
 Try sorting the intervals in ascending order of left index and descending order of right index. What algorithm could you come up with where you only have to iterate once through the list to get the answer? Think about why this sorting method was mentioned and what advantages it has. 
 
-*Solution: *
+*Solution:*
 
 The problem asks us to find two values for each range: the number of other ranges it contains, and the number of other ranges that contain it.
 A naive solution comparing every pair would be too slow ($O(n^2)$). We'll need a better approach.
@@ -5272,7 +5272,7 @@ Lastly range 0 contains range 1, range 2, and range 3, because $8 < 10$, $6 < 10
 
 While the approach seems logical, how can we efficiently find out how many ranges have a right end point less than the current range or greater than the current range. For that, we can use a Fenwick tree as an indexed set. You can add the right index of all ranges either succeeding or preceding and then find the how many right indexes are more or less than the current range.
 
-Looking at the code should make it much clearer:
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5283,7 +5283,7 @@ vector<int> fen;
 struct Range{
 	int l, r, idx; 
 
-  bool operator<(const Range& ran){
+  bool operator<(const Range& ran){//operator overloading for the custom sorting.
     return l < ran.l || l == ran.l && r > ran.r;
   }
 };
