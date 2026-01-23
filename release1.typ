@@ -2644,23 +2644,106 @@ int main() {
 === Grid Path Description
 
 \
+
 #link("https://cses.fi/problemset/task/1625")[Question - Grid Path Description]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1625")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Hint:*
 
-The program counts how many valid ways exist to move through a `7×7` grid using exactly 48 moves.
-You start at the top-left cell and must end at the bottom-left cell without visiting any cell twice. Each move must follow the given string, where `?` allows any direction and other characters force a specific move. The code tries all allowed moves step by step while marking visited cells.
+Try using backtracking#footnote[see @backtracking] but optimizing it for cases when you know it's impossible to reach the bottom-left while covering all other squares.
 
-Paths that get trapped or split the grid into unreachable regions are stopped early. Every complete path that reaches the destination at exactly 48 steps is counted.
+*Solution:*
 
-*Code :*
+You start at the top-left cell and must end at the bottom-left cell without visiting any cell twice. Each move must follow the given string, where `?` allows any direction and other characters force a specific move. The code tries all allowed moves step by step while marking visited cells and backtracking when either all cells are reached or it's impossible to continue the path.
+
+While you could implement this easily, this will be too slow. Hence, you need to optimize it to catch impossible routes as soon as possible.
+
++ If a path reaches the bottom-left cell early (i.e. before covering other cells), backtrack right here because all future paths can't end up at the bottom-left. 
++ If a path gets stopped by a wall and has the option to move left or right along the wall, then the grid will get split into 2 regions, and you can't cover all cells in both regions. Hence you must backtrack 
++ The extension to the previous point is that if a path get's stopped by cells previously visited and have to option to move left or right along the visited cells, the grid will again get split into 2 regions. Hence you must backtrack.
+
+#let len = 7
+#figure(caption: "2 regions fromed by getting stopped at a wall", supplement: none,
+  cetz.canvas(length: 0.7cm, {
+    import cetz.draw: *
+    for y in range(0, - len, step: -1) {
+      for x in range(len) {
+        rect((x,y),(x + 1, y - 1))
+      }
+    }
+    let o = line((0.5,-0.5),(0.5,-0.5))
+    let l = line((rel: (0, 0)),(rel: (-1,0)))
+    let r = line((rel: (0, 0)),(rel: (1,0)))
+    let u = line((rel: (0, 0)),(rel: (0,1)))
+    let d = line((rel: (0, 0)),(rel: (0,-1)))
+    let path = (o,d,d,d,d,d,d,r,r,u,l,u,r,u,r,r,r,r)
+
+    for i in range(path.len()) {
+      if i == path.len() - 1 {
+        set-style(mark: (end: ">"))
+      }
+      path.at(i)  
+    }
+
+    rect((3,-4),(7,-7), fill: luma(255, 70%), name: "region1")
+    rect((3,-4),(7,-7), fill: rgb(0,0,255, 30%), name: "region1")
+    content((name: "region1", anchor: "center"), [*Region 1*])
+    rect((1,0),(7,-3), fill: luma(255, 70%), name: "region2")
+    rect((1,0),(7,-3), fill: rgb(255,0,0, 30%), name: "region2")
+    content((name: "region2", anchor: "center"), [*Region 2*])
+    rect((1,-3),(2,-4), fill: luma(255, 70%))
+    rect((1,-3),(2,-4), fill: rgb(255,0,0, 30%))
+    set-style(mark: none)
+    // line((1,-3),(2,-3), stroke: luma(255))
+    line((1 + 0.024696,-3),(2 - 0.024696,-3), stroke: luma(255, 70%))
+    line((1 + 0.024696,-3),(2 - 0.024696,-3), stroke: rgb(255,0,0, 30%))
+  })
+)
+
+#figure(caption: "2 regions form by getting stopped by previously visited cells", supplement: none,
+  cetz.canvas(length: 0.7cm, {
+    import cetz.draw: *
+    for y in range(0, - len, step: -1) {
+      for x in range(len) {
+        rect((x,y),(x + 1, y - 1))
+      }
+    }
+    let o = line((0.5,-0.5),(0.5,-0.5))
+    let l = line((rel: (0, 0)),(rel: (-1,0)))
+    let r = line((rel: (0, 0)),(rel: (1,0)))
+    let u = line((rel: (0, 0)),(rel: (0,1)))
+    let d = line((rel: (0, 0)),(rel: (0,-1)))
+    let path = (o,d,d,d,d,d,d,r,r,r,r,r,r,u,l,l,l,l,l,u,u,u,r,r,r,r,d,d)
+
+    for i in range(path.len()) {
+      if i == path.len() - 1 {
+        set-style(mark: (end: ">"))
+      }
+      path.at(i)  
+    }
+
+    rect((2,-3),(5,-5), fill: luma(255, 70%), name: "region1")
+    rect((2,-3),(5,-5), fill: rgb(0,0,255, 30%), name: "region1")
+    content((name: "region1", anchor: "center"), [*Region 1*])
+    rect((1,0),(7,-2), fill: luma(255, 70%), name: "region2")
+    rect((1,0),(7,-2), fill: rgb(255,0,0, 30%), name: "region2")
+    content((name: "region2", anchor: "center"), [*Region 2*])
+    rect((6,-2),(7,-5), fill: luma(255, 70%))
+    rect((6,-2),(7,-5), fill: rgb(255,0,0, 30%))
+    set-style(mark: none)
+    // line((1,-3),(2,-3), stroke: luma(255))
+    line((6 + 0.02565,-2),(7 - 0.02565,-2), stroke: luma(255, 70%))
+    line((6 + 0.02565,-2),(7 - 0.02565,-2), stroke: rgb(255,0,0, 30%))
+  })
+)
+
+*Code:*
 
 ```cpp
+#include <bits/stdc++.h>
 using namespace std;
 
 string path;
@@ -2680,21 +2763,22 @@ bool is_blocked(int x, int y) {
     return false;
 }
 
-void dfs(int x, int y, int step) {
+void gridPaths(int x, int y, int step) {
     // If we reached the target cell
     if (x == 6 && y == 0) {
         if (step == 48) ans++;  // Count only if all moves were used
         return;
     }
-
-    // Stop early if movement is forced into a dead split
-    if ((is_blocked(x + 1, y) && is_blocked(x - 1, y) &&
+    
+    //Backtrack if the current path has split the grid into 2 regions.
+    //x+1 is right, x-1 is left, y+1 is up, y-1 is down.
+    if ((is_blocked(x + 1, y) && is_blocked(x - 1, y) && 
          !is_blocked(x, y + 1) && !is_blocked(x, y - 1)) ||
         (!is_blocked(x + 1, y) && !is_blocked(x - 1, y) &&
          is_blocked(x, y + 1) && is_blocked(x, y - 1)))
         return;
 
-    visited[x][y] = true;   // Mark this cell as used
+    visited[x][y] = true;// Mark this cell as visited
 
     for (int d = 0; d < 4; ++d) {
         int nx = x + dx[d];
@@ -2704,8 +2788,8 @@ void dfs(int x, int y, int step) {
         if (path[step] != '?' && path[step] != dir[d]) continue;
 
         // Move only to valid and unused cells
-        if (inside(nx, ny) && !visited[nx][ny])
-            dfs(nx, ny, step + 1);
+        if (!is_blocked(nx,ny))
+            gridPaths(nx, ny, step + 1);
     }
 
     visited[x][y] = false;  // Undo the move before trying other possibilities
@@ -2713,15 +2797,14 @@ void dfs(int x, int y, int step) {
 
 int main() {
     cin >> path;
-    dfs(0, 0, 0);           // Start from top-left with zero moves taken
+    gridPaths(0, 0, 0);           // Start from top-left with zero moves taken
     cout << ans << endl;
     return 0;
 }
 ```
 
-\
-
 #pagebreak()
+
 = Sorting and Searching
 
 == Concepts
@@ -5141,7 +5224,7 @@ int main(){
 
 #pagebreak()
 
-=== Nested Ranges Check
+=== Nested Ranges Check //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/2168/")[Question - Nested Ranges Check]
@@ -5367,6 +5450,7 @@ int main(){
 === Room Allocation
 
 \
+
 #link("https://cses.fi/problemset/task/1164")[Question - Room Allocation]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1164")[Backup Link]
