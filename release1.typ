@@ -5076,7 +5076,7 @@ int main() {
     // For each distinct value, we can include 0, 1, 2, ..., or occ copies
     // This gives (occ + 1) choices per value; multiply all choices together
     ll ans = 1;
-    for (pair<ll, ll> [num, occ] : freq) {
+    for (auto [num, occ] : freq) {
         ans = (ans * (occ + 1)) % MOD;
     }
 
@@ -5455,15 +5455,13 @@ int main(){
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1164")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:*
 
-We use a greedy algorithm by sorting customers by their arrival time. For each customer, we check if any previously used room has become free (i.e., its last guest departed before the current guest arrives). We use a multiset to efficiently track rooms by their end times - if a suitable free room exists, we reuse it; otherwise, we allocate a new room. This greedy choice is optimal because assigning an available room to the earliest arriving customer never leads to a worse solution than leaving it empty.
+We can sort the customers by arrival time. For each customer, we check if any previously used room has become free (i.e., its last guest departed before the current guest arrives). We use a multiset to efficiently track rooms by their end times: if a rooms end time is less than the current customers arrival time we reuse it; otherwise, we allocate a new room. This greedy choice is optimal because assigning an available room to the earliest arriving customer never leads to a worse solution than leaving it empty.
 
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5498,7 +5496,7 @@ int main() {
         // Find a room that's free before this booking starts
         // upper_bound finds first room with end_time > start
         // We want the room with end_time <= start, so we go one back
-        auto it = availableRooms.upper_bound({start, INT_MAX});
+        auto it = availableRooms.upper_bound({start, INT_MAX});//auto is multiset<pair<int,int>>::iterator
 
         if (it == availableRooms.begin()) {
             // No available room found - need a new room
@@ -5524,8 +5522,8 @@ int main() {
 
     return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Factory Machines
