@@ -5965,20 +5965,20 @@ int main() {
 === Subarray Sums II
 
 \
+
 #link("https://cses.fi/problemset/task/1661")[Question - Subarray Sums II]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1661")[Backup Link]
 
 \
 
-*Explanation* :
+*Solution:*
 
-We iterate through the array while maintaining a running prefix sum. A map stores how many times each prefix sum has appeared so far. At each position, if a previous prefix sum equals `currentSum` − `targetSum`, a subarray with the required sum exists. We add its frequency to the answer and then record the current prefix sum.
-This counts all valid subarrays in linear time.
+We iterate through the array while maintaining a prefix sum. A map stores how many times each prefix sum has appeared so far. At each position, if a previous prefix sum equals `currentSum` − `targetSum`, a subarray with sum `targetSum` exists(The subarray start 1 place after the previous prefix sum). We add the frequency of how often that previous prefix sum value occurred to the answer and then increase the frequency of the value of the current prefix sum.
 
 \
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5995,7 +5995,7 @@ int main() {
         cin >> array[i];
     }
 
-    // prefixSumCount[s] = how many times prefix sum 's' has occurred
+    // prefixSumCount[s] = how many times prefix sum with value s has occurred
     map<ll, ll> prefixSumCount;
     prefixSumCount[0] = 1;   // empty prefix
 
@@ -6008,15 +6008,15 @@ int main() {
         // count subarrays ending here with sum = targetSum
         subarrayCount += prefixSumCount[currentSum - targetSum];
 
-        // record current prefix sum
+        // increase the frequency of the value of the current prefix sum
         prefixSumCount[currentSum]++;
     }
 
     cout << subarrayCount << "\n";
     return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Subarray Divisibility
