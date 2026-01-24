@@ -5911,17 +5911,18 @@ int main() {
 === Subarray Sums I
 
 \
+
 #link("https://cses.fi/problemset/task/1660")[Question - Subarray Sums I]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1660")[Backup Link]
 
 \
 
-*Explanation* :
+*Solution:*
 
-All numbers are positive, so we keep a sliding window: expand the right end, and whenever the sum exceeds x we shrink from the left until it fits. Each time the window sum equals x we have one valid subarray.
+Because all numbers are positive adding or removing an element to the current subarray will increase or decrease the sum respectively. This lets us use a sliding window to keep track of the current sum of the subarray. 
 
-\
+For every element `r`, we first increase the size of the current subarray from `l`,`r-1` to `l`,`r` and increase the sum by `v[r]`. If this sum is greater than the target `x`, we shrink the window from the left and remove those elements from the sum until the sum is less than or equal to `x`. If the sum is equal to `x` we increase our answer by 1.
 
 *Code :*
 
@@ -5935,28 +5936,27 @@ int main() {
     cin >> n >> x;
 
     vector<int> v(n);
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
         cin >> v[i];
-    }
 
-    ll curr = 0;   // current window sum
-    ll count = 0;  // number of subarrays equal to x
+    ll sum = 0;   // current window sum
+    ll ans = 0;  // number of subarrays equal to x
     ll l = 0;      // left pointer of sliding window
 
     for (int r = 0; r < n; r++) {
-        curr += v[r];               // expand window to the right
+        sum += v[r]; // expand window to the right
 
-        // shrink window from the left while sum exceeds x
-        while (curr > x) {
-            curr -= v[l];
+        // shrink window from the left while sum > x
+        while (sum > x) {
+            sum -= v[l];
             l++;
         }
 
-        // if current window sum matches x, count it
-        if (curr == x) count++;
+        // if current window sum = x, increase the answer by 1
+        if (sum == x) ans++;
     }
 
-    cout << count;
+    cout << ans << "\n";
 }
 
 ```
