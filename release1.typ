@@ -5861,58 +5861,51 @@ int main() {
 ```
 #pagebreak()
 
-=== Nearest Smaller Values
+=== Nearest Smaller Values //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1645")[Question - Nearest Smaller Values]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1645")[Backup Link]
 
-
 \
 
-*Intuitive Explanation* :
+*Solution:*
 
-We use a set of pairs (value, index) to maintain a sorted collection of elements seen so far. The lower_bound function efficiently locates the first element not smaller than the current value, allowing quick access to the previous smaller element by moving one step back. After each iteration, larger or equal elements are erased to maintain order and correctness.
+We can use a stack of pairs (value, index) that stores the previously seen values that are less than the current value `x` in ascending order. This is achieved by first popping all elements greater than `x` and then either outputting the index at the top of the stack (`s.top.second`) or if the stack is empty, outputting zero. Finally push `x` into the stack.
 
-*Code :*
+The index at the top of the stack is guaranteed to be the closest value less than than `x` because any other values that are less than `x` which occurred earlier than the answer were pushed in first and hence will be lower in the stack than the answer.
+
+*Code:*
 
 ```cpp
-
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 int main() {
-    ll n, a;
-    cin >> n;
-    set<pair<ll,ll>> s;  // Stores pairs of (value, index) in sorted order by value
+  ll n, a;
+  cin >> n;
+  stack<pair<int,int>> s;  // Stores pairs of (value, index) in sorted order by value
 
-    for (int i = 0; i < n; i++) {
-        cin >> a;
+  for (int idx = 1; idx <= n; idx++) {
+    cin >> x;
 
-        // Find the first element in the set whose value >= current value 'a'
-        auto it = s.lower_bound({a, -1});
+    while(!s.empty() && s.top().first >= x)//remove all elements >= x
+      s.pop(); 
 
-        // If there's no smaller value, output 0
-        if (it == s.begin()) cout << "0 ";
-        else {
-            // Otherwise, go one step back to get the last smaller element
-            --it;
-            cout << it->second + 1 << " ";  // Output its index (1-based)
-        }
+    if(s.empty())//if there are no elements < x
+      cout << 0 << " ";
+    else //output the element with the idx closest to x i.e the top of the stack
+      cout << s.top().second << " ";
 
-        // Remove all elements with value >= 'a' (not needed anymore)
-        auto it2 = s.lower_bound({a, -1});
-        s.erase(it2, s.end());
+    s.push({x,idx});
+  }
 
-        // Insert current element (value, index)
-        s.insert({a, i});
-    }
+  return 0;
 }
-
-
 ```
+
 #pagebreak()
 
 === Subarray Sums I
