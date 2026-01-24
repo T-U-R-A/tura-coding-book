@@ -5533,15 +5533,18 @@ int main() {
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1620")[Backup Link]
 
+\
+
+*Hint:*
+
+Observe that the amount of items the machines in total produce increase consistently with time(i.e monotonically). You can also in $O(n)$ compute the amount of items the machines can make in a given amount of time. Think about how you could use this to find the minimum time to make $t$ items.
+
+*Solution:* 
+
+The key idea is to use binary-search on answers. This means you assume the answer(minimum time to make $t$ items) is some time `mid`. You then compute how many items can be made in time `mid` by summing up `mid/v[i]` for each machine. If the amount of products you made is greater than or equal to `t`, you try a smaller time by halving the range towards smaller values. If you made less than `t` products, you try a larger time by halving the range towards larger values. This guarantees we find the earliest moment when production meets the target.
 
 \
 
-*Explanation* :
-
-The key idea is that the number of items produced increases monotonically with time, so we can binary-search the minimum time needed to make at least `t` items. For any guessed time `mid`, we compute how many items all machines together can produce by summing $mid / v[i]$. If the total is ≥ t, we try a smaller time; otherwise, we increase the time. This guarantees we find the earliest moment when production meets the target.
-
-
-\
 *Code :*
 
 ```cpp
@@ -5578,13 +5581,13 @@ int main() {
         }
 
         // If we can produce at least t items in 'mid' time,
-        // try to find an even smaller valid time.
+        // try to find an even smaller valid time by halving the range
         if (total >= t) {
             ans = mid;
             high = mid - 1;
         }
         else {
-            // Not enough items — need more time.
+            // Need more time, so halve the range towards larger values.
             low = mid + 1;
         }
     }
@@ -5593,6 +5596,7 @@ int main() {
     return 0;
 }
 ```
+
 #pagebreak()
 
 === Tasks and Deadlines
