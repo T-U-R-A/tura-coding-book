@@ -5609,15 +5609,23 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:*
 
-In this problem, we must schedule tasks to maximize total reward, where each task gives a reward only if completed before its deadline.
+The greedy approach is to always prioritize tasks with the shortest durations first, because choosing a long task early delays all subsequent tasks and reduces their rewards by a larger amount. Say we have 2 tasks $X$ and $Y$ arranged in the following 2 arrangements: 
 
-The intuitive greedy approach is to always prioritize tasks with the shortest durations first, because choosing a long task early delays all subsequent tasks and reduces their chances of meeting deadlines. By sorting tasks by duration and maintaining a timeline, we ensure we fit the maximum number of tasks in the shortest possible time. Whenever adding a new task would exceed its deadline, we can replace the longest task in our schedule with it if it has a smaller duration.
-Thus, the algorithm minimizes wasted time and maximizes the number of completed tasks for optimal total reward.
+$
+underbrace(#rect(align(left)[X], width: 2cm, fill: luma(210), stroke: black), a)
+underbrace(#rect(align(left)[Y], width: 5cm, fill: luma(230), stroke: black), b)
 
 \
-*Code :*
+
+underbrace(#rect(align(left)[Y], width: 5cm, fill: luma(230), stroke: black), b)
+underbrace(#rect(align(left)[X], width: 2cm, fill: luma(210), stroke: black), a)
+$
+
+If you compare the change in score from the first ordering to the second ordering: in the second ordering, $Y$ gets completed $a$ units of time earlier so the score of $Y$ increases by $a$. However, $X$ gets completed $b$ units of time later, so the score of $X$ decreases by $b$. The net change in score is $a - b < 0$ which is lesser than it was in the first ordering. Hence you must sort the tasks by during to ensure the maximum score.
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5645,10 +5653,11 @@ int main() {
         total_reward += jobs[i].second - time_elapsed;  // reward = deadline - completion time
     }
 
-    cout << total_reward;
+    cout << total_reward << "\n";
+    return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Reading Books
