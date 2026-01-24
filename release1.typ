@@ -4330,7 +4330,7 @@ int main() {
 
 #pagebreak()
 
-=== Sum of Two Values //Reviewed
+=== Sum of Two Values <sumoftwo> //Reviewed
 
 \
 
@@ -5721,7 +5721,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Sum of Three Values
+=== Sum of Three Values <sumofthree> //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1641")[Question - Sum of Three Values]
@@ -5731,13 +5731,11 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:*
 
-This solution finds three numbers that sum to the target by first sorting the array and then fixing one element at a time. For each fixed element, it uses a two-pointer scan on the remaining range to efficiently search for a complementary pair. Sorting allows the sum to guide pointer movement, reducing the search from cubic to quadratic time. If no valid triple exists, the answer is declared impossible, keeping the logic clean and deterministic.
+This question is an extension of Sum of Two Values#footnote[See @sumoftwo]. We can pick one number `v[i]` and then seeing if there are any remainder 2 values `v[l]`, `v[r]` in the range `i+1` to `n-1` such that `v[i] + v[l] + v[r] = target`. The remainder 2 values are found by using the same 2 pointer approach as shown in the previous question.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -5772,10 +5770,10 @@ int main() {
                 return 0;
             }
             else if (sum < target) {
-                l++;         // need a larger sum → move left pointer right
+                l++;         // need a larger sum -> move left pointer right
             }
             else {
-                r--;         // need a smaller sum → move right pointer left
+                r--;         // need a smaller sum -> move right pointer left
             }
         }
     }
@@ -5788,24 +5786,21 @@ int main() {
 ```
 #pagebreak()
 
-=== Sum of Four Values
+=== Sum of Four Values //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1642")[Question - Sum of Four Values]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1642")[Backup Link]
 
-
 \
 
-*Explanation* :
+*Solution:*
 
-If you understood the above three sum algorithm, four sum simply extends this by fixing two elements instead of one. You iterate through all pairs (i, j), then for each pair, use the same two-pointer technique to find the remaining two numbers that complete the target sum.
+This question is an extension of Sum of Three Values#footnote[See @sumoftwo]. We can pick two numbers `v[i]`,  `v[j]` then seeing if there are any remainder 2 values `v[l]`, `v[r]` in the range `i+1` to `n-1` such that `v[i] + v[l] + v[r] = target`. The remainder 2 values are found by using the same 2 pointer approach as shown in the previous question.
 
-
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
