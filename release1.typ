@@ -6229,13 +6229,11 @@ int main() {
 
 \
 
-*Explanation* :
+*Solution:*
 
-The movies are sorted by ending time so earlier-finishing movies are considered first. A multiset stores when each of the k watchers becomes free. For each movie, we find the latest watcher free at or before its start time. If such a watcher exists, we assign the movie and update their free time. This greedy process maximizes the total number of movies watched.
+The movies are sorted by ending time so earlier-finishing movies are considered first. A `multiset` stores when each of the k watchers becomes free. For each movie, we find the watcher who become free as close as possible to when the current movie starts (i.e. the time when the watcher becomes free is the largest value less than or equal to the start time of the movie). If such a watcher exists, we assign the movie and update when the time when they become free. This greedy process maximizes the total number of movies watched.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -6263,8 +6261,8 @@ int main() {
     int watched = 0;
 
     for (auto [endTime, startTime] : movies) {
-        // Find a watcher who is free at or before startTime
-        auto it = freeAt.upper_bound(startTime);
+        // Find the watcher who is free as close to the startTime (i.e largest values less than or equal to startTime)
+        auto it = freeAt.upper_bound(startTime);//auto is multiset<int>::iterator
 
         if (it == freeAt.begin()) {
             // No watcher available
@@ -6272,16 +6270,16 @@ int main() {
         }
 
         // Assign this movie to the latest possible free watcher
-        freeAt.erase(--it);
-        freeAt.insert(endTime);
+        freeAt.erase(--it);//upperbound - 1 is the same as largest value less than or equal to startTime
+        freeAt.insert(endTime);//updating when the watcher gets free
         watched++;
     }
 
-    cout << watched;
+    cout << watched << "\n";
     return 0;
 }
-
 ```
+
 #pagebreak()
 
 === Maximum Subarray Sum II
