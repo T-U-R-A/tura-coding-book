@@ -4392,7 +4392,7 @@ int main() {
 
 #pagebreak()
 
-=== Maximum Subarray //Reviewed
+=== Maximum Subarray Sum //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1643")[Question - Maximum Subarray Sum]
@@ -6285,20 +6285,18 @@ int main() {
 === Maximum Subarray Sum II
 
 \
+
 #link("https://cses.fi/problemset/task/1644")[Question - Maximum Subarray Sum II]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/1644")[Backup Link]
 
 \
 
-*Explanation* :
+*Solution:*
 
-The code finds the maximum subarray sum whose length lies between `a` and `b`. It first builds a prefix sum array so any subarray sum can be computed in O(1). A multiset stores candidate prefix sums that can serve as valid subarray starts. As the right end moves forward, new valid prefixes are added to the set.
-Prefixes that would make the subarray longer than b are removed. The smallest prefix in the set gives the maximum possible subarray ending at the current index. The answer is updated by comparing all such valid subarrays efficiently.
+We can first build a prefix sum array so any subarray sum can be computed in O(1). A multiset stores prefix sums such that if you subtract the prefix sums in the multiset from the prefix sum at the current index `right`, you get the sums of subarrays with lengths `minLen` to `maxLen` ending at `right`. As `right` moves forward, new valid prefixes are added to the set. Prefixes that would make the subarray longer than b ending a `right` are removed. The smallest prefix in the `multiset`(`valid.begin()`) gives the maximum possible subarray ending at `right`. The answer is updated by comparing all such valid subarrays.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -6319,20 +6317,20 @@ int main() {
         prefix[i + 1] = prefix[i] + values[i];
     }
 
-    multiset<long long> candidates;
+    multiset<long long> valid;
     long long bestSum = LLONG_MIN;
 
     for (int right = minLen; right <= n; right++) {
-        // Add prefix corresponding to subarrays of length >= minLen
-        candidates.insert(prefix[right - minLen]);
+        // Add the prefix sum corresponding to a subarray of length >= minLen
+        valid.insert(prefix[right - minLen]);
 
-        // Remove prefix that would make subarray length > maxLen
+        // Remove the prefix sum that would make subarray length > maxLen
         if (right > maxLen) {
-            candidates.erase(candidates.find(prefix[right - maxLen - 1]));
+            valid.erase(valid.find(prefix[right - maxLen - 1]));
         }
 
         // Best subarray ending at 'right'
-        bestSum = max(bestSum, prefix[right] - *candidates.begin());
+        bestSum = max(bestSum, prefix[right] - *valid.begin());
     }
 
     cout << bestSum << "\n";
@@ -6340,5 +6338,6 @@ int main() {
 }
 
 ```
+
 #pagebreak()
 
