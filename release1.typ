@@ -4907,7 +4907,7 @@ int main() {
 
 #pagebreak()
 
-=== Distinct Values Subarrays //Reviewed
+=== Distinct Values Subarrays <distvalsub> //Reviewed
 
 \
 
@@ -6077,22 +6077,25 @@ int main() {
 
 #pagebreak()
 
-=== Distinct Values Subarrays II
+=== Distinct Values Subarrays II //Reviewed
 
 \
-#link("https://cses.fi/problemset/task/2428")[Question - Subarray Distinct Values]
+
+#link("https://cses.fi/problemset/task/2428")[Question - Distinct Values Subarrays II]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250815000000/https://cses.fi/problemset/task/2428")[Backup Link]
 
 \
 
-*Explanation* :
+*Hint*
 
-Use a sliding window with a frequency map. Expand the right end; if the number of distinct elements exceeds k, shrink from the left until it doesn’t. Every position contributes `window_length` new subarrays ending there, so we add that to the answer.
+If you've solved Distinct Values Subarrays#footnote[See @distvalsub], try using the same method but modifying it for the needs of this question.
 
-\
+*Solution:*
 
-*Code :*
+We can use a sliding window while storing the frequencies of every element in a `map`. When you expand the right end of the window, check to see if the number of distinct elements has gone up. If that number exceeds `k`, shrink the window from the left until the distinct elements are at most `k`. Increase the answer by the length of the window because that's how many subarrays have at most `k` distinct values ending at the right endpoint.
+
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -6107,19 +6110,19 @@ int main() {
         cin >> v[i];
     }
 
-    map<long long, int> freq;          // frequency of each element in current window
+    map<long long, int> freq; // frequency of each element in current window
     long long left = 0, ans = 0, distinct = 0;
 
     for (int right = 0; right < n; right++) {
         // add right element to window
-        if (++freq[v[right]] == 1) {
+        if (++freq[v[right]] == 1) {//If it's a new element, increase the number of distinct elements.
             distinct++;
         }
 
         // shrink window until we have at most k distinct elements
         while (distinct > k) {
             freq[v[left]]--;
-            if (freq[v[left]] == 0) {
+            if (freq[v[left]] == 0) {//if an element is no longer present in the window, decrease the number od distinct elements
                 distinct--;
             }
             left++;
@@ -6132,6 +6135,7 @@ int main() {
     cout << ans << "\n";
 }
 ```
+
 #pagebreak()
 
 === Array Division
