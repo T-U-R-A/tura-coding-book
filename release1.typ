@@ -5908,7 +5908,7 @@ int main() {
 
 #pagebreak()
 
-=== Subarray Sums I
+=== Subarray Sums I //Reviewed
 
 \
 
@@ -5962,7 +5962,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Subarray Sums II
+=== Subarray Sums II //Reviewed
 
 \
 
@@ -6019,7 +6019,7 @@ int main() {
 
 #pagebreak()
 
-=== Subarray Divisibility
+=== Subarray Divisibility //Reviewed
 
 \
 #link("https://cses.fi/problemset/task/1662")[Question - Subarray Divisibility]
@@ -6028,15 +6028,19 @@ int main() {
 
 \
 
-*Explanation* :
+*Hint:*
+
+If you solved the question above(Subarray Sums II), try using the same technique of storing frequencies, but figure out what you should be storing the frequency of so that you can figure out a subarrays divisibility.
+
+*Solution:*
 
 We use prefix sums modulo `n` to count subarrays whose sum is divisible by `n`. Each element is first reduced modulo `n` to keep values small.
-As we iterate, we maintain the current prefix sum modulo `n`. A map stores how many times each modulo value has appeared so far. If the same modulo appears again, the subarray between them has sum divisible by `n`. We add the frequency of the current modulo to the answer and update the map.
 
+As we iterate, we maintain the current prefix sum modulo `n`. A map stores the frequency of each modulo value of the prefix sums. If the same modulo appears again, there exists a  subarray that has it's sum divisible by `n`(If the current remainders is `n` and some previous remainder is also `n`, then their difference is 0 which means it's divisible). We add the frequency of the current modulo to the answer and increase the frequency of that modulo in the map.
 
 \
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -6066,10 +6070,11 @@ int main() {
         frequency[prefixSum]++;
     }
 
-    cout << result;
+    cout << result << "\n";
     return 0;
 }
 ```
+
 #pagebreak()
 
 === Distinct Values Subarrays II
