@@ -849,6 +849,272 @@ This also has $O(1)$ operations with the caveat that its worst case is $O(n)$. S
 
 #v(1.5em)
 
+= Maps <map>
+
+A map is a data structure in C++ which has the following properties:
+
++ A new key-value pair can be added to a map in $O(log n)$ time.
++ A value can be accessed using its key in $O(log n)$ time.
++ A key-value pair can be removed in $O(log n)$ time.
++ All keys are sorted in ascending order.
++ All keys in a map are unique.
+
+Here's a quick problem whose solution will explain how to use maps:
+
+Accept student names and their scores from a user. Then accept queries for student names and print their scores if they exist; otherwise, print `NOT FOUND`. After processing all queries, print all students and their scores in alphabetical order by name.
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+  map<string, int> m;
+
+  for(int i = 0; i < n; i++){
+    string name;
+    int score;
+    cin >> name >> score;
+    m[name] = score;//Inserts or updates the key-value pair.
+  }
+
+  for(int i = 0; i < q; i++){
+    string name;
+    cin >> name;
+    if(m.find(name) != m.end()){//m.find(name) returns the position of the key in the map.
+      cout << m[name] << endl;
+    }
+    else
+      cout << "NOT FOUND" << endl;
+  }
+
+  for(map<string, int>::iterator it = m.begin(); it != m.end(); it++){
+    cout << it->first << " " << it->second << endl;
+  }
+  return 0;
+}
+```
+
+In the solution, we can see that:
+- `m[key] = value` inserts or updates the key-value pair in the map `m`. This will ensure that `m` remains sorted by key by inserting it into the correct place.
+- `m.find(key)` returns the position of `key` in `m`. If `key` doesn't exist, it will return `m.end()`, which is a pointer at one place past the position of the last element in the map.
+- `m.erase(key)` removes the key-value pair with the specified `key` from `m`.
+
+Finally, we end up printing all key-value pairs that are currently in `m`. However, you may notice that instead of the traditional loop with a variable `i` that increases, we're using a `map<string, int>::iterator`. An iterator is simply a pointer that is used to go over a data structure that is not traditionally indexed. When iterating through a map, each iterator points to a pair, where `it->first` is the key and `it->second` is the value.
+
+== Important Note on Accessing Keys
+
+When you use `m[key]`, if the key doesn't exist in the map, it will automatically create an entry with that key and a default value (0 for integers, empty string for strings, etc.). This can sometimes lead to unintended behavior.
+
+#v(0.5em)
+
+If you want to check if a key exists without creating it, always use `m.find(key) != m.end()` instead of just accessing `m[key]`.
+
+#v(1em)
+
+== `lower_bound` and `upper_bound`
+
+Just like sets, maps have their own implementation of `lower_bound()` and `upper_bound()` that work in $O(log n)$ time.
+
+#v(0.5em)
+
+If you have a `map<int, int> m`, then:
+- `m.lower_bound(t)` will return an iterator to the first key-value pair whose key is not less than `t`
+- `m.upper_bound(t)` will return an iterator to the first key-value pair whose key is greater than `t`
+
+#v(1em)
+
+== `multimap`
+
+A `multimap` is exactly like a map except that it can store multiple values for the same key, whereas a `map` does not allow duplicate keys.
+
+#v(0.5em)
+
+The syntax for using a `multimap` is similar to a `map`—just write `multimap` instead of `map`. However, note that you cannot use the `[]` operator with `multimap` since a key can have multiple values. Instead, you must use `insert()` and `find()`.
+
+#v(1em)
+
+== `unordered_map`
+
+An `unordered_map` works a bit differently than a map. It supports the following operations:
+
+#v(0.5em)
+
+- A new key-value pair can be added to an `unordered_map` in $O(1)$ time.
+- A value can be accessed using its key in $O(1)$ time.
+- A key-value pair can be removed in $O(1)$ time.
+- The order of keys is random.
+- All keys in an `unordered_map` are unique.
+
+#v(0.5em)
+
+Notice how it's almost identical to a map other than the fact that it's faster, with the downside of no sorted order.
+
+#v(0.5em)
+
+This looks as if it would be useful to use an `unordered_map` instead of a `map` if you just want to store and retrieve values by keys, due to their $O(1)$ versus the much slower $O(log n)$.
+
+#v(0.5em)
+
+However, this $O(1)$ is not guaranteed, and for large test cases that you may expect during questions, it usually ends up being the much worse $O(n)$, which will lead to a Time Limit Exceeded (TLE).
+
+#v(0.5em)
+
+*This is why you should always use a `map` over an `unordered_map`, even if you don't care about the sorting order.*
+
+#v(1em)
+
+== `unordered_multimap`
+
+Again, it's the same as an `unordered_map` except that it can store multiple values for the same key.
+
+#v(0.5em)
+
+This also has $O(1)$ operations with the caveat that its worst case is $O(n)$. So you should use `multimap` over `unordered_multimap`.
+
+= Stacks <stack>
+
+A stack is a data structure in C++ which has the following properties:
+
++ A new element can be added to the top of a stack in $O(1)$ time.
++ The top element can be accessed in $O(1)$ time.
++ The top element can be removed in $O(1)$ time.
++ Elements follow the Last In First Out (LIFO) principle.
++ You can only access the most recently added element.
+
+Here's a quick problem whose solution will explain how to use stacks:
+
+Accept numbers from a user and push them onto a stack. Then process queries where you either add a new number to the stack or remove the top number and print it. At the end, print all remaining elements in the stack from top to bottom.
+
+Solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+
+  int n, q;
+  cin >> n >> q;
+  stack<int> st;
+
+  for(int i = 0; i < n; i++){
+    int x;
+    cin >> x;
+    st.push(x);//Pushes a value onto the top of the stack.
+  }
+
+  for(int i = 0; i < q; i++){
+    int type;
+    cin >> type;
+    if(type == 1){
+      int x;
+      cin >> x;
+      st.push(x);//Adds x to the top of the stack
+    }
+    else if(type == 2 && !st.empty()){
+      cout << st.top() << endl;//st.top() returns the top element
+      st.pop();//st.pop() removes the top element
+    }
+  }
+
+  while(!st.empty()){
+    cout << st.top() << " ";
+    st.pop();
+  }
+  return 0;
+}
+```
+
+In the solution, we can see that:
+- `st.push(x)` pushes `x` onto the top of the stack `st`. This operation adds the element to the very top.
+- `st.top()` returns the element at the top of `st`. This does not remove the element, just accesses it.
+- `st.pop()` removes the top element from `st`. Note that `pop()` does not return anything—you must use `top()` first if you want the value.
+- `st.empty()` returns `true` if the stack is empty, `false` otherwise.
+
+Finally, we end up printing all values that are currently in `st` from top to bottom. Notice that we must keep calling `pop()` to remove elements as we go, since we can only access the top element at any given time.
+
+== Common Use Cases
+
+Stacks are particularly useful for:
+
+#v(0.3em)
+
+- *Reversing elements*: Since stacks follow LIFO, pushing elements and then popping them gives you the reverse order.
+- *Balanced parentheses*: Push opening brackets onto the stack and pop when you encounter closing brackets.
+- *Function call tracking*: The system uses a call stack to keep track of function calls and returns.
+- *Depth-First Search (DFS)*: Stacks can be used to implement DFS traversal in graphs and trees.
+
+#v(1em)
+
+== Size and Empty Check
+
+Before accessing or removing elements from a stack, it's important to check if it's empty:
+
+```cpp
+if(!st.empty()){
+  int x = st.top();
+  st.pop();
+}
+```
+
+You can also get the size of the stack using `st.size()`, which returns the number of elements currently in the stack in $O(1)$ time.
+
+#v(1em)
+
+== Stack vs Vector
+
+You might wonder why you'd use a stack when you could just use a vector and always access/modify the last element using `back()` and `pop_back()`.
+
+#v(0.5em)
+
+The answer is that stacks provide a cleaner interface when you only need LIFO behavior. They prevent accidental access to middle elements and make your code's intent clearer. However, if you need to access elements other than the top, you should use a vector or deque instead.
+
+#v(1em)
+
+== Example: Balanced Parentheses
+
+Here's a classic problem that demonstrates the power of stacks:
+
+```cpp
+bool isBalanced(string s){
+  stack<char> st;
+  
+  for(char c : s){
+    if(c == '(' || c == '{' || c == '['){
+      st.push(c);
+    }
+    else{
+      if(st.empty()) return false;
+      
+      char top = st.top();
+      st.pop();
+      
+      if(c == ')' && top != '(') return false;
+      if(c == '}' && top != '{') return false;
+      if(c == ']' && top != '[') return false;
+    }
+  }
+  
+  return st.empty();
+}
+```
+
+This function checks if parentheses, braces, and brackets are properly balanced in a string by using a stack to match opening and closing symbols.
+
+#v(1em)
+
+== Important Notes
+
+- Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
+- Stacks are typically implemented using `deque` underneath, which provides efficient operations at both ends.
+- Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
+
+
 = Permutations
 
 Let's say you are given a string, and you wish to list out all possible permutations of the string. For instance, `"abcde"`.
