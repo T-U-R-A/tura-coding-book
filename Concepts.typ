@@ -185,17 +185,19 @@
 #outline()
 #pagebreak()
 
-= Concepts
+== Concepts
 
-== Basic C++ Syntax
+=== Basic C++ Syntax //chap1
 
-=== Question
+This section will go over the basic `c++` syntax with a simple question and the implementation to solve the question. The code will cover the main elements required to write basic `c++` programs.
+
+==== Question
 
 Write a C++ program that processes student performance data. First, accept the total number of students from the user. Subsequently, collect each student's name along with their corresponding marks.
 
 The program should then analyze this data to identify and display the name or names of all students who achieved the highest percentage among their peers. In cases where multiple students share the top score, all their names should be printed.
 
-=== Solution
+==== Solution
 
 ```cpp
 
@@ -266,7 +268,7 @@ int main() {
 
 While this isn't the only way to solve the question, the code should cover the most basic C++ syntax.
 
-=== Data Types
+==== Data Types
 
 This code contained the following data types:
 
@@ -275,59 +277,61 @@ This code contained the following data types:
 + `string` – Text
 + `pair<int,int>` – A `pair` is a data type that can be a combination of 2 other data types, and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`s, but it could be a pair of `int` and `string` and much more.
 
-=== Variables
+==== Variables
 
 Variables are fundamental building blocks in programming that serve as named storage locations in a computer's memory where you can store data that your program needs to work with. Variables are strongly typed in C++, which means you must specify their data type and then their name.
 
-=== Input/Output
+==== Input/Output
 
 Input and output are done with `cin` and `cout` and angle brackets: `>>` for input and `<<` for output.
 
-=== Conditional Statements
+==== Conditional Statements
 
 Conditional statements are represented with `if`. The part inside the `if` block runs if the condition is true. You can also use `else`, which triggers if the `if` block above is `false`, and create if-else ladders with `else if`, which triggers if the above `if` and `else if` blocks were `false`.
 
-=== Loops
+==== Loops
 
 A loop in the example is a `for` loop, which has 3 parts. The first part initializes a variable. The second part is the condition to determine if the loop should continue, and the third part is what happens at the end of the loop block, which is usually to update the variable initialized in the first part.
 
-=== Classes/Structs
+==== Classes/Structs
 
 In this program we made a struct because they're easier to use than a class. They work in nearly the same way, though, and the only difference is that members in a struct are public by default, while members in a class are private by default.
 
-=== Arrays/Vectors
+==== Arrays/Vectors
 
 An array is a list of many of the same data type. In this program we made an array of `Student`s, which is our own data type. We also made a vector, which, unlike an array, has a dynamic size.
 
-=== Functions
+==== Functions
 
 A function is something that accepts parameters and returns a value. This includes our `calcPercent` function and the 2 constructors used to make `Student`.
 
-=== Summary
+==== Summary
 
 These basic concepts are meant to serve as a revision or as an introduction to C++ syntax for those of you recently switching to C++. This is just the tip of the iceberg, and there is much more to learn about C++ as you go along.#footnote[More about C++ syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
 
-= Input Output Optimization
+== Input Output Optimization //chap1
 
-== `ios_base::sync_with_stdio(false)`
+=== `ios_base::sync_with_stdio(false)`
 #v(0.5em)
 By default, C++ streams (cin, cout) are synchronized with C's stdio (scanf, printf) to allow interleaved use. This synchronization adds overhead. Calling `ios_base::sync_with_stdio(false)` disables this synchronization, making C++ streams significantly faster—often 2-3x faster for large inputs. However, once disabled, you cannot mix C++ streams with C-style I/O in the same program. This is particularly useful in competitive programming where performance matters and you only use cin/cout.
+
+`std::cin` is also tied to `std::cout`, which means that whenever input is accpeted, the output is first flushed(displayed) before acccepting input, which is useful for interactive programs but not needed for competitive programming. We usually untie these with `cin.tie(nullptr)`.
 
 #v(0.5em)
 
 ```cpp
 ios_base::sync_with_stdio(false);
-cin.tie(NULL);  // Often paired with this
+cin.tie(nullptr);
 ```
 
 #v(0.5em)
 
-== endl vs \n
+=== `endl` vs `"\n"`
 
 #v(0.5em)
 #v(0.5em)
 
-The `endl` manipulator does two things: inserts a newline character and flushes the output buffer. Flushing is an expensive operation that forces immediate write to the output device. In contrast, `"\n"` only inserts a newline without flushing. For programs with many output lines, using `"\n"` instead of `endl` can dramatically improve performance since the buffer is flushed automatically when full or when the program ends. Use `endl` only when you need immediate output (like interactive programs); otherwise, prefer `"\n"`.
+The `endl` manipulator does two things: inserts a newline character and flushes the output buffer. Flushing is an expensive operation that forces immediate write to the output device. In contrast, `"\n"` only inserts a newline without flushing. For programs with many output lines, using `"\n"` instead of `endl` can dramatically improve performance since the buffer is flushed automatically when full or when the program ends. Use `endl` only when you need immediate output (like interactive programs) or while debugger for when you need to know exactly when the code breaks; otherwise, use `"\n"`.
 
 #v(0.5em)
 
@@ -340,13 +344,17 @@ cout << "Result: " << x << "\n";
 
 #v(0.5em)
 
-= Time Complexity
+== Space & Time Complexity //chap1
 
-Time complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent it by using something called Big-O Notation. For instance, say we have a program that is $O(n)$; this means that the function is linear, i.e., if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
+Space complexity is simply a measure of how much memory a program requires and time complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent it by using something called Big-O Notation. For instance, say we have a program that has a time complexity of $O(n)$; this means that the function is linear, i.e., if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
 
-When solving a problem, always analyze the time complexity of your algorithm. To verify your solution will run efficiently, substitute the maximum input size into your time complexity formula. The resulting number of operations should be less than $10^8$, as this is approximately how many operations a typical computer can execute per second.
+Similarly, a program with a space complexity of $O(n)$ will take twice the memory for double the input size. E.g a program that uses an array to store the $n$ values in the input. A program with a space complexity of $O(n^2)$ will take 4 times as much memory for double the input.
 
-= Pointers
+When solving a problem, always analyze the time complexity of your algorithm. To verify your solution will run efficiently, substitute the maximum input size into your time complexity formula. The resulting number of operations should be less than $10^8$, as this is approximately how many operations a typical computer can execute per second. Also check your space complexity and memory limits. While the constrains on space complexity are more lenient, some problems will require you to think about how to optimize memory.
+
+The time complexity for the CSES Questions which will you see throughout the book have a time limit of 1.00s and a memory limit of 512MB.
+
+== Pointers <pointers> //chap1
 
 Unlike in other higher-level programming languages which you may be familiar with, C++ allows you to have full control over how to allocate memory. This is achieved by using pointers.
 
@@ -401,7 +409,7 @@ To summarize the new syntax of pointers:
 
 + `&x` gives the memory location of the variable `x`.
 
-= Vectors in Depth
+== Vectors in Depth //chap1
 
 We're going to go into vectors in a little more depth. As stated before, vectors are almost the same as arrays except they are dynamic, meaning elements can be added and removed, but only at the end. This is done by the `push_back()` and `pop_back()` functions.
 
@@ -420,7 +428,7 @@ Note that vectors' constant factors are bigger than arrays, which means for ques
 
 More technical details about vectors can be found #link("https://en.cppreference.com/w/cpp/container/vector.html")[here].
 
-= Recursion
+== Recursion <recur> //chap1
 
 Recursion is the concept of calling some function inside of itself. Say we want to compute the factorial of a number $n$. We can do:
 
@@ -451,7 +459,7 @@ Every recursive algorithm has 2 main things:
 
 Fun fact: It's proven that any recursive function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop, you should. However, some programs are too hard to convert to loops, so you should stick to recursion.
 
-= Lambda Expressions
+== Lambda Expressions //chap2
 
 Lambda expressions are a way to write functions inline without having to write them separately. For example:
 
@@ -478,7 +486,7 @@ As you can see, we've defined a function within the main function. The first par
 
 Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
 
-= Sorting
+== Sorting //chap1
 
 To sort a data structure like an array or vector, C++ has its own sort function for this:
 
@@ -503,7 +511,7 @@ As you can see, the sort function accepts 2 pointers, the start position of the 
 
 The time complexity of `std::sort` is $O(n log n)$.
 
-== Sorting with a Custom Sorting Order
+== Custom Sorting Order //chap2
 
 Say you wish to sort a vector in descending order, or you have something more complicated in mind. The `sort()` function has an extra parameter to supply your own sorting order.
 
@@ -549,7 +557,7 @@ int main(){
 
 //TODO: Write about merge sort.
 
-== Binary Search
+=== Binary Search //chap1
 
 Let's say you want to find a certain number in a list of numbers to see if it exists. Normally, the way you would do this is by iterating over each element in the array and checking if it matches the element you're looking for. The time complexity of this is $O(n)$. However, if we were to first sort the array, we can find a number in $O(log n)$!
 
@@ -633,7 +641,7 @@ int main(){
 }
 ```
 
-== Lower Bound and Upper Bound <lbub>
+=== Lower Bound and Upper Bound <lbub> //chap1
 
 Usually, whenever we do binary search, we rarely ever want to know if a value is actually there or not. Rather, we'd like to know two things:
 
@@ -714,7 +722,7 @@ To get the index, we simply do `lb - v.begin()` and `ub - v.begin()` because tha
 
 You now might wonder how to get the largest element less than or the largest element less than or equal to a target. This can be achieved by subtracting 1 from the lower bound and upper bound, respectively.
 
-=== `lower_bound()` & `upper_bound()` with Custom Sorting
+==== `lower_bound()` & `upper_bound()` with Custom Sorting
 
 Sometimes your vector may not be sorted in ascending order. Sometimes it might be descending, or it could have some custom ordering. In these cases, it's important to understand what `lower_bound()` and `upper_bound()` are actually doing.
 
@@ -724,7 +732,7 @@ Sometimes your vector may not be sorted in ascending order. Sometimes it might b
 
 By default, the `comp()` function is `operator<()`. However, this can be changed to `greater<int>()`, which returns true if the first number is greater than the second number, which is needed for it to work properly on a descending list. Note, however, that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use them on a descending list. Apply a correction factor as needed.
 
-= Sets <set>
+== Sets <set> //chap2
 
 A set is a data structure in C++ which has the following properties:
 
@@ -781,7 +789,7 @@ In the solution, we can see that:
 
 Finally, we end up printing all values that are currently in `s`. However, you may notice that instead of the traditional loop with a variable `i` that increases, we're using a `set<int>::iterator`. An iterator is simply a pointer that is used to go over a data structure that is not traditionally indexed. You can very much use the same syntax with vectors too, but it's not necessary.
 
-== `lower_bound` and `upper_bound`
+=== `lower_bound` and `upper_bound`
 
 Unlike for vectors, if you try to use the `lower_bound()` and `upper_bound()` functions, they won't execute binary search and will instead search through them in linear time.
 
@@ -799,7 +807,7 @@ If you have a `set<int> s`, then:
 
 #v(1em)
 
-== `multiset`
+=== `multiset`
 
 A `multiset` is exactly like a set except that it can store multiple copies of the same element, whereas a `set` does not store duplicates.
 
@@ -809,7 +817,7 @@ The syntax for using a `multiset` is identical to a `set`—just write `multiset
 
 #v(1em)
 
-== `unordered_set`
+=== `unordered_set`
 
 An `unordered_set` works a bit differently than a set. It supports the following operations:
 
@@ -839,7 +847,7 @@ However, this $O(1)$ is not guaranteed, and for large test cases that you may ex
 
 #v(1em)
 
-== `unordered_multiset`
+=== `unordered_multiset`
 
 Again, it's the same as an `unordered_set` except that it can store multiple copies of the same element.
 
@@ -849,7 +857,7 @@ This also has $O(1)$ operations with the caveat that its worst case is $O(n)$. S
 
 #v(1.5em)
 
-= Maps <map>
+== Maps <map> //chap2
 
 A map is a data structure in C++ which has the following properties:
 
@@ -906,7 +914,7 @@ In the solution, we can see that:
 
 Finally, we end up printing all key-value pairs that are currently in `m`. However, you may notice that instead of the traditional loop with a variable `i` that increases, we're using a `map<string, int>::iterator`. An iterator is simply a pointer that is used to go over a data structure that is not traditionally indexed. When iterating through a map, each iterator points to a pair, where `it->first` is the key and `it->second` is the value.
 
-== Important Note on Accessing Keys
+=== Important Note on Accessing Keys
 
 When you use `m[key]`, if the key doesn't exist in the map, it will automatically create an entry with that key and a default value (0 for integers, empty string for strings, etc.). This can sometimes lead to unintended behavior.
 
@@ -916,7 +924,7 @@ If you want to check if a key exists without creating it, always use `m.find(key
 
 #v(1em)
 
-== `lower_bound` and `upper_bound`
+=== `lower_bound` and `upper_bound`
 
 Just like sets, maps have their own implementation of `lower_bound()` and `upper_bound()` that work in $O(log n)$ time.
 
@@ -928,7 +936,7 @@ If you have a `map<int, int> m`, then:
 
 #v(1em)
 
-== `multimap`
+=== `multimap`
 
 A `multimap` is exactly like a map except that it can store multiple values for the same key, whereas a `map` does not allow duplicate keys.
 
@@ -938,7 +946,7 @@ The syntax for using a `multimap` is similar to a `map`—just write `multimap` 
 
 #v(1em)
 
-== `unordered_map`
+=== `unordered_map`
 
 An `unordered_map` works a bit differently than a map. It supports the following operations:
 
@@ -968,7 +976,7 @@ However, this $O(1)$ is not guaranteed, and for large test cases that you may ex
 
 #v(1em)
 
-== `unordered_multimap`
+=== `unordered_multimap`
 
 Again, it's the same as an `unordered_map` except that it can store multiple values for the same key.
 
@@ -976,7 +984,7 @@ Again, it's the same as an `unordered_map` except that it can store multiple val
 
 This also has $O(1)$ operations with the caveat that its worst case is $O(n)$. So you should use `multimap` over `unordered_multimap`.
 
-= Stacks <stack>
+== Stacks <stack> //chap2
 
 A stack is a data structure in C++ which has the following properties:
 
@@ -1038,7 +1046,7 @@ In the solution, we can see that:
 
 Finally, we end up printing all values that are currently in `st` from top to bottom. Notice that we must keep calling `pop()` to remove elements as we go, since we can only access the top element at any given time.
 
-== Common Use Cases
+=== Common Use Cases
 
 Stacks are particularly useful for:
 
@@ -1051,7 +1059,7 @@ Stacks are particularly useful for:
 
 #v(1em)
 
-== Size and Empty Check
+=== Size and Empty Check
 
 Before accessing or removing elements from a stack, it's important to check if it's empty:
 
@@ -1066,7 +1074,7 @@ You can also get the size of the stack using `st.size()`, which returns the numb
 
 #v(1em)
 
-== Stack vs Vector
+=== Stack vs Vector
 
 You might wonder why you'd use a stack when you could just use a vector and always access/modify the last element using `back()` and `pop_back()`.
 
@@ -1076,7 +1084,7 @@ The answer is that stacks provide a cleaner interface when you only need LIFO be
 
 #v(1em)
 
-== Example: Balanced Parentheses
+=== Example: Balanced Parentheses
 
 Here's a classic problem that demonstrates the power of stacks:
 
@@ -1108,14 +1116,12 @@ This function checks if parentheses, braces, and brackets are properly balanced 
 
 #v(1em)
 
-== Important Notes
+=== Important Notes
 
 - Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
-- Stacks are typically implemented using `deque` underneath, which provides efficient operations at both ends.
 - Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
 
-
-= Permutations
+== Permutations <permute> //chap1
 
 Let's say you are given a string, and you wish to list out all possible permutations of the string. For instance, `"abcde"`.
 
@@ -1203,7 +1209,7 @@ int main(){
 
 #v(1em)
 
-== `next_permutation()`
+=== `next_permutation()`
 
 Fortunately for you, C++ already has a function that generates the next permutation!
 
@@ -1227,7 +1233,7 @@ int main(){
   return 0;
 }
 ```
-= Greedy Algorithms
+== Greedy Algorithms //chap
 
 //Variables required for Greedy.
 #let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
@@ -1276,7 +1282,7 @@ There are many other questions where you can use a greedy approach, and you'll u
 
 //Add tag to Tasks and Deadlines when documents are merged
 
-= Backtracking
+== Backtracking <backtracking> //chap1
 
 A backtracking algorithm is one where you recursively go through all possibilities and then backtrack at invalid solutions. Let's use an example to explain this better.
 
@@ -1372,7 +1378,7 @@ Also observe that we didn't use a `row` vector because the backtracking algorith
 
 The complexity of this code is $O(n!)$, which grows very quickly. Solving the problem for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$, and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
-= Negative Numbers
+== Negative Numbers //chap2
 
 In a computer, all numbers are stored in binary. For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
 
@@ -1425,11 +1431,11 @@ $
   -9 = 11111111111111111111111111110111
 $
 
-= Bit Operations
+== Bit Operations //chap2
 
 In C++, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
-== AND (`&`)
+=== AND (`&`)
 
 Let's say I have the numbers 5 and 6. The question is: what would be the output of `cout << (5 & 6);`?
 
@@ -1446,7 +1452,7 @@ Finally, convert 0100 back to decimal, which is 4.
 
 So the code `cout << (5 & 6);` would output `4`.
 
-== OR (`|`)
+=== OR (`|`)
 
 Now we want to find out the output of `cout << (5 | 6);`. We now perform the `or` operation on each bit:
 
@@ -1459,7 +1465,7 @@ $
 
 Which is 7 in decimal.
 
-== XOR (`^`)
+=== XOR (`^`)
 
 Now we want to find out the output of `cout << (5 ^ 6);`. We now perform the `xor` operation on each bit:
 
@@ -1472,7 +1478,7 @@ $
 
 Which is 3 in decimal.
 
-== NOT (`~`)
+=== NOT (`~`)
 
 The `not (~)` operator flips all the bits of a number. In the earlier examples, we were only showing 4 bits because the numbers were small. However, the `int` type has a total of 32 bits. So if you want to find the output of `cout << (~5);`, the answer would be:
 
@@ -1484,11 +1490,11 @@ $
 
 Which is `-6`. This is because `~` generates the 1's complement which for some positive $n$ will give you $-n-1$.
 
-== Left Shift (`<<`) and Right Shift (`>>`)
+=== Left Shift (`<<`) and Right Shift (`>>`)
 
 Left shifting is moving all the bits some number of places to the left. Each left shift is just multiplying the number by 2. So `cout << (3 << 4);` would be $000011 -> 000110 -> 001100 -> 011000 -> 110000$, which is $3 times 2^4 = 3 times 16 = 48$. Right shifting works in the exact opposite manner. Each right shift gives you the floor of the number divided by 2 ($floor(n/2)$). So `cout << (57 >> 3);` is $111001 -> 011100 -> 001110 -> 000111 = 7$.
 
-== Lowest Set Bit (LSB) <lssb>
+=== Lowest Set Bit (LSB) <lssb>
 
 The lowest set bit is the value of the rightmost bit of a binary number that is set to 1. This bit contributes the least to the number. For example, the number 20 in binary is 10100. The rightmost bit that is 1 is in the third position from the right (0-indexed from the right). The value it represents is $100_2 = 2^2 = 4$, which means $"LSB"(20) = 4$.
 
@@ -1507,7 +1513,7 @@ $
            & 00000000000000000000000000000#text(fill: red)[1]00
 $
 
-= Bitmask
+== Bitmask //chap2
 
 Bitmasking is the technique of using the binary representation of numbers to represent subsets of a set. Let's look at a problem which can be solved using bitmasks.
 
@@ -1551,7 +1557,7 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 5 4 7 }
 ```
 
-= Prefix Sum
+== Prefix Sum //chap2
 
 #let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
 #let arr3 = ((4, 7), (2, 5), (1, 3))
@@ -1715,7 +1721,7 @@ Output:
 The space complexity is $O(n)$ and the prefix sum construction runs in $O(n)$ time. Each query operation runs in $O(1)$ time.
 
 
-= Binary Indexed Tree
+== Binary Indexed Tree //chap2
 
 #v(0.5em)
 
@@ -2079,7 +2085,7 @@ Output:
 ]
 
 
-== Fenwick Trees as Indexed Sets
+=== Fenwick Trees as Indexed Sets
 
 A Fenwick tree can also be used as an indexed set. In @set, a set was explained to be a data structure that lets you insert, find, and erase elements in $O(log n)$ time. It is also sorted and contains unique elements. However, it's not possible to simply access the 2nd, 5th, or 12th value in a set unless you iterate all the way from the beginning to that position. That makes accessing elements at a specific index $O(n)$.
 
@@ -2094,7 +2100,7 @@ int search(int idx){
   int ans = 0;
 
   for(int k = floor(log2(n)); k >= 0; k--){ // go through the powers of 2
-    if(1 << k <= n && fenw[ans + (1 << k)] < idx){ // this element is before idx
+    if(ans + (1 << k) <= n && fenw[ans + (1 << k)] < idx){ // this element is before idx
       ans += 1 << k; // update the answer
       idx -= fenw[ans]; // account for all indices up to fenw[ans]
     }
@@ -2121,7 +2127,7 @@ $
 
 If we were to store this array as an indexed set, it would require the storage of 10 + 1 (because 1-indexed) `int`s of storage. Notice that there are only 5 unique numbers in this entire vector $(2, 3, 4, 5, 10)$. If we were to reassign these numbers to just $(1, 2, 3, 4, 5)$, our indexed set would only take 5 + 1 (because 1-indexed) `int`s of memory. This technique is called *index compression*.
 
-== Index Compression
+=== Index Compression
 
 To perform index compression, you need to sort the original vector of values stored in a different vector. Let's call this other vector `comp`. Then remove all the duplicate elements from `comp`. Then to compress the indices, find at what index values from the original vector appear in `comp`. This can be done efficiently with `lower_bound()` because `comp` is sorted. For the above example, `comp` would look like:
 
@@ -2201,7 +2207,7 @@ int search(int idx){
   int ans = 0;
 
   for(int k = floor(log2(n)); k >= 0; k--){ // go through the powers of 2
-    if(1 << k <= n && fenw[ans + (1 << k)] < idx){ // this element is before idx
+    if(ans + (1 << k) <= n && fenw[ans + (1 << k)] < idx){ // this element is before idx
       ans += 1 << k; // update the answer
       idx -= fenw[ans]; // account for all indices up to fenw[ans]
     }
@@ -2236,8 +2242,7 @@ int main(){
 }
 ```
 
-
-= Linked List
+== Linked List //chap2
 
 A linked list is a data structure where every element in the list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one point to the element after the erased one. The same is true for inserting an element at a given position.
 
@@ -2284,7 +2289,7 @@ struct List{
 
 Of course, this is a very poor implementation with not much memory safety, leading to memory leaks. Fortunately, C++ has its own implementation of a linked list.
 
-== `std::list`
+=== `std::list`
 
 Here's a code example of how the C++ implementation of a linked list is used:
 
@@ -2335,7 +2340,7 @@ As you can see from the code, if you want to store a value, you simply update `*
 
 For the `std::list` documentation, click #link("https://en.cppreference.com/w/cpp/container/list")[here].
 
-= Queue
+== Queue //chap2
 
 A *queue* behaves very similarly to a queue in real life. Say you wish to buy tickets for a movie. You must first join the back of the queue, then the people who joined before you must all receive their tickets before you can buy your own ticket and leave the front of the queue.
 
