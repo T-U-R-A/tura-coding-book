@@ -1064,7 +1064,7 @@ For the `std::queue` documentation, click #link("https://en.cppreference.com/w/c
 
 #pagebreak()
 
-== Hints & Solutions to CSES Questions
+== Solutions to CSES Questions
 
 === Weird Algorithm //Reviewed
 
@@ -4364,7 +4364,7 @@ int main(){
 
 #pagebreak()
 
-== Hints & Solutions to CSES Questions
+== Solutions to CSES Questions
 
 === Distinct Numbers //Reviewed
 
