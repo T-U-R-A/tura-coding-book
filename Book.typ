@@ -115,7 +115,7 @@ This book builds directly on that approach. The algorithms are organized into se
 
 Whether you are a beginner exploring competitive programming for the first time or an experienced coder refining your approach, the content is structured to be both accessible and enriching. Instead of relying on heavy notation or unnecessary complexity, explanations focus on clarity and intuition. 
 
-Finally, this is a work in progress. It has an active #link("https://github.com/PuddingisPOG/CodingBook")[GitHub repository] and contributions from the community are warmly welcomed. With collective effort, this book can become more comprehensive, refined, and enjoyable for readers around the world.
+Finally, this is a work in progress. It has an active #link("https://github.com/PuddingisPOG/tura-coding-book")[GitHub repository] and contributions from the community are warmly welcomed. With collective effort, this book can become more comprehensive, refined, and enjoyable for readers around the world.
 
 We acknowledge the use of AI tools in the creation of this book and for the cover. All material presented is our own work and has been carefully reviewed to ensure accuracy, clarity, and originality.
 
