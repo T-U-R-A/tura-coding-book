@@ -4,4 +4,4 @@ This book is designed to introduce you to the world of computer science by expla
 
 # Downloading
 
-Please download Book.pdf from the (https://github.com/PuddingisPOG/tura-coding-book/releases/)[latest release] to get a finished book. If you want the work in progress version, download what's there on the latest commit.
+Please download Book.pdf from the [latest release](https://github.com/PuddingisPOG/tura-coding-book/releases/) to get a finished book. If you want the work in progress version, download what's there on the latest commit.
