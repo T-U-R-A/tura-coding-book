@@ -214,10 +214,10 @@ While this isn't the only way to solve the question, the code should cover the m
 
 This code contained the following data types:
 
-+ `int` – Integer, which is a non-decimal number
-+ `double` – Decimal number
-+ `string` – Text
-+ `pair<int,int>` – A `pair` is a data type that can be a combination of 2 other data types, and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`s, but it could be a pair of `int` and `string` and much more.
++ `int` - Integer
++ `double` - floating point 
++ `string` - Text
++ `pair<int,int>` - A `pair` is a data type that can be a combination of 2 other data types, and each individual part can be accessed with `.first` and `.second`. In this case it was 2 `int`s, but it could be a pair of `int` and `string` and much more.
 
 ==== Variables
 
@@ -1069,13 +1069,14 @@ For the `std::queue` documentation, click #link("https://en.cppreference.com/w/c
 === Weird Algorithm //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1068")[Question - Weird Algorithm]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1068")[Backup Link]
 
 \
 
-*Solution* :
+*Solution:*
 
 To solve this question, we need a way to check if a number is odd or even. This can be done with the modulo(remainder) operator.
 
@@ -1084,8 +1085,7 @@ To solve this question, we need a way to check if a number is odd or even. This 
 
 Now just repeat this process in a while loop as long as `n != 1`
 
-\
-*Code :*
+*Code:*
 
 
 ```cpp
@@ -1122,14 +1122,14 @@ int main() {
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1083")[Backup Link]
 
 \
-*Explanation* :
+
+*Solution:*
 
 We use a simple mathematical trick: calculate the expected sum of numbers from 1 to n using either arithmetic progression formula to give $ n(n+1)/2 $.
 
 Then subtract the actual sum of the given numbers to reveal the missing number, as this difference represents the value that's absent, elegantly avoiding any searching or sorting in a fast way.
 
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1193,7 +1193,7 @@ $
 
 \
 
-*Solution: *
+*Solution:*
 
 This program finds the longest stretch of the same character in a string.
 
@@ -1205,9 +1205,7 @@ It goes through each character one by one:
 
 Finally, it prints the length of that longest consecutive sequence.
 
-
-\
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1238,11 +1236,13 @@ int main() {
 ```
 
 \
+
 #pagebreak()
 
 === Increasing Array //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1094")[Question - Increasing Array]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1094")[Backup Link]
@@ -1263,9 +1263,7 @@ Here's the approach step by step:
 + Continue until all elements are processed.
 + Output the total count of increments required.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1296,9 +1294,7 @@ int main() {
     cout << operations << "\n";
     return 0;
 }
-
 ```
-
 
 #pagebreak()
 
@@ -1316,7 +1312,7 @@ int main() {
 
 The trick we exploit here is to first print all the numbers up to n of one parity (odd or even), and then print all the numbers of the opposite parity. This is because the difference between consecutive odd or even numbers is always greater than 1.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1409,8 +1405,6 @@ Here's the approach step by step:
 
 + And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer is $ 21 - 2 = #(25 - (5 - 1))$.
 
-
-\
 *Code:*
 
 ```cpp
@@ -1443,12 +1437,12 @@ int main() {
 }
 ```
 
-\
 #pagebreak()
 
 === Two Knights //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1072")[Question - Two Knights]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1072")[Backup Link]
@@ -1524,8 +1518,6 @@ $ "Answer" = (k^2 (k^2 - 1)) / 2 - 4(k-1)(k-2) $
 
 - *k = 4*: Total = $binom(16,2) = 120$ placements. Attacking pairs = $4 times 3 times 2 = 24$. Answer = $120 - 24 = 96$.
 
-\
-
 *Code:*
 
 ```cpp
@@ -1580,7 +1572,7 @@ If $n$ is a multiple of $4$, you can always break up the numbers into two sets b
 
 The only other case is when $n$ is 3 more than a multiple of $4$. This is because of the special case of $n = 3$. The first 3 numbers can be split into ${1, 2}$ and ${3}$ and the remaining are now a multiple of 4, allowing you to split them as shown previously.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1635,17 +1627,15 @@ int main() {
 }
 ```
 
-\
 #pagebreak()
-
 
 === Bit Strings //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1617")[Question - Bit Strings]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1617")[Backup Link]
-
 
 \
 
@@ -1653,9 +1643,7 @@ int main() {
 
 Each of the n positions has 2 values it can be, either 0 or 1. The answer is going to be $underbrace(2 times 2 times 2 times ... times 2, n "times")$ because its 2 values for each character. We compute the answer iteratively while taking remainders modulo $10^9+7$ to avoid overflow.
 
-\
-
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1675,16 +1663,15 @@ int main() {
     return 0;
 }
 ```
-\
 #pagebreak()
 
 === Trailing Zeros //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/1618")[Question - Trailing Zeros]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1618")[Backup Link]
-
 
 \
 
@@ -1703,10 +1690,8 @@ For example, take $n = 27$:
 - $floor(27/125) = #calc.floor(27/125)$ (stop).
 
 - Total: 5 + 1 + 0 = #(5 + 1 + 0) zeros.
-\
 
 *Code:*
-
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1751,7 +1736,7 @@ The second observation is that if the number of coins in one pile is more than t
 
 We check if the above two conditions are met and accordingly output the result.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -1853,13 +1838,12 @@ int main() {
     return 0;
 }
 ```
-
-\
 #pagebreak()
 
 === Gray Code //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/2205")[Question - Gray Code]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/2205")[Backup Link]
@@ -2089,7 +2073,7 @@ In `c++` there is a very useful function called `next_permutation()`#footnote[Se
 
 It returns false when no other greater permutations exists, otherwise it rearranges the string or the vector.
 
-*Code :*
+*Code:*
 
 ```cpp
 
@@ -2191,13 +2175,9 @@ int main() {
 
     cout << ans;
 }
-
 ```
 
-\
-
 #pagebreak()
-
 
 === Chessboard and Queens //Reviewed
 
@@ -2206,7 +2186,6 @@ int main() {
 #link("https://cses.fi/problemset/task/1624")[Question - Chessboard and Queens]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250718094246/https://cses.fi/problemset/task/1624")[Backup Link]
-
 
 \
 
@@ -2220,7 +2199,7 @@ This solution uses backtracking. Section @backtracking explains a problem very s
 
 The code is almost the same with just one extra condition that if a cell is `*`, you can't place a queen.
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <bits/stdc++.h>
@@ -2265,9 +2244,8 @@ int main(){
 	return 0;
 }
 ```
-\
-#pagebreak()
 
+#pagebreak()
 
 === Raab Game I //Reviewed
 
@@ -2299,7 +2277,7 @@ The remaining elements are appended in increasing order, resulting in draws for 
 This construction satisfies all constraints while maintaining valid permutations.
 
 
-*Code :*
+*Code:*
 
 ```cpp
 #include <iostream>
@@ -5606,6 +5584,7 @@ int main(){
 === Nested Ranges Check //Reviewed
 
 \
+
 #link("https://cses.fi/problemset/task/2168/")[Question - Nested Ranges Check]
 #h(0.5cm)
 #link("https://web.archive.org/web/20250125134618/https://cses.fi/problemset/task/2168/")[Backup Link]
