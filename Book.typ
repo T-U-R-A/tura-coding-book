@@ -115,15 +115,19 @@ This book builds directly on that approach. The algorithms are organized into se
 
 Whether you are a beginner exploring competitive programming for the first time or an experienced coder refining your approach, the content is structured to be both accessible and enriching. Instead of relying on heavy notation or unnecessary complexity, explanations focus on clarity and intuition. 
 
-Finally, this is a work in progress. It has an active #link("https://github.com/PuddingisPOG/tura-coding-book")[GitHub repository] and contributions from the community are warmly welcomed. With collective effort, this book can become more comprehensive, refined, and enjoyable for readers around the world.
+Additionally this is a work in progress. It has an active #link("https://github.com/PuddingisPOG/tura-coding-book")[GitHub repository] and contributions from the community are warmly welcomed. With collective effort, this book can become more comprehensive, refined, and enjoyable for readers around the world.
 
 We acknowledge the use of AI tools in the creation of this book and for the cover. All material presented is our own work and has been carefully reviewed to ensure accuracy, clarity, and originality.
 
 We are grateful to our mentor Mr. Vinit Ajgaonkar who started us in our competitive programming journey. His inputs were valuable in the creation of this book.
 
+Lastly, the algorithms in this book can be implemented in any programming language. However, we use C++ because the International Olympiad in Informatics has switched to using only C++ (since 2021), and C++ is the most commonly used language for contests such as the International Collegiate Programming Contest.
+
 Happy coding, and welcome to the journey!
 
 #v(0.6em)
+
+#pagebreak()
 
 = Introductory Problems
 
