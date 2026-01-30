@@ -65,22 +65,48 @@
 //Beginning of content:
 
 #set page(margin: 0pt) 
+#set par(spacing: 0pt)
 #page(
  background: image(
-   "Cover.jpeg",
+   "Cover.png",
    width: 21.1cm, 
    height: 29.8cm, 
    fit: "cover"
  ),
  place(
-   center, 
-   block(
-     width: 50%, 
-     text(white, 2em, "")
-   )
+    top + center,
+    dx: 0.5cm,
+    dy: 24%,  // Adjust vertical position
+    block(
+      width: 90%,
+      inset: 0pt,
+      align(left)[
+        #text(white, 4em, font: "LED Counter 7", tracking: 4pt, spacing: 12pt)[
+          #text(fill: rgb("f7ab2c"))[T]#h(4pt)hinking, 
+          #v(0.5em)
+          #text(fill: rgb("2b929a"))[U]#h(4pt)nderstanding, and 
+          #v(0.5em)
+          #text(fill: rgb("f7ab2c"))[R]#h(4pt)easoning in 
+          #v(0.5em)
+          #text(fill: rgb("2b929a"))[A]#h(4pt)lgorithms
+          #v(1em)
+        ]
+        #text(white, 1.5em, font: "LED Counter 7", tracking: 4pt)[
+          Data Structures and Solutions \ to problems in c++
+          #v(1em)
+        ]
+        #text(white, 1em, font: "LED Counter 7", tracking: 4pt)[
+          Taksh Kothari
+          \
+          Apurva Bhat
+        ]
+      ]
+    )
  )
 )
+
 #set page(margin: auto)
+#set par(spacing: 1.2em)
 
 #align(
   center+horizon, 
