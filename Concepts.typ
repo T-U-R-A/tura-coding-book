@@ -2437,3 +2437,267 @@ This function checks if parentheses, braces, and brackets are properly balanced 
 
 - Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
 - Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
+
+== Dynamic Programming <dp> //chap3
+
+#let fibNode(n, repeated: false) = {
+  let fillColor = if repeated { rgb(255, 200, 200) } else { rgb(200, 225, 255) }
+  box(
+    inset: 2pt,
+    fill: fillColor,
+    stroke: 0.5pt,
+    radius: 2pt,
+  )[fib(#n)]
+}
+
+Dynamic Programming, often shortened to DP, is one of the most important techniques in competitive programming. The core idea is simple: if a problem can be broken into smaller subproblems, and those subproblems *overlap*, meaning the same smaller problem needs to be solved more than once, then we can save a huge amount of time by *storing* the answer to each subproblem the first time we solve it and *reusing* it whenever it comes up again.
+
+You might notice this sounds related to the greedy approach from earlier. Both techniques break a problem into smaller parts. The difference is that in greedy problems you make a locally optimal choice and move on, never revisiting a decision. In DP, you solve every relevant subproblem and combine their answers to build the final result. The best way to understand this is to start with a concrete example and see exactly why the naive approach is slow, and how DP fixes it.
+
+=== Why Naive Recursion Fails
+
+Consider the Fibonacci sequence: $F(0) = 0$, $F(1) = 1$, and $F(n) = F(n-1) + F(n-2)$ for $n > 1$. A natural way to compute it is with recursion:
+
+```cpp
+int fib(int n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+```
+
+This is clean and reads just like the mathematical definition. But let's look at what actually happens when we call `fib(4)`:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+    cetz.tree.tree((
+      fibNode(4),
+      (
+        fibNode(3),
+        (
+          fibNode(2),
+          fibNode(1),
+          fibNode(0),
+        ),
+        fibNode(1, repeated: true),
+      ),
+      (
+        fibNode(2, repeated: true),
+        fibNode(1, repeated: true),
+        fibNode(0, repeated: true),
+      ),
+    ))
+  })
+]
+
+The blue nodes are computed for the first time. The red nodes are *redundant*, they recompute a value we have already found. `fib(2)` is computed twice and `fib(1)` is computed three times. For `fib(4)` this is a minor issue, but the number of redundant calls grows exponentially as $n$ increases. The time complexity of this naive approach is $O(2^n)$.
+
+The fix is obvious once you see it: *remember* the answers we have already computed. This is the core idea behind Dynamic Programming.
+
+=== Top-Down DP (Memoization)
+
+The technique of *memoization* stores the result of each subproblem the first time we compute it. If we ever need that result again, we simply look up the stored value instead of recomputing.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int memo[1001];
+
+int fib(int n) {
+  if (n <= 1) return n;
+  if (memo[n] != -1) return memo[n]; // Already computed — return stored value
+  memo[n] = fib(n - 1) + fib(n - 2); // Compute, store, and return
+  return memo[n];
+}
+
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+
+  memset(memo, -1, sizeof(memo));
+  int n;
+  cin >> n;
+  cout << fib(n) << endl;
+  return 0;
+}
+```
+
+We use `memset` to initialize every element of `memo` to $-1$, a value that no valid Fibonacci number can take. This signals that the subproblem hasn't been solved yet.#footnote[`memset(memo, -1, sizeof(memo))` works because $-1$ is stored as all $1$ bits in binary (as we saw in the chapter on negative numbers). Since `memset` fills memory one byte at a time, every byte becomes `0xFF`, and four bytes of `0xFF` form exactly $-1$ for a 32-bit integer. This trick only works reliably for the values $0$ and $-1$.] The first time `fib(n)` is called, it computes the answer, stores it in `memo[n]`, and returns it. Every subsequent call to `fib(n)` skips the computation entirely and returns `memo[n]` right away.
+
+Each subproblem is now solved exactly once, so the time complexity drops from $O(2^n)$ to $O(n)$.
+
+=== Bottom-Up DP (Tabulation)
+
+Memoization is a *top-down* approach: we start with the big problem and recurse down to smaller subproblems. We can instead solve things in the opposite direction—start with the smallest subproblems and work our way up to the answer. This is called *tabulation*, and it avoids recursion entirely.
+
+For Fibonacci, the smallest subproblems are $F(0) = 0$ and $F(1) = 1$. Since each value depends only on the two values before it, we can fill in the rest in order:
+
+#align(center)[
+  #table(
+    columns: 9,
+    align: center,
+    fill: (col, row) => if row == 0 { rgb(180, 210, 255) } else { none },
+    [$i$], [0], [1], [2], [3], [4], [5], [6], [7],
+    [$F(i)$], [0], [1], [1], [2], [3], [5], [8], [13],
+  )
+]
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+
+  int n;
+  cin >> n;
+
+  vector<int> dp(n + 1);
+  dp[0] = 0;
+  dp[1] = 1;
+  for (int i = 2; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+  }
+
+  cout << dp[n] << endl;
+  return 0;
+}
+```
+
+Here, `dp[i]` stores the value of $F(i)$. We fill the array left to right, and by the time we reach `dp[i]`, both `dp[i-1]` and `dp[i-2]` are already known.
+
+Both memoization and tabulation give $O(n)$ time. Top-down can be easier to write because it mirrors the recursive structure of the problem. Bottom-up is often slightly faster in practice since it avoids the overhead of recursive function calls. Now that we have the basics down, let's use DP to solve some actual problems.
+
+=== Climbing Stairs
+
+*Question:* You are at the bottom of a staircase with $n$ steps. Each time, you can climb either $1$ step or $2$ steps. How many distinct ways are there to reach the top?
+
+For example, when $n = 4$, the possible ways to climb are $1+1+1+1$, $1+1+2$, $1+2+1$, $2+1+1$, and $2+2$—a total of $5$ ways.
+
+To solve this, think about the *last* move you make to reach step $n$. You either climbed $1$ step from step $n-1$, or $2$ steps from step $n-2$. So the number of ways to reach step $n$ is the number of ways to reach $n-1$ plus the number of ways to reach $n-2$:
+
+$
+  "dp"[n] = "dp"[n-1] + "dp"[n-2]
+$
+
+The base cases are $"dp"[1] = 1$ (the only way is a single step) and $"dp"[2] = 2$ (either $1+1$ or $2$). Here is the completed table:
+
+#align(center)[
+  #table(
+    columns: 8,
+    align: center,
+    fill: (col, row) => if row == 0 { rgb(180, 210, 255) } else { none },
+    [$n$], [1], [2], [3], [4], [5], [6], [7],
+    [$"dp"[n]$], [1], [2], [3], [5], [8], [13], [21],
+  )
+]
+
+This recurrence is identical to Fibonacci—only the base cases differ slightly. This is a common theme in DP: problems that look different on the surface often share the same underlying structure.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+
+  int n;
+  cin >> n;
+
+  vector<int> dp(n + 1);
+  dp[1] = 1;
+  dp[2] = 2;
+  for (int i = 3; i <= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];
+  }
+
+  cout << dp[n] << endl;
+  return 0;
+}
+```
+
+=== Coin Change
+
+*Question:* You are given $n$ coins with different denominations and a target amount. What is the minimum number of coins needed to make up that amount? If it is not possible, output $-1$.
+
+For example, if the coins are $\{1, 3, 4\}$ and the target amount is $6$, the answer is $2$, since we can use two coins of denomination $3$.
+
+This problem looks quite different from Fibonacci or climbing stairs, but it follows the exact same style of DP thinking. Let $"dp"[i]$ be the minimum number of coins needed to make amount $i$. To figure out $"dp"[i]$, imagine the *last* coin we used was some coin $c$. The remaining amount we needed to make was $i - c$, and the best way to do that took $"dp"[i - c]$ coins. So using coin $c$ last costs us $"dp"[i - c] + 1$ coins in total. We try every coin and take the minimum:
+
+$
+  "dp"[i] = min_(c in "coins", c <= i) (op("dp")[i - c] + 1)
+$
+
+The base case is $"dp"[0] = 0$: no coins are needed to make amount $0$. For coins $\{1, 3, 4\}$, here is the completed table:
+
+#align(center)[
+  #table(
+    columns: 8,
+    align: center,
+    fill: (col, row) => if row == 0 { rgb(180, 210, 255) } else { none },
+    [$i$], [0], [1], [2], [3], [4], [5], [6],
+    [$"dp"[i]$], [0], [1], [2], [1], [1], [2], [2],
+  )
+]
+
+Let's verify $"dp"[6]$ step by step. We try each coin:
+- Coin $1$: $"dp"[6-1] + 1 = "dp"[5] + 1 = 3$
+- Coin $3$: $"dp"[6-3] + 1 = "dp"[3] + 1 = 2$
+- Coin $4$: $"dp"[6-4] + 1 = "dp"[2] + 1 = 3$
+
+The minimum is $2$, so $"dp"[6] = 2$. This corresponds to using two coins of denomination $3$.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+  ios_base::sync_with_stdio(0);
+  cin.tie(0);
+  cout.tie(0);
+
+  int n, amount;
+  cin >> n >> amount;
+
+  vector<int> coins(n);
+  for (int i = 0; i < n; i++) cin >> coins[i];
+
+  vector<int> dp(amount + 1, INT_MAX); // Initialize all values to "infinity"
+  dp[0] = 0;
+
+  for (int i = 1; i <= amount; i++) {
+    for (int c : coins) {
+      if (c <= i && dp[i - c] != INT_MAX) { // Only if this coin can be used
+        dp[i] = min(dp[i], dp[i - c] + 1);
+      }
+    }
+  }
+
+  cout << (dp[amount] == INT_MAX ? -1 : dp[amount]) << endl;
+  return 0;
+}
+```
+
+We initialize `dp` to `INT_MAX`—a very large number representing "infinity"—for every amount except $0$. If some amount can never be formed with the given coins, its value stays at `INT_MAX` and we output $-1$. We also check `dp[i - c] != INT_MAX` before adding $1$ to it, because adding to `INT_MAX` would cause an integer overflow.
+
+The time complexity here is $O(n times "amount")$, where $n$ is the number of coin denominations.
+
+=== How to Think About DP Problems
+
+After working through these examples, you may start to notice a pattern. Almost every DP problem follows the same structure, and learning to recognize it is the most valuable skill you can develop.
+
+The first step is always to define what `dp[i]` represents—this is the *subproblem*. In Fibonacci, `dp[i]` was the $i$-th number in the sequence. In climbing stairs, it was the number of ways to reach step $i$. In coin change, it was the minimum coins to make amount $i$. Getting this definition right is the foundation of your entire solution.
+
+Next, you need to find the *recurrence relation*—the formula that computes `dp[i]` from smaller, already-solved subproblems. This is usually the hardest part. A useful way to think about it is to ask: "What was the *last* decision I made before arriving at state $i$?" In climbing stairs, the last decision was whether to climb $1$ or $2$ steps. In coin change, it was which coin to use last.
+
+After that, identify the *base cases*—the smallest subproblems whose answers you already know without any computation. These are the starting points for filling the table.
+
+Finally, make sure you fill in values in the right order, so that when you compute `dp[i]`, all the values it depends on are already known. For bottom-up DP, this usually means iterating from smaller values to larger ones.
+
+With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
