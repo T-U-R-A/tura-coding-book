@@ -92,7 +92,47 @@ int main() {
 *Code :*
 
 ```cpp
-// To be added
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, target;
+    cin >> n >> target;
+
+    vector<int> coins(n);
+    for (int i = 0; i < n; i++) {
+        cin >> coins[i];
+    }
+
+    // dp[i] = minimum number of coins needed to make sum i
+    vector<int> dp(target + 1, INF);
+    dp[0] = 0;
+
+    for (int sum = 1; sum <= target; sum++) {
+        for (int coin : coins) {
+            if (coin <= sum && dp[sum - coin] != INF) {
+                dp[sum] = min(dp[sum], dp[sum - coin] + 1);
+            }
+        }
+    }
+
+    if (dp[target] == INF) {
+        cout << -1 << '\n';
+    } else {
+        cout << dp[target] << '\n';
+    }
+
+    return 0;
+}
+
+
+
+
 ```
 #pagebreak()
 
