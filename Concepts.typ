@@ -2701,3 +2701,1603 @@ After that, identify the *base cases*—the smallest subproblems whose answers y
 Finally, make sure you fill in values in the right order, so that when you compute `dp[i]`, all the values it depends on are already known. For bottom-up DP, this usually means iterating from smaller values to larger ones.
 
 With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
+
+
+== Depth-First Search (DFS) //chap3
+
+#v(0.5em)
+
+*Depth-First Search (DFS)* is a graph traversal algorithm that explores a graph by going as deep as possible along each branch before backtracking. Imagine exploring a maze by always choosing to go forward until you hit a dead end, then backtracking to the last intersection and trying a different path.
+
+DFS can be implemented in two ways: recursively or iteratively using a stack. The recursive approach is more intuitive and commonly used, while the iterative approach is useful when you need more control over the traversal or when dealing with very deep graphs that might cause stack overflow.
+
+=== Recursive DFS
+
+The recursive implementation of DFS is the most natural way to think about the algorithm. When you visit a node, you immediately explore all of its unvisited neighbors before moving on.
+
+Here's the basic implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj; // adjacency list
+vector<bool> visited;
+
+void dfs(int node) {
+  visited[node] = true;
+  cout << node << " "; // Process the current node
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      dfs(neighbor); // Recursively visit unvisited neighbors
+    }
+  }
+}
+
+int main() {
+  int n, m; // n = number of nodes, m = number of edges
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u); // For undirected graph
+  }
+  
+  cout << "DFS traversal: ";
+  dfs(1); // Start DFS from node 1
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+7 6
+1 2
+1 3
+2 4
+2 5
+3 6
+3 7
+```
+]
+
+Output:
+
+#block[
+```
+DFS traversal: 1 2 4 5 3 6 7
+```
+]
+
+The graph in this example looks like:
+
+```
+    1
+   / \
+  2   3
+ / \ / \
+4  5 6  7
+```
+
+Starting from node 1, DFS visits node 2 first, then goes deep to nodes 4 and 5. After exploring all neighbors of 2, it backtracks to 1 and explores 3, then 6 and 7.
+
+=== Iterative DFS
+
+The iterative version uses an explicit stack to simulate the recursive call stack. This is useful when you need to avoid potential stack overflow issues with very deep recursion.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+
+void dfs_iterative(int start) {
+  stack<int> s;
+  s.push(start);
+  
+  while (!s.empty()) {
+    int node = s.top();
+    s.pop();
+    
+    if (visited[node]) continue;
+    
+    visited[node] = true;
+    cout << node << " ";
+    
+    // Push neighbors in reverse order to maintain left-to-right traversal
+    for (int i = adj[node].size() - 1; i >= 0; i--) {
+      int neighbor = adj[node][i];
+      if (!visited[neighbor]) {
+        s.push(neighbor);
+      }
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  cout << "Iterative DFS: ";
+  dfs_iterative(1);
+  cout << endl;
+  
+  return 0;
+}
+```
+
+=== DFS with Connected Components
+
+A common application of DFS is finding connected components in a graph. A connected component is a set of nodes where every node is reachable from every other node in that set.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+vector<int> component;
+
+void dfs(int node) {
+  visited[node] = true;
+  component.push_back(node);
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      dfs(neighbor);
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  vector<vector<int>> components;
+  
+  for (int i = 1; i <= n; i++) {
+    if (!visited[i]) {
+      component.clear();
+      dfs(i);
+      components.push_back(component);
+    }
+  }
+  
+  cout << "Number of connected components: " << components.size() << endl;
+  for (int i = 0; i < components.size(); i++) {
+    cout << "Component " << i + 1 << ": ";
+    for (int node : components[i]) {
+      cout << node << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+8 5
+1 2
+2 3
+4 5
+6 7
+7 8
+```
+]
+
+Output:
+
+#block[
+```
+Number of connected components: 3
+Component 1: 1 2 3
+Component 2: 4 5
+Component 3: 6 7 8
+```
+]
+
+This graph has three separate components that are not connected to each other.
+
+=== DFS with Path Tracking
+
+Sometimes you need to track the path from the starting node to each node. This is useful for finding paths in a graph or solving maze problems.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+vector<int> parent;
+
+bool dfs(int node, int target) {
+  visited[node] = true;
+  
+  if (node == target) {
+    return true; // Found the target
+  }
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      parent[neighbor] = node;
+      if (dfs(neighbor, target)) {
+        return true;
+      }
+    }
+  }
+  
+  return false; // Target not found in this path
+}
+
+void print_path(int start, int end) {
+  vector<int> path;
+  int current = end;
+  
+  while (current != start) {
+    path.push_back(current);
+    current = parent[current];
+  }
+  path.push_back(start);
+  
+  reverse(path.begin(), path.end());
+  
+  cout << "Path from " << start << " to " << end << ": ";
+  for (int i = 0; i < path.size(); i++) {
+    cout << path[i];
+    if (i < path.size() - 1) cout << " -> ";
+  }
+  cout << endl;
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  parent.resize(n + 1, -1);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  int start, target;
+  cin >> start >> target;
+  
+  parent[start] = start;
+  
+  if (dfs(start, target)) {
+    print_path(start, target);
+  } else {
+    cout << "No path exists from " << start << " to " << target << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+6 7
+1 2
+1 3
+2 4
+3 4
+4 5
+3 6
+5 6
+1 5
+```
+]
+
+Output:
+
+#block[
+```
+Path from 1 to 5: 1 -> 2 -> 4 -> 5
+```
+]
+
+=== Time and Space Complexity
+
+The time complexity of DFS is $O(n + m)$ where $n$ is the number of nodes and $m$ is the number of edges. This is because we visit each node exactly once and examine each edge exactly once (or twice for undirected graphs).
+
+The space complexity is $O(n)$ for the visited array and the recursion stack (in the worst case, the recursion can go $n$ levels deep in a linear graph). For the iterative version, the explicit stack also takes $O(n)$ space in the worst case.
+
+=== Common DFS Applications
+
+DFS is used in many graph algorithms and problems:
+
++ Finding connected components in an undirected graph
++ Detecting cycles in a graph
++ Topological sorting of directed acyclic graphs (DAGs)
++ Finding strongly connected components (using algorithms like Tarjan's or Kosaraju's)
++ Solving maze and pathfinding problems
++ Checking if a graph is bipartite
++ Finding bridges and articulation points in a graph
+
+The key advantage of DFS over other traversal methods like BFS is that it uses less memory when the graph is very wide, and it naturally finds paths by exploring deeply before backtracking.
+
+For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
+
+== Breadth-First Search (BFS) //chap2
+
+#v(0.5em)
+
+Imagine you're standing at the center of a maze and want to find the shortest path to the exit. You could explore one path deeply until you hit a dead end, then backtrack and try another (this is called depth-first search). However, a more systematic approach would be to explore all paths one step at a time - first checking all locations one step away, then all locations two steps away, and so on. This is the essence of *breadth-first search (BFS)*.
+
+BFS is a graph traversal algorithm that explores vertices level by level, visiting all neighbors of a vertex before moving to their neighbors. This makes BFS perfect for finding the shortest path in an unweighted graph, as the first time you reach a vertex is guaranteed to be via the shortest path.
+
+=== How BFS Works
+
+BFS uses a queue to keep track of which vertices to visit next. Here's the algorithm:
+
+1. Start at the source vertex and add it to the queue
+2. Mark the source as visited
+3. While the queue is not empty:
+   - Dequeue the front vertex
+   - For each unvisited neighbor of this vertex:
+     - Mark the neighbor as visited
+     - Add it to the queue
+
+Let's visualize this with an example graph:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw vertices as circles
+    circle((0, 0), radius: 0.3, name: "v0")
+    content((0, 0), [0])
+    
+    circle((2, 1), radius: 0.3, name: "v1")
+    content((2, 1), [1])
+    
+    circle((2, -1), radius: 0.3, name: "v2")
+    content((2, -1), [2])
+    
+    circle((4, 1.5), radius: 0.3, name: "v3")
+    content((4, 1.5), [3])
+    
+    circle((4, 0), radius: 0.3, name: "v4")
+    content((4, 0), [4])
+    
+    circle((4, -1.5), radius: 0.3, name: "v5")
+    content((4, -1.5), [5])
+
+    // Draw edges
+    line("v0.east", "v1.west")
+    line("v0.east", "v2.west")
+    line("v1.east", "v3.west")
+    line("v1.south", "v4.north")
+    line("v2.east", "v4.south")
+    line("v2.east", "v5.west")
+    line("v4.south", "v5.north")
+  })
+]
+
+If we run BFS starting from vertex 0, here's the order in which vertices are visited:
+
+*Step 1:* Start at vertex 0
+- Queue: `[0]`
+- Visited: `{0}`
+
+*Step 2:* Process vertex 0, add neighbors 1 and 2
+- Queue: `[1, 2]`
+- Visited: `{0, 1, 2}`
+
+*Step 3:* Process vertex 1, add neighbors 3 and 4
+- Queue: `[2, 3, 4]`
+- Visited: `{0, 1, 2, 3, 4}`
+
+*Step 4:* Process vertex 2, add neighbor 5 (4 is already visited)
+- Queue: `[3, 4, 5]`
+- Visited: `{0, 1, 2, 3, 4, 5}`
+
+*Step 5-7:* Process remaining vertices 3, 4, and 5 (no new neighbors to add)
+- Queue becomes empty
+
+The traversal order is: 0, 1, 2, 3, 4, 5
+
+Notice how all vertices at distance 1 from the source (1 and 2) are visited before any vertices at distance 2 (3, 4, 5).
+
+=== Basic BFS Implementation
+
+Here's the standard BFS implementation in C++:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> adj[100005]; // adjacency list
+bool visited[100005];    // track visited vertices
+
+void bfs(int start) {
+  queue<int> q;
+  
+  // Initialize the queue with the starting vertex
+  q.push(start);
+  visited[start] = true;
+  
+  while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+    
+    cout << cur << " "; // process current vertex
+    
+    // Visit all neighbors
+    for (int neighbor : adj[cur]) {
+      if (!visited[neighbor]) {
+        visited[neighbor] = true;
+        q.push(neighbor);
+      }
+    }
+  }
+}
+
+int main() {
+  int n, m; // n vertices, m edges
+  cin >> n >> m;
+  
+  // Read edges
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u); // remove this line for directed graphs
+  }
+  
+  // Run BFS from vertex 0
+  bfs(0);
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+0 1
+0 2
+1 3
+1 4
+2 4
+2 5
+4 5
+```
+
+Output:
+
+```
+0 1 2 3 4 5
+```
+
+The time complexity of BFS is $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges. This is because we visit each vertex once and examine each edge once.
+
+=== Finding Shortest Distances
+
+One of BFS's most powerful applications is finding the shortest distance from a source vertex to all other vertices in an unweighted graph. We can track distances by maintaining a `dist` array:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> adj[100005];
+int dist[100005];
+
+void bfs(int start) {
+  queue<int> q;
+  
+  // Initialize distances to -1 (infinity)
+  memset(dist, -1, sizeof(dist));
+  
+  q.push(start);
+  dist[start] = 0;
+  
+  while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+    
+    for (int neighbor : adj[cur]) {
+      if (dist[neighbor] == -1) { // not visited
+        dist[neighbor] = dist[cur] + 1;
+        q.push(neighbor);
+      }
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  bfs(0);
+  
+  // Print distances from vertex 0
+  for (int i = 0; i < n; i++) {
+    cout << "Distance to vertex " << i << ": ";
+    if (dist[i] == -1)
+      cout << "unreachable" << endl;
+    else
+      cout << dist[i] << endl;
+  }
+  
+  return 0;
+}
+```
+
+Using the same input as before:
+
+```
+6 7
+0 1
+0 2
+1 3
+1 4
+2 4
+2 5
+4 5
+```
+
+Output:
+
+```
+Distance to vertex 0: 0
+Distance to vertex 1: 1
+Distance to vertex 2: 1
+Distance to vertex 3: 2
+Distance to vertex 4: 2
+Distance to vertex 5: 2
+```
+
+=== Reconstructing the Shortest Path
+
+If we also want to know what the actual shortest path is (not just the distance), we can maintain a `parent` array that tracks where each vertex was reached from:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> adj[100005];
+int dist[100005];
+int parent[100005];
+
+void bfs(int start) {
+  queue<int> q;
+  
+  memset(dist, -1, sizeof(dist));
+  memset(parent, -1, sizeof(parent));
+  
+  q.push(start);
+  dist[start] = 0;
+  
+  while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+    
+    for (int neighbor : adj[cur]) {
+      if (dist[neighbor] == -1) {
+        dist[neighbor] = dist[cur] + 1;
+        parent[neighbor] = cur; // track where we came from
+        q.push(neighbor);
+      }
+    }
+  }
+}
+
+vector<int> getPath(int start, int end) {
+  vector<int> path;
+  
+  // Check if end is reachable
+  if (dist[end] == -1) {
+    return path; // return empty path
+  }
+  
+  // Backtrack from end to start using parent array
+  int cur = end;
+  while (cur != -1) {
+    path.push_back(cur);
+    cur = parent[cur];
+  }
+  
+  // Reverse to get path from start to end
+  reverse(path.begin(), path.end());
+  return path;
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  bfs(0);
+  
+  // Find path from vertex 0 to vertex 5
+  vector<int> path = getPath(0, 5);
+  
+  if (path.empty()) {
+    cout << "No path exists" << endl;
+  } else {
+    cout << "Shortest path from 0 to 5: ";
+    for (int i = 0; i < path.size(); i++) {
+      cout << path[i];
+      if (i < path.size() - 1)
+        cout << " -> ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+0 1
+0 2
+1 3
+1 4
+2 4
+2 5
+4 5
+```
+
+Output:
+
+```
+Shortest path from 0 to 5: 0 -> 2 -> 5
+```
+
+=== Multi-Source BFS
+
+Sometimes you want to find the shortest distance from *any* of several source vertices. For example, if you have multiple fire stations in a city and want to find the nearest fire station to each building. Instead of running BFS separately from each source, you can run a single BFS by adding all sources to the queue initially:
+
+```cpp
+void multiSourceBFS(vector<int>& sources) {
+  queue<int> q;
+  memset(dist, -1, sizeof(dist));
+  
+  // Add all sources to queue with distance 0
+  for (int src : sources) {
+    q.push(src);
+    dist[src] = 0;
+  }
+  
+  while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+    
+    for (int neighbor : adj[cur]) {
+      if (dist[neighbor] == -1) {
+        dist[neighbor] = dist[cur] + 1;
+        q.push(neighbor);
+      }
+    }
+  }
+}
+```
+
+This is still $O(V + E)$ and each vertex will be marked with the distance to the nearest source.
+
+=== BFS on a Grid
+
+A common application of BFS is navigating a 2D grid. Instead of maintaining an explicit adjacency list, we use the grid structure itself. Each cell can move to its 4 adjacent cells (up, down, left, right):
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m; // grid dimensions
+char grid[1005][1005];
+int dist[1005][1005];
+
+// Direction vectors: up, down, left, right
+int dr[] = {-1, 1, 0, 0};
+int dc[] = {0, 0, -1, 1};
+
+bool isValid(int r, int c) {
+  return r >= 0 && r < n && c >= 0 && c < m && grid[r][c] != '#';
+}
+
+void bfs(int startR, int startC) {
+  queue<pair<int, int>> q;
+  
+  memset(dist, -1, sizeof(dist));
+  
+  q.push({startR, startC});
+  dist[startR][startC] = 0;
+  
+  while (!q.empty()) {
+    auto [r, c] = q.front();
+    q.pop();
+    
+    // Try all 4 directions
+    for (int i = 0; i < 4; i++) {
+      int nr = r + dr[i];
+      int nc = c + dc[i];
+      
+      if (isValid(nr, nc) && dist[nr][nc] == -1) {
+        dist[nr][nc] = dist[r][c] + 1;
+        q.push({nr, nc});
+      }
+    }
+  }
+}
+
+int main() {
+  cin >> n >> m;
+  
+  int startR, startC;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> grid[i][j];
+      if (grid[i][j] == 'S') {
+        startR = i;
+        startC = j;
+      }
+    }
+  }
+  
+  bfs(startR, startC);
+  
+  // Print the distance grid
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      if (grid[i][j] == '#')
+        cout << "# ";
+      else if (dist[i][j] == -1)
+        cout << "X ";
+      else
+        cout << dist[i][j] << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 6
+S.....
+.###..
+.#....
+.#.##.
+......
+```
+
+Output:
+
+```
+0 1 2 3 4 5 
+1 # # # 5 6 
+2 # 6 7 6 7 
+3 # 7 # # 8 
+4 5 6 7 8 9 
+```
+
+The grid shows the minimum number of steps needed to reach each cell from the starting position 'S', where `#` represents walls that cannot be traversed.
+
+=== 0-1 BFS
+
+There's a variant of BFS called *0-1 BFS* that handles graphs where edges have weights of either 0 or 1. The key insight is to use a deque instead of a queue: when traversing an edge with weight 0, add the vertex to the front of the deque; when traversing an edge with weight 1, add it to the back.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<pair<int, int>> adj[100005]; // {neighbor, weight}
+int dist[100005];
+
+void bfs01(int start) {
+  deque<int> dq;
+  
+  memset(dist, -1, sizeof(dist));
+  
+  dq.push_back(start);
+  dist[start] = 0;
+  
+  while (!dq.empty()) {
+    int cur = dq.front();
+    dq.pop_front();
+    
+    for (auto [neighbor, weight] : adj[cur]) {
+      int newDist = dist[cur] + weight;
+      
+      if (dist[neighbor] == -1 || newDist < dist[neighbor]) {
+        dist[neighbor] = newDist;
+        
+        if (weight == 0)
+          dq.push_front(neighbor); // 0-weight edge: add to front
+        else
+          dq.push_back(neighbor);  // 1-weight edge: add to back
+      }
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v, w;
+    cin >> u >> v >> w; // w is either 0 or 1
+    adj[u].push_back({v, w});
+    adj[v].push_back({u, w});
+  }
+  
+  bfs01(0);
+  
+  for (int i = 0; i < n; i++) {
+    cout << "Distance to vertex " << i << ": ";
+    if (dist[i] == -1)
+      cout << "unreachable" << endl;
+    else
+      cout << dist[i] << endl;
+  }
+  
+  return 0;
+}
+```
+
+This runs in $O(V + E)$ time, which is faster than using Dijkstra's algorithm (which would be $O((V + E) log V)$) for this specific case.
+
+=== Common BFS Applications
+
+Here are some typical problems where BFS is the right tool:
+
+1. *Finding shortest paths* in unweighted graphs
+2. *Level-order traversal* of trees
+3. *Connected components* in undirected graphs
+4. *Bipartite graph checking* (alternate coloring while traversing)
+5. *Finding all vertices within k distance* from a source
+6. *Maze solving* and grid pathfinding
+7. *Network flow problems* (using BFS to find augmenting paths)
+
+=== BFS vs DFS
+
+You might wonder when to use BFS versus depth-first search (DFS). Here's a quick comparison:
+
+*Use BFS when:*
+- You need the shortest path in an unweighted graph
+- You want to explore level by level
+- The solution is likely to be close to the starting point
+
+*Use DFS when:*
+- You need to explore all possible paths
+- You're looking for any path (not necessarily shortest)
+- The graph might be very wide but not deep
+- You need to detect cycles
+
+Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
+
+== Bellman-Ford Algorithm //chap3
+
+#v(0.5em)
+
+In many graph problems, you need to find the shortest path from one node to all other nodes. If all edge weights are non-negative, Dijkstra's algorithm solves this in $O((n + m) log n)$ time. However, what if some edges have negative weights?
+
+Consider the following graph:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 0), radius: 0.3, name: "1")
+    content((name: "1", anchor: "center"), [1])
+    
+    circle((2, 1), radius: 0.3, name: "2")
+    content((name: "2", anchor: "center"), [2])
+    
+    circle((2, -1), radius: 0.3, name: "3")
+    content((name: "3", anchor: "center"), [3])
+    
+    circle((4, 0), radius: 0.3, name: "4")
+    content((name: "4", anchor: "center"), [4])
+
+    set-style(mark: (end: ">"))
+    
+    line((0.3, 0.1), (1.7, 0.9))
+    content((1, 0.7), [5])
+    
+    line((0.3, -0.1), (1.7, -0.9))
+    content((1, -0.7), [-3])
+    
+    line((2.3, 0.9), (3.7, 0.1))
+    content((3, 0.7), [2])
+    
+    line((2.3, -0.9), (3.7, -0.1))
+    content((3, -0.7), [4])
+    
+    line((2, 0.7), (2, -0.7))
+    content((2.3, 0), [1])
+  })
+]
+
+If we want to find the shortest path from node 1 to node 4, Dijkstra's algorithm might incorrectly conclude that going through node 2 (total cost $5 + 2 = 7$) is optimal without properly considering the path through node 3 (total cost $-3 + 1 + 2 = 0$). The issue is that Dijkstra assumes once a node is processed, its distance won't improve - but negative edges can violate this assumption.
+
+The *Bellman-Ford algorithm* solves this problem. It can handle negative edge weights and finds the shortest path from a source node to all other nodes in $O(n m)$ time, where $n$ is the number of nodes and $m$ is the number of edges.
+
+=== How Bellman-Ford Works
+
+The algorithm is based on a simple idea: if the shortest path from the source to any node uses at most $k$ edges, then we can find all shortest paths using at most $k + 1$ edges by checking if going through any edge improves the distance.
+
+Here's the process:
+
+1. Initialize the distance to the source node as 0 and all other distances as infinity ($infinity$).
+2. *Relax* all edges $n - 1$ times. Relaxing an edge $(u, v)$ with weight $w$ means checking if `dist[u] + w < dist[v]`, and if so, updating `dist[v] = dist[u] + w`.
+3. After $n - 1$ iterations, all shortest paths will be found (assuming no negative cycles).
+
+Why $n - 1$ iterations? Because the longest simple path (without cycles) in a graph with $n$ nodes has at most $n - 1$ edges. So after $n - 1$ iterations, we've considered all possible shortest paths.
+
+Let's trace through an example. Consider this graph with 5 nodes:
+
+#let edges = ((1, 2, 4), (1, 3, 2), (2, 3, -3), (3, 4, 2), (3, 5, 1), (4, 5, -1), (2, 5, 6))
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 2), radius: 0.3, name: "1")
+    content((name: "1", anchor: "center"), [1])
+    
+    circle((2, 3), radius: 0.3, name: "2")
+    content((name: "2", anchor: "center"), [2])
+    
+    circle((2, 1), radius: 0.3, name: "3")
+    content((name: "3", anchor: "center"), [3])
+    
+    circle((4, 2.5), radius: 0.3, name: "4")
+    content((name: "4", anchor: "center"), [4])
+    
+    circle((4, 0.5), radius: 0.3, name: "5")
+    content((name: "5", anchor: "center"), [5])
+
+    set-style(mark: (end: ">"))
+    
+    // 1 -> 2: 4
+    line((0.2, 2.2), (1.8, 2.8))
+    content((1, 2.7), [4])
+    
+    // 1 -> 3: 2
+    line((0.2, 1.8), (1.8, 1.2))
+    content((1, 1.3), [2])
+    
+    // 2 -> 3: -3
+    line((1.9, 2.7), (1.9, 1.3))
+    content((1.5, 2), [-3])
+    
+    // 3 -> 4: 2
+    line((2.3, 1.2), (3.7, 2.3))
+    content((2.7, 1.9), [2])
+    
+    // 3 -> 5: 1
+    line((2.3, 0.8), (3.7, 0.7))
+    content((3, 0.5), [1])
+    
+    // 4 -> 5: -1
+    line((3.9, 2.2), (3.9, 0.8))
+    content((4.3, 1.5), [-1])
+    
+    // 2 -> 5: 6
+    line((2.3, 2.9), (3.7, 0.8))
+    content((3.3, 2.1), [6])
+  })
+]
+
+Starting from node 1, let's trace the distance array after each iteration:
+
+*Initial:* $"dist" = [0, infinity, infinity, infinity, infinity]$
+
+*After iteration 1:*
+- Edge (1, 2): $"dist"[2] = min(infinity, 0 + 4) = 4$
+- Edge (1, 3): $"dist"[3] = min(infinity, 0 + 2) = 2$
+- Other edges don't improve distances yet
+
+$"dist" = [0, 4, 2, infinity, infinity]$
+
+*After iteration 2:*
+- Edge (2, 3): $"dist"[3] = min(2, 4 + (-3)) = 1$
+- Edge (3, 4): $"dist"[4] = min(infinity, 1 + 2) = 3$
+- Edge (3, 5): $"dist"[5] = min(infinity, 1 + 1) = 2$
+
+$"dist" = [0, 4, 1, 3, 2]$
+
+*After iteration 3:*
+- Edge (4, 5): $"dist"[5] = min(2, 3 + (-1)) = 2$ (no change)
+
+$"dist" = [0, 4, 1, 3, 2]$
+
+*After iteration 4:*
+- No distances improve
+
+The final distances are: node 1 to node 1 is 0, to node 2 is 4, to node 3 is 1, to node 4 is 3, and to node 5 is 2.
+
+=== Implementation
+
+Here's the C++ implementation of the Bellman-Ford algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Edge {
+  int u, v, w;  // edge from u to v with weight w
+  Edge(int u, int v, int w) : u(u), v(v), w(w) {}
+};
+
+const int INF = 1e9;
+
+int main() {
+  int n, m;  // n nodes, m edges
+  cin >> n >> m;
+  
+  vector<Edge> edges;
+  for (int i = 0; i < m; i++) {
+    int u, v, w;
+    cin >> u >> v >> w;
+    edges.push_back(Edge(u, v, w));
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF);
+  dist[source] = 0;
+  
+  // Relax all edges n-1 times
+  for (int i = 0; i < n - 1; i++) {
+    for (Edge& e : edges) {
+      if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
+        dist[e.v] = dist[e.u] + e.w;
+      }
+    }
+  }
+  
+  // Print distances
+  for (int i = 1; i <= n; i++) {
+    if (dist[i] == INF)
+      cout << "INF ";
+    else
+      cout << dist[i] << " ";
+  }
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+  ```
+  5 7
+  1 2 4
+  1 3 2
+  2 3 -3
+  3 4 2
+  3 5 1
+  4 5 -1
+  2 5 6
+  1
+  ```
+]
+
+Output:
+
+#block[
+  ```
+  0 4 1 3 2
+  ```
+]
+
+=== Detecting Negative Cycles <negative-cycles>
+
+A *negative cycle* is a cycle in the graph where the sum of edge weights is negative. If a negative cycle is reachable from the source, there is no shortest path because you can keep going around the cycle to make the distance arbitrarily small.
+
+For example:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 0), radius: 0.3, name: "1")
+    content((name: "1", anchor: "center"), [1])
+    
+    circle((2, 0.8), radius: 0.3, name: "2")
+    content((name: "2", anchor: "center"), [2])
+    
+    circle((2, -0.8), radius: 0.3, name: "3")
+    content((name: "3", anchor: "center"), [3])
+
+    set-style(mark: (end: ">"))
+    
+    line((0.3, 0.1), (1.7, 0.7))
+    content((1, 0.6), [2])
+    
+    line((1.7, 0.7), (1.7, -0.7))
+    content((1.4, 0), [-3])
+    
+    line((1.7, -0.7), (0.3, -0.1))
+    content((1, -0.6), [2])
+  })
+]
+
+The cycle $1 arrow.r 2 arrow.r 3 arrow.r 1$ has weight $2 + (-3) + 2 = 1 > 0$, but the cycle $2 arrow.r 3 arrow.r 1 arrow.r 2$ has weight $(-3) + 2 + 2 = 1 > 0$. Wait, let me recalculate: if we have edges with weights such that going $1 arrow.r 2$ (weight 2), $2 arrow.r 3$ (weight -5), and $3 arrow.r 1$ (weight 1), the total is $2 + (-5) + 1 = -2$, which is a negative cycle.
+
+Bellman-Ford can detect negative cycles. After $n - 1$ iterations, if we can still improve any distance by relaxing edges, then a negative cycle exists. Here's how to detect it:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Edge {
+  int u, v, w;
+  Edge(int u, int v, int w) : u(u), v(v), w(w) {}
+};
+
+const int INF = 1e9;
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  vector<Edge> edges;
+  for (int i = 0; i < m; i++) {
+    int u, v, w;
+    cin >> u >> v >> w;
+    edges.push_back(Edge(u, v, w));
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF);
+  dist[source] = 0;
+  
+  // Relax all edges n-1 times
+  for (int i = 0; i < n - 1; i++) {
+    for (Edge& e : edges) {
+      if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
+        dist[e.v] = dist[e.u] + e.w;
+      }
+    }
+  }
+  
+  // Check for negative cycles
+  bool hasNegativeCycle = false;
+  for (Edge& e : edges) {
+    if (dist[e.u] != INF && dist[e.u] + e.w < dist[e.v]) {
+      hasNegativeCycle = true;
+      break;
+    }
+  }
+  
+  if (hasNegativeCycle) {
+    cout << "Graph contains a negative cycle!" << endl;
+  } else {
+    for (int i = 1; i <= n; i++) {
+      if (dist[i] == INF)
+        cout << "INF ";
+      else
+        cout << dist[i] << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input with negative cycle:
+
+#block[
+  ```
+  3 3
+  1 2 2
+  2 3 -5
+  3 1 1
+  1
+  ```
+]
+
+Output:
+
+#block[
+  ```
+  Graph contains a negative cycle!
+  ```
+]
+
+=== When to Use Bellman-Ford
+
+Use Bellman-Ford when:
+- The graph has negative edge weights
+- You need to detect negative cycles
+- The graph is small enough that $O(n m)$ complexity is acceptable
+
+Use Dijkstra when:
+- All edge weights are non-negative
+- You need better time complexity ($O((n + m) log n)$ vs $O(n m)$)
+
+=== SPFA Optimization
+
+The *Shortest Path Faster Algorithm (SPFA)* is an optimization of Bellman-Ford that often runs faster in practice, though its worst-case complexity is still $O(n m)$.
+
+The idea is simple: instead of relaxing all edges in every iteration, only relax edges coming from nodes whose distances were updated in the previous iteration. This is done using a queue.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1);  // adj[u] = {(v, w)}
+  
+  for (int i = 0; i < m; i++) {
+    int u, v, w;
+    cin >> u >> v >> w;
+    adj[u].push_back({v, w});
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF);
+  vector<bool> inQueue(n + 1, false);
+  queue<int> q;
+  
+  dist[source] = 0;
+  q.push(source);
+  inQueue[source] = true;
+  
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    inQueue[u] = false;
+    
+    for (auto [v, w] : adj[u]) {
+      if (dist[u] + w < dist[v]) {
+        dist[v] = dist[u] + w;
+        if (!inQueue[v]) {
+          q.push(v);
+          inQueue[v] = true;
+        }
+      }
+    }
+  }
+  
+  for (int i = 1; i <= n; i++) {
+    if (dist[i] == INF)
+      cout << "INF ";
+    else
+      cout << dist[i] << " ";
+  }
+  cout << endl;
+  
+  return 0;
+}
+```
+
+SPFA can also detect negative cycles by counting how many times each node is added to the queue. If any node is added more than $n - 1$ times, a negative cycle exists.
+
+The average case complexity of SPFA is often $O(m)$, making it much faster than standard Bellman-Ford for most graphs, though it can still degrade to $O(n m)$ in worst cases (particularly on specially constructed adversarial graphs).
+
+== Dijkstra's Algorithm //chap3
+
+#v(0.5em)
+
+Dijkstra's algorithm is used to find the shortest path from a source node to all other nodes in a weighted graph. It works on graphs where all edge weights are non-negative. If there are negative weights, you'll need to use the Bellman-Ford algorithm instead.
+
+The algorithm maintains a distance array where `dist[i]` represents the shortest known distance from the source to node `i`. Initially, all distances are set to infinity except for the source node, which is set to 0.
+
+The core idea is to repeatedly select the unvisited node with the smallest distance, then update the distances to all of its neighbors. This process is called *relaxation*. If we find a shorter path to a neighbor, we update its distance.
+
+Here's how the algorithm works step by step:
+
+1. Set the distance to the source node as 0 and all other distances to infinity.
+2. Create a priority queue to store nodes with their current distances.
+3. While the priority queue is not empty:
+   - Extract the node with the minimum distance.
+   - For each neighbor of this node, check if going through the current node gives a shorter path.
+   - If it does, update the distance and add the neighbor to the priority queue.
+
+The time complexity of Dijkstra's algorithm is $O((n + m) log n)$ where $n$ is the number of nodes and $m$ is the number of edges, assuming we use a priority queue for implementation.
+
+Let's look at a sample graph to understand this better:
+
+Consider a graph with 5 nodes (1 through 5) and weighted edges. We want to find the shortest path from node 1 to all other nodes.
+
+Here's the code for Dijkstra's algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main(){
+  int n, m; // n = number of nodes, m = number of edges
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1); // adjacency list: adj[u] = {v, weight}
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    adj[u].push_back({v, w}); // directed edge from u to v with weight w
+    // For undirected graphs, also add: adj[v].push_back({u, w});
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF); // distance array
+  dist[source] = 0;
+  
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  // min-heap: stores {distance, node}
+  pq.push({0, source});
+  
+  while(!pq.empty()){
+    int d = pq.top().first; // current distance
+    int u = pq.top().second; // current node
+    pq.pop();
+    
+    if(d > dist[u]) // if this is an outdated entry, skip it
+      continue;
+    
+    for(auto& edge : adj[u]){
+      int v = edge.first; // neighbor
+      int w = edge.second; // edge weight
+      
+      if(dist[u] + w < dist[v]){ // relaxation step
+        dist[v] = dist[u] + w;
+        pq.push({dist[v], v});
+      }
+    }
+  }
+  
+  // Output the shortest distances
+  for(int i = 1; i <= n; i++){
+    if(dist[i] == INF)
+      cout << "INF ";
+    else
+      cout << dist[i] << " ";
+  }
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2 4
+1 3 2
+2 3 1
+2 4 5
+3 4 8
+3 5 10
+4 5 2
+1
+```
+
+This represents a directed graph with 5 nodes and 7 edges. The edges are:
+- 1 → 2 with weight 4
+- 1 → 3 with weight 2
+- 2 → 3 with weight 1
+- 2 → 4 with weight 5
+- 3 → 4 with weight 8
+- 3 → 5 with weight 10
+- 4 → 5 with weight 2
+
+We want to find the shortest path from node 1 to all other nodes.
+
+Output:
+
+```
+0 4 2 9 11
+```
+
+This means:
+- Distance to node 1: 0 (it's the source)
+- Distance to node 2: 4 (path: 1 → 2)
+- Distance to node 3: 2 (path: 1 → 3)
+- Distance to node 4: 9 (path: 1 → 2 → 4)
+- Distance to node 5: 11 (path: 1 → 2 → 4 → 5)
+
+Note that even though there's a direct edge from 1 to 2 with weight 4, and an edge from 2 to 3 with weight 1, the shortest path to node 3 is directly from 1 to 3 with weight 2.
+
+=== Understanding the Priority Queue
+
+The priority queue in Dijkstra's algorithm is crucial. We use a min-heap (achieved with `greater<pair<int, int>>`) so that we always process the node with the smallest known distance first. This ensures we find the optimal path.
+
+The priority queue stores pairs of `{distance, node}`. We put distance first because C++ compares pairs lexicographically (first element first), so the pair with the smallest distance will be at the top of the min-heap.
+
+One important optimization is the check `if(d > dist[u]) continue;`. This handles the case where we've already found a shorter path to node `u`. Since we can't efficiently remove elements from the middle of a priority queue, we simply ignore outdated entries when we pop them.
+
+=== Reconstructing the Path
+
+If you want to not only find the shortest distance but also reconstruct the actual path, you need to keep track of the parent of each node. Here's how:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1);
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    adj[u].push_back({v, w});
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF);
+  vector<int> parent(n + 1, -1); // parent[i] stores the previous node in the shortest path to i
+  dist[source] = 0;
+  
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  pq.push({0, source});
+  
+  while(!pq.empty()){
+    int d = pq.top().first;
+    int u = pq.top().second;
+    pq.pop();
+    
+    if(d > dist[u])
+      continue;
+    
+    for(auto& edge : adj[u]){
+      int v = edge.first;
+      int w = edge.second;
+      
+      if(dist[u] + w < dist[v]){
+        dist[v] = dist[u] + w;
+        parent[v] = u; // update parent
+        pq.push({dist[v], v});
+      }
+    }
+  }
+  
+  // Reconstruct path from source to a target node
+  int target;
+  cin >> target;
+  
+  if(dist[target] == INF){
+    cout << "No path exists" << endl;
+  }
+  else{
+    vector<int> path;
+    int cur = target;
+    while(cur != -1){
+      path.push_back(cur);
+      cur = parent[cur];
+    }
+    reverse(path.begin(), path.end());
+    
+    cout << "Shortest path from " << source << " to " << target << ": ";
+    for(int i = 0; i < path.size(); i++){
+      cout << path[i];
+      if(i != path.size() - 1)
+        cout << " -> ";
+    }
+    cout << endl;
+    cout << "Distance: " << dist[target] << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2 4
+1 3 2
+2 3 1
+2 4 5
+3 4 8
+3 5 10
+4 5 2
+1
+5
+```
+
+Output:
+
+```
+Shortest path from 1 to 5: 1 -> 2 -> 4 -> 5
+Distance: 11
+```
+
+The `parent` array stores which node we came from to reach each node along the shortest path. By following the parent pointers backwards from the target to the source, we can reconstruct the complete path.
+
+=== Common Mistakes
+
+1. *Using Dijkstra with negative weights*: Dijkstra's algorithm does not work correctly with negative edge weights. If your graph has negative weights, use Bellman-Ford instead.
+
+2. *Forgetting the outdated check*: Without `if(d > dist[u]) continue;`, the algorithm might process the same node multiple times with outdated distances, leading to inefficiency or incorrect results.
+
+3. *Wrong priority queue comparator*: Remember to use `greater<pair<int, int>>` for a min-heap. The default is a max-heap, which will give incorrect results.
+
+4. *Not initializing distances to infinity*: If you don't initialize all distances to `INF` except the source, the algorithm won't work correctly.
+
+For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
+
+

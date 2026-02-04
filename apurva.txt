@@ -1,4 +1,4 @@
 Mex Grid Construction xor approach step1
-2. Counting rooms step4
-3. Dice Combinations step2
-4. Visualization of Tower of Hanoi + Loop Solution.
+Counting rooms step4
+Dice Combinations step2
+Visualization of Tower of Hanoi + Loop Solution.
