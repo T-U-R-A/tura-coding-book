@@ -5095,7 +5095,7 @@ While $O(n^3)$ might seem slow, for small graphs (say $n <= 400$), Floyd-Warshal
 Use Floyd-Warshall when:
 - You need shortest paths between *all pairs* of vertices
 - The graph is small ($n <= 400$ typically)
-- The graph may have negative edge weights (but no negative cycles)
+- The graph mpay have negative edge weights (but no negative cycles)
 - You want a simple, easy-to-implement solution
 
 Don't use Floyd-Warshall when:
@@ -5103,4 +5103,344 @@ Don't use Floyd-Warshall when:
 - The graph is very large ($n > 1000$) as $O(n^3)$ will be too slow
 - You're working with an unweighted graph (use BFS instead)
 
+== Disjoint Set Union (DSU) //chap2
 
+#v(0.5em)
+
+Let's say you have a group of people, and you want to keep track of which people are friends with each other. If Alice is friends with Bob, and Bob is friends with Charlie, then Alice, Bob, and Charlie are all in the same friend group. You want to be able to quickly answer two types of questions:
+
+1. Are two people in the same friend group?
+2. Merge two friend groups together (for example, when two groups meet at a party).
+
+You could use a simple array where `group[i]` tells you which group person `i` belongs to, but updating this when merging groups would take $O(n)$ time because you'd need to update everyone in one of the groups.
+
+There is a data structure that can help us do both operations in nearly $O(1)$ time (technically $O(alpha(n))$ where $alpha(n)$ is the inverse Ackermann function, which grows so slowly that it's effectively constant for all practical purposes). This is called a *Disjoint Set Union (DSU)* or *Union-Find* data structure.
+
+=== How DSU Works
+
+In a DSU, each group has a *representative* or *parent*. Initially, each person is in their own group, so they are their own representative. When we want to check if two people are in the same group, we find their representatives. If they have the same representative, they're in the same group.
+
+Let's say we have 8 people numbered from 0 to 7. Initially, everyone is in their own group:
+
+#block[
+```
+Person:         0  1  2  3  4  5  6  7
+Representative: 0  1  2  3  4  5  6  7
+```
+]
+
+Now let's say we connect (union) person 0 and person 1. We pick one to be the representative of the other. Let's make 0 the representative:
+
+#block[
+```
+Person:         0  1  2  3  4  5  6  7
+Representative: 0  0  2  3  4  5  6  7
+```
+]
+
+If we then connect person 2 and person 3:
+
+#block[
+```
+Person:         0  1  2  3  4  5  6  7
+Representative: 0  0  2  2  4  5  6  7
+```
+]
+
+Now if we connect person 1 and person 3, we need to merge the groups containing 1 and 3. Person 1's representative is 0, and person 3's representative is 2. So we make one of them point to the other. Let's make 2 point to 0:
+
+#block[
+```
+Person:         0  1  2  3  4  5  6  7
+Representative: 0  0  0  2  4  5  6  7
+```
+]
+
+Wait, but now person 3 still points to 2, and 2 points to 0. This creates a chain. To find person 3's true representative, we need to follow the chain: $3 arrow.r 2 arrow.r 0$. The representative is 0.
+
+=== Path Compression
+
+Following long chains is slow. The optimization called *path compression* makes this faster. When we find the representative of a person, we make everyone in the chain point directly to the representative. So after finding that person 3's representative is 0, we update it:
+
+#block[
+```
+Person:         0  1  2  3  4  5  6  7
+Representative: 0  0  0  0  4  5  6  7
+```
+]
+
+Now person 3 points directly to 0, making future queries faster!
+
+=== Union by Rank (or Size)
+
+Another optimization is to always attach the smaller group to the larger group when doing a union. This prevents creating long chains. We can track either the *rank* (approximate height of the tree) or the *size* (number of elements) of each group.
+
+Here's the basic implementation without optimizations:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> parent;
+
+void make_set() {
+  parent.resize(n);
+  for (int i = 0; i < n; i++)
+    parent[i] = i; // Each person is their own representative
+}
+
+int find(int x) {
+  if (parent[x] == x) // x is the representative
+    return x;
+  return find(parent[x]); // Follow the chain
+}
+
+void unite(int a, int b) {
+  a = find(a); // Find representative of a
+  b = find(b); // Find representative of b
+  if (a != b)
+    parent[b] = a; // Make a the representative of b's group
+}
+
+int main() {
+  cin >> n;
+  make_set();
+  
+  int q;
+  cin >> q;
+  
+  for (int i = 0; i < q; i++) {
+    int type;
+    cin >> type;
+    
+    if (type == 1) { // Union query
+      int a, b;
+      cin >> a >> b;
+      unite(a, b);
+    }
+    else if (type == 2) { // Find query
+      int a, b;
+      cin >> a >> b;
+      if (find(a) == find(b))
+        cout << "YES" << endl;
+      else
+        cout << "NO" << endl;
+    }
+  }
+  
+  return 0;
+}
+```
+
+Now here's the optimized implementation with path compression and union by size:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> parent, size;
+
+void make_set() {
+  parent.resize(n);
+  size.resize(n);
+  for (int i = 0; i < n; i++) {
+    parent[i] = i;
+    size[i] = 1; // Each group starts with size 1
+  }
+}
+
+int find(int x) {
+  if (parent[x] == x)
+    return x;
+  return parent[x] = find(parent[x]); // Path compression: make x point directly to the representative
+}
+
+void unite(int a, int b) {
+  a = find(a);
+  b = find(b);
+  
+  if (a == b)
+    return; // Already in the same group
+  
+  // Union by size: attach smaller group to larger group
+  if (size[a] < size[b])
+    swap(a, b);
+  
+  parent[b] = a;
+  size[a] += size[b]; // Update the size of the merged group
+}
+
+int main() {
+  cin >> n;
+  make_set();
+  
+  int q;
+  cin >> q;
+  
+  for (int i = 0; i < q; i++) {
+    int type;
+    cin >> type;
+    
+    if (type == 1) { // Union query
+      int a, b;
+      cin >> a >> b;
+      unite(a, b);
+    }
+    else if (type == 2) { // Find query
+      int a, b;
+      cin >> a >> b;
+      if (find(a) == find(b))
+        cout << "YES" << endl;
+      else
+        cout << "NO" << endl;
+    }
+    else if (type == 3) { // Size query
+      int a;
+      cin >> a;
+      cout << size[find(a)] << endl; // Size of a's group
+    }
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+8 10
+1 0 1
+1 2 3
+1 1 3
+2 0 3
+2 4 5
+1 4 5
+2 4 5
+3 0
+1 0 6
+3 0
+```
+]
+
+Output:
+
+#block[
+```
+YES
+NO
+YES
+4
+5
+```
+]
+
+Let's trace through this:
+- Start with 8 people (0-7)
+- `1 0 1`: Connect 0 and 1
+- `1 2 3`: Connect 2 and 3
+- `1 1 3`: Connect 1 and 3 (merges groups {0,1} and {2,3} into {0,1,2,3})
+- `2 0 3`: Are 0 and 3 in same group? YES
+- `2 4 5`: Are 4 and 5 in same group? NO
+- `1 4 5`: Connect 4 and 5
+- `2 4 5`: Are 4 and 5 in same group? YES
+- `3 0`: What's the size of 0's group? 4 (contains 0,1,2,3)
+- `1 0 6`: Connect 0 and 6 (group becomes {0,1,2,3,6})
+- `3 0`: What's the size of 0's group? 5
+
+=== Time Complexity
+
+With both path compression and union by rank/size, the `find()` and `unite()` operations run in $O(alpha(n))$ time, where $alpha(n)$ is the inverse Ackermann function. For all practical values of $n$ (even up to $10^100$), $alpha(n) <= 4$. So you can effectively treat these operations as $O(1)$.
+
+Without optimizations, the worst case is $O(n)$ per operation if the structure degenerates into a long chain.
+
+=== Practical Example: Connected Components
+
+A common use of DSU is to find connected components in a graph. If you have a graph with $n$ nodes and $m$ edges, you can use DSU to quickly determine which nodes are connected.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<int> parent, size;
+
+void make_set() {
+  parent.resize(n);
+  size.resize(n);
+  for (int i = 0; i < n; i++) {
+    parent[i] = i;
+    size[i] = 1;
+  }
+}
+
+int find(int x) {
+  if (parent[x] == x)
+    return x;
+  return parent[x] = find(parent[x]);
+}
+
+void unite(int a, int b) {
+  a = find(a);
+  b = find(b);
+  if (a == b)
+    return;
+  if (size[a] < size[b])
+    swap(a, b);
+  parent[b] = a;
+  size[a] += size[b];
+}
+
+int main() {
+  cin >> n >> m; // n nodes, m edges
+  make_set();
+  
+  for (int i = 0; i < m; i++) {
+    int a, b;
+    cin >> a >> b;
+    unite(a, b); // Connect nodes a and b
+  }
+  
+  // Count number of connected components
+  int components = 0;
+  for (int i = 0; i < n; i++) {
+    if (find(i) == i) // This node is a representative
+      components++;
+  }
+  
+  cout << "Number of connected components: " << components << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+7 5
+0 1
+1 2
+3 4
+5 6
+6 3
+```
+]
+
+Output:
+
+#block[
+```
+Number of connected components: 2
+```
+]
+
+In this example, we have 7 nodes and 5 edges. The edges connect: {0,1,2} into one component and {3,4,5,6} into another component. So there are 2 connected components total.
+
+DSU is particularly useful when you need to dynamically add edges and query connectivity, which makes it perfect for problems involving:
+- Finding connected components in a graph
+- Kruskal's algorithm for minimum spanning trees
+- Detecting cycles in undirected graphs
+- Problems involving equivalence relations
