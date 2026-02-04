@@ -6,3 +6,5 @@ dijkstara concept step 2
 intro to graph concept step 2
 floyd warshall concept step 2
 dsu concept step 2
+kruskal step 2
+topological sort step 2

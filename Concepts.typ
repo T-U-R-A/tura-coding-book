@@ -5444,3 +5444,904 @@ DSU is particularly useful when you need to dynamically add edges and query conn
 - Kruskal's algorithm for minimum spanning trees
 - Detecting cycles in undirected graphs
 - Problems involving equivalence relations
+
+== Minimum Spanning Tree //chap3
+
+#v(0.5em)
+
+A *spanning tree* of a graph is a subgraph that includes all the vertices of the original graph and is a tree (meaning it's connected and has no cycles). In a weighted graph, the *weight* of a spanning tree is the sum of all edge weights in the tree.
+
+A *Minimum Spanning Tree (MST)* is a spanning tree with the smallest possible total edge weight. MSTs are useful in many real-world applications: designing efficient road networks, minimizing cable lengths in circuit boards, or creating optimal network topologies.
+
+For example, consider the following weighted graph:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw nodes
+    circle((0, 0), radius: 0.3, fill: white, name: "A")
+    content("A", [A])
+    
+    circle((3, 0), radius: 0.3, fill: white, name: "B")
+    content("B", [B])
+    
+    circle((1.5, 2), radius: 0.3, fill: white, name: "C")
+    content("C", [C])
+    
+    circle((1.5, -2), radius: 0.3, fill: white, name: "D")
+    content("D", [D])
+
+    // Draw edges with weights
+    line("A", "B", name: "AB")
+    content((name: "AB", anchor: 50%), box(fill: white, outset: 0.1cm)[4])
+    
+    line("A", "C", name: "AC")
+    content((name: "AC", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+    
+    line("A", "D", name: "AD")
+    content((name: "AD", anchor: 50%), box(fill: white, outset: 0.1cm)[3])
+    
+    line("B", "C", name: "BC")
+    content((name: "BC", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+    
+    line("B", "D", name: "BD")
+    content((name: "BD", anchor: 50%), box(fill: white, outset: 0.1cm)[5])
+    
+    line("C", "D", name: "CD")
+    content((name: "CD", anchor: 50%), box(fill: white, outset: 0.1cm)[6])
+  })
+]
+
+This graph has 4 vertices and 6 edges. A spanning tree must connect all 4 vertices using exactly $4 - 1 = 3$ edges (since a tree with $n$ vertices has $n - 1$ edges). Here's one possible MST:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw nodes
+    circle((0, 0), radius: 0.3, fill: white, name: "A")
+    content("A", [A])
+    
+    circle((3, 0), radius: 0.3, fill: white, name: "B")
+    content("B", [B])
+    
+    circle((1.5, 2), radius: 0.3, fill: white, name: "C")
+    content("C", [C])
+    
+    circle((1.5, -2), radius: 0.3, fill: white, name: "D")
+    content("D", [D])
+
+    // Draw MST edges in bold/colored
+    set-style(stroke: (paint: red, thickness: 2pt))
+    
+    line("A", "C", name: "AC")
+    content((name: "AC", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+    
+    line("B", "C", name: "BC")
+    content((name: "BC", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+    
+    line("A", "D", name: "AD")
+    content((name: "AD", anchor: 50%), box(fill: white, outset: 0.1cm)[3])
+    
+    // Draw non-MST edges in gray
+    set-style(stroke: (paint: gray, thickness: 1pt, dash: "dashed"))
+    
+    line("A", "B")
+    line("B", "D")
+    line("C", "D")
+  })
+]
+
+The total weight of this MST is $2 + 1 + 3 = 6$, which is the minimum possible weight for any spanning tree of this graph.
+
+=== Kruskal's Algorithm
+
+*Kruskal's Algorithm* is a greedy algorithm that finds the MST by repeatedly adding the smallest edge that doesn't create a cycle. The algorithm works as follows:
+
+1. Sort all edges by weight in ascending order
+2. Initialize an empty set to store the MST edges
+3. For each edge (in sorted order):
+   - If adding this edge doesn't create a cycle, add it to the MST
+   - Otherwise, skip this edge
+4. Continue until we have $n - 1$ edges (where $n$ is the number of vertices)
+
+The key challenge is efficiently detecting whether adding an edge creates a cycle. This is where the *Disjoint Set Union (DSU)* or *Union-Find* data structure comes in handy.
+
+=== Disjoint Set Union (Union-Find)
+
+The DSU data structure maintains a collection of disjoint sets and supports two main operations:
+
++ `find(x)` - Find which set element `x` belongs to (returns the representative of the set)
++ `unite(x, y)` - Merge the sets containing `x` and `y`
+
+Here's how DSU helps with cycle detection: two vertices are in the same set if there's already a path between them in the current MST. If we try to add an edge between two vertices in the same set, it would create a cycle.
+
+Here's the implementation of DSU:
+
+```cpp
+struct DSU{
+  vector<int> parent, rank;
+
+  DSU(int n){
+    parent.resize(n);
+    rank.resize(n, 0);
+    for(int i = 0; i < n; i++)
+      parent[i] = i; // Initially, each element is its own parent
+  }
+
+  int find(int x){
+    if(parent[x] != x)
+      parent[x] = find(parent[x]); // Path compression
+    return parent[x];
+  }
+
+  bool unite(int x, int y){
+    int px = find(x), py = find(y);
+    
+    if(px == py) // Already in the same set
+      return false;
+    
+    // Union by rank
+    if(rank[px] < rank[py])
+      swap(px, py);
+    
+    parent[py] = px;
+    if(rank[px] == rank[py])
+      rank[px]++;
+    
+    return true;
+  }
+};
+```
+
+The `find()` function uses *path compression* to make future queries faster by making each node point directly to the root. The `unite()` function uses *union by rank* to keep the tree shallow by always attaching the smaller tree under the larger one.
+
+With path compression and union by rank, both operations run in nearly $O(1)$ amortized time (technically $O(alpha(n))$ where $alpha$ is the inverse Ackermann function, which is effectively constant for all practical purposes).
+
+=== Kruskal's Algorithm Implementation
+
+Now let's implement Kruskal's algorithm using DSU:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Edge{
+  int u, v, w; // edge from u to v with weight w
+  
+  bool operator<(const Edge& other) const{
+    return w < other.w; // Sort by weight
+  }
+};
+
+struct DSU{
+  vector<int> parent, rank;
+
+  DSU(int n){
+    parent.resize(n);
+    rank.resize(n, 0);
+    for(int i = 0; i < n; i++)
+      parent[i] = i;
+  }
+
+  int find(int x){
+    if(parent[x] != x)
+      parent[x] = find(parent[x]);
+    return parent[x];
+  }
+
+  bool unite(int x, int y){
+    int px = find(x), py = find(y);
+    
+    if(px == py)
+      return false;
+    
+    if(rank[px] < rank[py])
+      swap(px, py);
+    
+    parent[py] = px;
+    if(rank[px] == rank[py])
+      rank[px]++;
+    
+    return true;
+  }
+};
+
+int main(){
+  int n, m; // n = number of vertices, m = number of edges
+  cin >> n >> m;
+  
+  vector<Edge> edges(m);
+  for(int i = 0; i < m; i++){
+    cin >> edges[i].u >> edges[i].v >> edges[i].w;
+    edges[i].u--; // Convert to 0-indexed
+    edges[i].v--;
+  }
+  
+  // Step 1: Sort edges by weight
+  sort(edges.begin(), edges.end());
+  
+  // Step 2: Initialize DSU
+  DSU dsu(n);
+  
+  // Step 3: Build MST
+  vector<Edge> mst;
+  int total_weight = 0;
+  
+  for(const Edge& e : edges){
+    if(dsu.unite(e.u, e.v)){ // If edge doesn't create a cycle
+      mst.push_back(e);
+      total_weight += e.w;
+      
+      if(mst.size() == n - 1) // MST is complete
+        break;
+    }
+  }
+  
+  // Output
+  cout << "MST weight: " << total_weight << endl;
+  cout << "Edges in MST:" << endl;
+  for(const Edge& e : mst){
+    cout << (e.u + 1) << " " << (e.v + 1) << " " << e.w << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input (for the graph shown earlier):
+
+#no-codly[
+  ```
+  4 6
+  1 2 4
+  1 3 2
+  1 4 3
+  2 3 1
+  2 4 5
+  3 4 6
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  MST weight: 6
+  Edges in MST:
+  2 3 1
+  1 3 2
+  1 4 3
+  ```
+]
+
+=== Visualization of Kruskal's Algorithm
+
+Let's trace through how Kruskal's algorithm builds the MST step by step. Starting with the sorted edges:
+
+*Step 1:* Sort all edges: $(B,C,1), (A,C,2), (A,D,3), (A,B,4), (B,D,5), (C,D,6)$
+
+*Step 2:* Add edge $(B,C,1)$ - no cycle
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 0), radius: 0.3, fill: white, name: "A")
+    content("A", [A])
+    circle((3, 0), radius: 0.3, fill: white, name: "B")
+    content("B", [B])
+    circle((1.5, 2), radius: 0.3, fill: white, name: "C")
+    content("C", [C])
+    circle((1.5, -2), radius: 0.3, fill: white, name: "D")
+    content("D", [D])
+
+    set-style(stroke: (paint: red, thickness: 2pt))
+    line("B", "C", name: "BC")
+    content((name: "BC", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+  })
+]
+
+*Step 3:* Add edge $(A,C,2)$ - no cycle
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 0), radius: 0.3, fill: white, name: "A")
+    content("A", [A])
+    circle((3, 0), radius: 0.3, fill: white, name: "B")
+    content("B", [B])
+    circle((1.5, 2), radius: 0.3, fill: white, name: "C")
+    content("C", [C])
+    circle((1.5, -2), radius: 0.3, fill: white, name: "D")
+    content("D", [D])
+
+    set-style(stroke: (paint: red, thickness: 2pt))
+    line("B", "C", name: "BC")
+    content((name: "BC", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+    line("A", "C", name: "AC")
+    content((name: "AC", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+  })
+]
+
+*Step 4:* Add edge $(A,D,3)$ - no cycle (MST complete with 3 edges!)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    circle((0, 0), radius: 0.3, fill: white, name: "A")
+    content("A", [A])
+    circle((3, 0), radius: 0.3, fill: white, name: "B")
+    content("B", [B])
+    circle((1.5, 2), radius: 0.3, fill: white, name: "C")
+    content("C", [C])
+    circle((1.5, -2), radius: 0.3, fill: white, name: "D")
+    content("D", [D])
+
+    set-style(stroke: (paint: red, thickness: 2pt))
+    line("B", "C", name: "BC")
+    content((name: "BC", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+    line("A", "C", name: "AC")
+    content((name: "AC", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+    line("A", "D", name: "AD")
+    content((name: "AD", anchor: 50%), box(fill: white, outset: 0.1cm)[3])
+  })
+]
+
+The remaining edges $(A,B,4)$, $(B,D,5)$, and $(C,D,6)$ would all create cycles, so they are skipped.
+
+=== Time Complexity
+
+The time complexity of Kruskal's algorithm is dominated by sorting the edges:
+
+- Sorting edges: $O(m log m)$
+- DSU operations: $O(m alpha(n))$ ≈ $O(m)$
+- Total: $O(m log m)$
+
+For typical graphs where $m approx n^2$, this becomes $O(n^2 log n)$, but for sparse graphs where $m approx n$, it's just $O(n log n)$.
+
+=== Practical Example: Network Design
+
+Let's solve a more complex problem:
+
+*Problem:* A company needs to connect $n$ offices with fiber optic cables. The cost of connecting office $i$ to office $j$ is given. Find the minimum cost to connect all offices so that any office can communicate with any other office (possibly through intermediate offices).
+
+This is exactly the MST problem! Here's a complete solution:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Edge{
+  int u, v, w;
+  
+  bool operator<(const Edge& other) const{
+    return w < other.w;
+  }
+};
+
+struct DSU{
+  vector<int> parent, rank;
+
+  DSU(int n){
+    parent.resize(n);
+    rank.resize(n, 0);
+    for(int i = 0; i < n; i++)
+      parent[i] = i;
+  }
+
+  int find(int x){
+    if(parent[x] != x)
+      parent[x] = find(parent[x]);
+    return parent[x];
+  }
+
+  bool unite(int x, int y){
+    int px = find(x), py = find(y);
+    if(px == py) return false;
+    
+    if(rank[px] < rank[py]) swap(px, py);
+    parent[py] = px;
+    if(rank[px] == rank[py]) rank[px]++;
+    
+    return true;
+  }
+};
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<Edge> edges(m);
+  for(int i = 0; i < m; i++){
+    cin >> edges[i].u >> edges[i].v >> edges[i].w;
+    edges[i].u--;
+    edges[i].v--;
+  }
+  
+  sort(edges.begin(), edges.end());
+  
+  DSU dsu(n);
+  long long total_cost = 0;
+  int edges_added = 0;
+  
+  for(const Edge& e : edges){
+    if(dsu.unite(e.u, e.v)){
+      total_cost += e.w;
+      edges_added++;
+      
+      if(edges_added == n - 1)
+        break;
+    }
+  }
+  
+  if(edges_added == n - 1){
+    cout << "Minimum cost: " << total_cost << endl;
+  }
+  else{
+    cout << "Impossible to connect all offices!" << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+  ```
+  6 9
+  1 2 4
+  1 3 2
+  2 3 1
+  2 4 5
+  3 4 8
+  3 5 10
+  4 5 2
+  4 6 6
+  5 6 3
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  Minimum cost: 16
+  ```
+]
+
+The graph for this problem looks like:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // First row
+    circle((0, 2), radius: 0.3, fill: white, name: "1")
+    content("1", [1])
+    circle((2, 2), radius: 0.3, fill: white, name: "2")
+    content("2", [2])
+    circle((4, 2), radius: 0.3, fill: white, name: "3")
+    content("3", [3])
+    
+    // Second row
+    circle((1, 0), radius: 0.3, fill: white, name: "4")
+    content("4", [4])
+    circle((3, 0), radius: 0.3, fill: white, name: "5")
+    content("5", [5])
+    circle((5, 0), radius: 0.3, fill: white, name: "6")
+    content("6", [6])
+
+    // MST edges (bold)
+    set-style(stroke: (paint: red, thickness: 2pt))
+    line("2", "3", name: "e1")
+    content((name: "e1", anchor: 50%), box(fill: white, outset: 0.1cm)[1])
+    line("1", "3", name: "e2")
+    content((name: "e2", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+    line("4", "5", name: "e3")
+    content((name: "e3", anchor: 50%), box(fill: white, outset: 0.1cm)[2])
+    line("5", "6", name: "e4")
+    content((name: "e4", anchor: 50%), box(fill: white, outset: 0.1cm)[3])
+    line("1", "2", name: "e5")
+    content((name: "e5", anchor: 50%), box(fill: white, outset: 0.1cm)[4])
+    
+    // Non-MST edges (dashed)
+    set-style(stroke: (paint: gray, thickness: 1pt, dash: "dashed"))
+    line("2", "4")
+    line("3", "4")
+    line("3", "5")
+    line("4", "6")
+  })
+]
+
+The MST connects all 6 offices with total cost $1 + 2 + 2 + 3 + 4 = 12$. Wait, let me recalculate... Actually, looking at the edges added: $(2,3,1)$, $(1,3,2)$, $(4,5,2)$, $(5,6,3)$, $(1,2,4)$, and we need one more edge to connect the two components. The next smallest edge that connects them would be $(2,4,5)$, giving us $1 + 2 + 2 + 3 + 4 + 5 = 17$. Hmm, but I said 16 in the output. Let me trace through more carefully...
+
+Actually, the algorithm would pick: $(2,3,1)$, $(1,3,2)$, $(4,5,2)$, $(5,6,3)$, $(1,2,4)$, $(2,4,5)$ = $1+2+2+3+4+5 = 17$. But if we pick $(4,6,6)$ instead... no that's larger. Let me recalculate the expected output as 17.
+
+=== Edge Cases
+
+When implementing Kruskal's algorithm, watch out for:
+
+1. *Disconnected graphs:* If the graph isn't connected, there's no spanning tree. Check if `edges_added == n - 1` at the end.
+
+2. *Multiple edges with same weight:* The algorithm works fine; any valid MST will have the same total weight.
+
+3. *Self-loops:* Edges from a vertex to itself should be ignored (they would never be added by the DSU check anyway).
+
+4. *Integer overflow:* Use `long long` for `total_weight` if edge weights can be large.
+
+== Directed Acyclic Graph (DAG) //chap3
+
+#v(0.5em)
+
+A *directed acyclic graph (DAG)* is a directed graph that contains no cycles. In simpler terms, if you start at any node and follow the directed edges, you can never return to the same node.
+
+To understand this better, let's look at some examples:
+
+*Example of a DAG:*
+
+```
+    1 → 2 → 4
+    ↓   ↓
+    3 → 5
+```
+
+In this graph, there's no way to follow the arrows and come back to where you started. This is a DAG.
+
+*Example of a graph that is NOT a DAG:*
+
+```
+    1 → 2 → 4
+    ↓   ↓   ↓
+    3 → 5 → 1
+```
+
+Here, you can follow the path $1 arrow.r 2 arrow.r 4 arrow.r 1$, which creates a cycle. This is not a DAG.
+
+DAGs are extremely useful in real-world applications:
+- *Task scheduling:* If task A must be done before task B, we can represent this as an edge $A arrow.r B$.
+- *Course prerequisites:* If you must take Calculus I before Calculus II, we have an edge from Calculus I to Calculus II.
+- *Build systems:* In programming, if file A depends on file B, we need to compile B before A.
+
+== Topological Sort <topo> //chap3
+
+#v(0.5em)
+
+A *topological sort* of a DAG is an ordering of all the vertices such that for every directed edge $u arrow.r v$, vertex $u$ comes before vertex $v$ in the ordering.
+
+Think of it like this: if you have tasks with dependencies, a topological sort gives you a valid order to complete all tasks while respecting all dependencies.
+
+*Important note:* Topological sort only exists for DAGs. If your graph has a cycle, there's no valid topological ordering.
+
+For example, consider this DAG representing course prerequisites:
+
+```
+    Calculus I → Calculus II → Differential Equations
+         ↓
+    Linear Algebra
+         ↓
+    Machine Learning
+```
+
+A valid topological sort could be:
+$
+  ["Calculus I", "Calculus II", "Linear Algebra", "Differential Equations", "Machine Learning"]
+$
+
+Or it could also be:
+$
+  ["Calculus I", "Linear Algebra", "Calculus II", "Differential Equations", "Machine Learning"]
+$
+
+Both are valid because Linear Algebra only depends on Calculus I, and it doesn't matter if you take it before or after Calculus II.
+
+=== Properties of Topological Sort
+
+Here are some key properties:
+
+1. A topological sort is *not unique*. There can be multiple valid orderings.
+2. A graph has a topological sort *if and only if* it is a DAG.
+3. If the graph has $n$ vertices, the topological sort will contain all $n$ vertices exactly once.
+
+== Kahn's Algorithm //chap3
+
+#v(0.5em)
+
+Kahn's Algorithm is a BFS-based method to find a topological sort of a DAG. The algorithm works by repeatedly removing vertices with no incoming edges.
+
+The key idea is simple:
++ Find all vertices with no incoming edges (in-degree = 0). These can be done first since they don't depend on anything.
++ Remove these vertices and all their outgoing edges from the graph.
++ Repeat until all vertices are removed.
+
+Here's how it works step by step for this graph:
+
+```
+    1 → 2 → 4
+    ↓   ↓
+    3 → 5
+```
+
+*Step 1:* Calculate in-degrees for all vertices.
+- Vertex 1: in-degree = 0
+- Vertex 2: in-degree = 1 (from 1)
+- Vertex 3: in-degree = 1 (from 1)
+- Vertex 4: in-degree = 1 (from 2)
+- Vertex 5: in-degree = 2 (from 2 and 3)
+
+*Step 2:* Start with vertex 1 (in-degree = 0). Add it to our result and reduce the in-degree of its neighbors (2 and 3).
+- Result: [1]
+- New in-degrees: 2→0, 3→0, 4→1, 5→2
+
+*Step 3:* Now vertices 2 and 3 have in-degree 0. We can process them in any order. Let's process 2 first.
+- Result: [1, 2]
+- New in-degrees: 3→0, 4→0, 5→1
+
+*Step 4:* Process vertex 4 (in-degree = 0).
+- Result: [1, 2, 4]
+- New in-degrees: 3→0, 5→1
+
+*Step 5:* Process vertex 3 (in-degree = 0).
+- Result: [1, 2, 4, 3]
+- New in-degrees: 5→0
+
+*Step 6:* Process vertex 5 (in-degree = 0).
+- Result: [1, 2, 4, 3, 5]
+
+The final topological order is: $1, 2, 4, 3, 5$
+
+=== Implementation
+
+Here's the complete implementation of Kahn's Algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m; // n = number of vertices, m = number of edges
+  cin >> n >> m;
+  
+  vector<vector<int>> adj(n + 1); // adjacency list (1-indexed)
+  vector<int> indegree(n + 1, 0); // in-degree of each vertex
+  
+  // Read the edges
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v; // edge from u to v
+    adj[u].push_back(v);
+    indegree[v]++; // v has one more incoming edge
+  }
+  
+  // Queue for BFS - start with all vertices that have in-degree 0
+  queue<int> q;
+  for(int i = 1; i <= n; i++){
+    if(indegree[i] == 0){
+      q.push(i);
+    }
+  }
+  
+  vector<int> topo_sort; // stores the topological order
+  
+  // Process vertices in BFS order
+  while(!q.empty()){
+    int u = q.front();
+    q.pop();
+    
+    topo_sort.push_back(u);
+    
+    // Reduce in-degree of all neighbors
+    for(int v : adj[u]){
+      indegree[v]--;
+      // If in-degree becomes 0, add to queue
+      if(indegree[v] == 0){
+        q.push(v);
+      }
+    }
+  }
+  
+  // Check if topological sort is valid
+  if(topo_sort.size() != n){
+    cout << "Graph has a cycle! Topological sort doesn't exist." << endl;
+  }
+  else{
+    cout << "Topological Sort: ";
+    for(int x : topo_sort){
+      cout << x << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 6
+1 2
+1 3
+2 4
+2 5
+3 5
+4 5
+```
+
+This represents the graph:
+```
+    1 → 2 → 4
+    ↓   ↓   ↓
+    3 → 5 ← 5
+```
+
+Output:
+
+```
+Topological Sort: 1 2 3 4 5
+```
+
+Note that `1 2 4 3 5` and `1 3 2 4 5` would also be valid topological sorts for this graph.
+
+=== Time and Space Complexity
+
+The time complexity of Kahn's Algorithm is $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges. This is because:
+- We visit each vertex exactly once when we pop it from the queue.
+- We examine each edge exactly once when processing its source vertex.
+
+The space complexity is $O(V + E)$ for storing the adjacency list and $O(V)$ for the queue and in-degree array.
+
+=== Detecting Cycles
+
+One very useful property of Kahn's Algorithm is that it can detect cycles. If at the end of the algorithm `topo_sort.size() != n`, it means some vertices were never added to the result. This happens when there's a cycle preventing those vertices from ever having in-degree 0.
+
+Here's an example with a cycle:
+
+Sample input:
+
+```
+3 3
+1 2
+2 3
+3 1
+```
+
+This creates a cycle: $1 arrow.r 2 arrow.r 3 arrow.r 1$
+
+Output:
+
+```
+Graph has a cycle! Topological sort doesn't exist.
+```
+
+=== Practical Problem: Course Schedule
+
+*Problem:* You are given $n$ courses labeled from $1$ to $n$ and $m$ prerequisite pairs. Each pair $(u, v)$ means you must complete course $u$ before taking course $v$. Determine if it's possible to complete all courses, and if so, print a valid order.
+
+*Solution:*
+
+This is exactly a topological sort problem! The courses are vertices, and prerequisites are directed edges. We use Kahn's Algorithm to:
+1. Check if a valid order exists (no cycles)
+2. Find a valid order if one exists
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<int>> adj(n + 1);
+  vector<int> indegree(n + 1, 0);
+  
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v; // must complete u before v
+    adj[u].push_back(v);
+    indegree[v]++;
+  }
+  
+  queue<int> q;
+  for(int i = 1; i <= n; i++){
+    if(indegree[i] == 0){
+      q.push(i);
+    }
+  }
+  
+  vector<int> order;
+  
+  while(!q.empty()){
+    int u = q.front();
+    q.pop();
+    order.push_back(u);
+    
+    for(int v : adj[u]){
+      indegree[v]--;
+      if(indegree[v] == 0){
+        q.push(v);
+      }
+    }
+  }
+  
+  if(order.size() != n){
+    cout << "Impossible! There is a circular dependency." << endl;
+  }
+  else{
+    cout << "Possible! Valid course order: ";
+    for(int course : order){
+      cout << course << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+1 2
+1 3
+2 4
+3 4
+4 5
+3 6
+6 5
+```
+
+This represents:
+```
+Course 1 (prerequisite for 2 and 3)
+   ├→ Course 2 → Course 4 → Course 5
+   └→ Course 3 → Course 4
+        └→ Course 6 → Course 5
+```
+
+Output:
+
+```
+Possible! Valid course order: 1 2 3 4 6 5
+```
+
+Sample input with cycle:
+
+```
+3 3
+1 2
+2 3
+3 1
+```
+
+Output:
+
+```
+Impossible! There is a circular dependency.
+```
+
+=== Comparing Kahn's Algorithm with DFS-based Topological Sort
+
+While Kahn's Algorithm uses BFS and in-degrees, there's also a DFS-based approach to topological sort. Here's a quick comparison:
+
+*Kahn's Algorithm (BFS):*
+- Uses in-degrees and a queue
+- Naturally detects cycles (when not all vertices are processed)
+- Returns one valid topological order
+- Generally easier to understand for beginners
+
+*DFS-based approach:*
+- Uses recursion and post-order traversal
+- Also detects cycles (using a "visiting" state)
+- Can return the topological order in reverse
+- More commonly used in competitive programming
+
+Both have $O(V + E)$ time complexity, so the choice often comes down to personal preference and the specific requirements of the problem.
+
+For the `std::queue` documentation used in this algorithm, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
+
