@@ -2703,6 +2703,500 @@ Finally, make sure you fill in values in the right order, so that when you compu
 With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
 
 
+== Intro to Graphs //chap2
+
+#v(0.5em)
+
+A *graph* is a data structure that consists of *nodes* (also called vertices) and *edges* that connect pairs of nodes. Graphs are used to model relationships between objects. For example, in a social network, each person could be a node, and an edge between two nodes means those two people are friends.
+
+Graphs can be *directed* or *undirected*. In a directed graph, edges have a direction - if there's an edge from node A to node B, you can travel from A to B, but not necessarily from B to A. In an undirected graph, edges work both ways - if there's an edge between A and B, you can travel in either direction.
+
+Graphs can also be *weighted* or *unweighted*. In a weighted graph, each edge has a value (weight) associated with it, such as the distance between two cities or the cost of traveling between two nodes. In an unweighted graph, all edges are considered equal.
+
+Here's an example of an undirected, unweighted graph with 6 nodes:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw nodes
+    circle((0, 0), radius: 0.3, fill: white, name: "1")
+    content((0, 0), [1])
+    
+    circle((2, 1), radius: 0.3, fill: white, name: "2")
+    content((2, 1), [2])
+    
+    circle((2, -1), radius: 0.3, fill: white, name: "3")
+    content((2, -1), [3])
+    
+    circle((4, 0.5), radius: 0.3, fill: white, name: "4")
+    content((4, 0.5), [4])
+    
+    circle((4, -1.5), radius: 0.3, fill: white, name: "5")
+    content((4, -1.5), [5])
+    
+    circle((6, 0), radius: 0.3, fill: white, name: "6")
+    content((6, 0), [6])
+
+    // Draw edges
+    line("1", "2")
+    line("1", "3")
+    line("2", "4")
+    line("3", "4")
+    line("3", "5")
+    line("4", "6")
+    line("5", "6")
+  })
+]
+
+In this graph, node 1 is connected to nodes 2 and 3, node 2 is connected to nodes 1 and 4, and so on. The edges show which nodes are directly connected.
+
+=== Storing Graphs
+
+There are three main ways to store graphs in C++: adjacency lists, adjacency matrices, and edge lists. Each method has its own advantages and disadvantages.
+
+==== Adjacency List
+
+An *adjacency list* stores for each node a list of all the nodes it's connected to. This is the most commonly used representation because it's memory-efficient and fast for most graph algorithms.
+
+For an unweighted graph, you can use a `vector<vector<int>>` where `adj[u]` contains all the nodes that node `u` is connected to.
+
+Here's the code to store the graph shown above:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m; // n = number of nodes, m = number of edges
+  cin >> n >> m;
+  
+  vector<vector<int>> adj(n + 1); // 1-indexed adjacency list
+  
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v); // add edge from u to v
+    adj[v].push_back(u); // add edge from v to u (undirected graph)
+  }
+  
+  // Print the adjacency list
+  for(int i = 1; i <= n; i++){
+    cout << i << ": ";
+    for(int j : adj[i])
+      cout << j << " ";
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+1 2
+1 3
+2 4
+3 4
+3 5
+4 6
+5 6
+```
+
+Output:
+
+```
+1: 2 3 
+2: 1 4 
+3: 1 4 5 
+4: 2 3 6 
+5: 3 6 
+6: 4 5 
+```
+
+For a directed graph, you only add the edge in one direction. For example, if there's a directed edge from `u` to `v`, you only do `adj[u].push_back(v)`.
+
+For a weighted graph, you need to store both the destination node and the weight of the edge. You can use a `vector<vector<pair<int, int>>>` where each pair contains the destination node and the edge weight.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1); // pair<destination, weight>
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w; // edge from u to v with weight w
+    adj[u].push_back({v, w});
+    adj[v].push_back({u, w}); // for undirected graph
+  }
+  
+  // Print the weighted adjacency list
+  for(int i = 1; i <= n; i++){
+    cout << i << ": ";
+    for(auto [node, weight] : adj[i])
+      cout << "(" << node << ", " << weight << ") ";
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4 4
+1 2 5
+1 3 2
+2 4 7
+3 4 3
+```
+
+Output:
+
+```
+1: (2, 5) (3, 2) 
+2: (1, 5) (4, 7) 
+3: (1, 2) (4, 3) 
+4: (2, 7) (3, 3) 
+```
+
+The *space complexity* of an adjacency list is $O(n + m)$ where $n$ is the number of nodes and $m$ is the number of edges. The *time complexity* to check if there's an edge between two nodes is $O(degree)$ where degree is the number of edges connected to a node. In the worst case, this is $O(n)$.
+
+==== Adjacency Matrix
+
+An *adjacency matrix* is a 2D array where `matrix[u][v] = 1` if there's an edge from node `u` to node `v`, and `matrix[u][v] = 0` otherwise. For weighted graphs, you store the weight instead of 1, and use a special value like `INF` or `-1` for non-existent edges.
+
+Here's the code for an unweighted graph using an adjacency matrix:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<int>> matrix(n + 1, vector<int>(n + 1, 0)); // initialize with 0s
+  
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v;
+    matrix[u][v] = 1; // edge from u to v
+    matrix[v][u] = 1; // edge from v to u (undirected)
+  }
+  
+  // Print the adjacency matrix
+  cout << "  ";
+  for(int i = 1; i <= n; i++)
+    cout << i << " ";
+  cout << endl;
+  
+  for(int i = 1; i <= n; i++){
+    cout << i << " ";
+    for(int j = 1; j <= n; j++)
+      cout << matrix[i][j] << " ";
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4 4
+1 2
+1 3
+2 4
+3 4
+```
+
+Output:
+
+```
+  1 2 3 4 
+1 0 1 1 0 
+2 1 0 0 1 
+3 1 0 0 1 
+4 0 1 1 0 
+```
+
+For weighted graphs, you can modify the code to store weights:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9; // represents no edge
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<int>> matrix(n + 1, vector<int>(n + 1, INF));
+  
+  // A node has distance 0 to itself
+  for(int i = 1; i <= n; i++)
+    matrix[i][i] = 0;
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    matrix[u][v] = w;
+    matrix[v][u] = w; // undirected
+  }
+  
+  // Print the weighted adjacency matrix
+  cout << "    ";
+  for(int i = 1; i <= n; i++)
+    cout << i << "   ";
+  cout << endl;
+  
+  for(int i = 1; i <= n; i++){
+    cout << i << " ";
+    for(int j = 1; j <= n; j++){
+      if(matrix[i][j] == INF)
+        cout << "INF ";
+      else
+        cout << matrix[i][j] << "   ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4 4
+1 2 5
+1 3 2
+2 4 7
+3 4 3
+```
+
+Output:
+
+```
+    1   2   3   4   
+1 0   5   2   INF 
+2 5   0   INF 7   
+3 2   INF 0   3   
+4 INF 7   3   0   
+```
+
+The advantage of an adjacency matrix is that you can check if there's an edge between two nodes in $O(1)$ time by simply looking at `matrix[u][v]`. However, the *space complexity* is $O(n^2)$, which is inefficient for sparse graphs (graphs with few edges). Adjacency matrices are useful when the graph is dense (has many edges) or when you need to quickly check if an edge exists.
+
+==== Edge List
+
+An *edge list* is simply a list of all edges in the graph. For unweighted graphs, you can use a `vector<pair<int, int>>` where each pair represents an edge. For weighted graphs, you can use a `vector<tuple<int, int, int>>` or create a struct to store the edge information.
+
+Here's the code for an unweighted edge list:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<pair<int, int>> edges;
+  
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v;
+    edges.push_back({u, v});
+  }
+  
+  // Print all edges
+  cout << "Edges:" << endl;
+  for(auto [u, v] : edges)
+    cout << u << " -> " << v << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4 5
+1 2
+1 3
+2 4
+3 4
+4 1
+```
+
+Output:
+
+```
+Edges:
+1 -> 2
+1 -> 3
+2 -> 4
+3 -> 4
+4 -> 1
+```
+
+For weighted graphs, you can use a struct:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Edge{
+  int u, v, w; // edge from u to v with weight w
+  
+  Edge(int u, int v, int w){
+    this->u = u;
+    this->v = v;
+    this->w = w;
+  }
+};
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<Edge> edges;
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    edges.push_back(Edge(u, v, w));
+  }
+  
+  // Print all edges with weights
+  cout << "Edges:" << endl;
+  for(Edge e : edges)
+    cout << e.u << " -> " << e.v << " (weight: " << e.w << ")" << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4 4
+1 2 5
+1 3 2
+2 4 7
+3 4 3
+```
+
+Output:
+
+```
+Edges:
+1 -> 2 (weight: 5)
+1 -> 3 (weight: 2)
+2 -> 4 (weight: 7)
+3 -> 4 (weight: 3)
+```
+
+Edge lists are useful for algorithms like Kruskal's algorithm for finding minimum spanning trees, where you need to process edges in sorted order. The *space complexity* is $O(m)$. However, checking if there's an edge between two specific nodes requires $O(m)$ time since you need to iterate through all edges.
+
+=== Choosing the Right Representation
+
+Here's a summary of when to use each representation:
+
+*Adjacency List:* Use this most of the time. It's memory-efficient for sparse graphs and supports fast iteration over neighbors. This is the default choice unless you have a specific reason to use something else.
+
+*Adjacency Matrix:* Use when you need to quickly check if an edge exists between two nodes, or when the graph is dense (has many edges). Also useful for algorithms like Floyd-Warshall.
+
+*Edge List:* Use when you need to process all edges (not neighbors of specific nodes), or when edges need to be sorted. Common in algorithms like Kruskal's MST or when reading input where edges are given in random order.
+
+For most competitive programming problems, adjacency lists are the way to go.
+
+=== Graph Traversal Example
+
+Let's see a simple example of traversing a graph using an adjacency list. Say you want to find all nodes reachable from a starting node. You can do this using a simple traversal:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<int>> adj(n + 1);
+  
+  for(int i = 0; i < m; i++){
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  int start;
+  cin >> start;
+  
+  vector<bool> visited(n + 1, false);
+  queue<int> q;
+  
+  q.push(start);
+  visited[start] = true;
+  
+  cout << "Nodes reachable from " << start << ": ";
+  
+  while(!q.empty()){
+    int cur = q.front();
+    q.pop();
+    
+    cout << cur << " ";
+    
+    for(int neighbor : adj[cur]){
+      if(!visited[neighbor]){
+        visited[neighbor] = true;
+        q.push(neighbor);
+      }
+    }
+  }
+  
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+1 2
+1 3
+2 4
+3 4
+3 5
+4 6
+5 6
+3
+```
+
+Output:
+
+```
+Nodes reachable from 3: 3 1 4 5 2 6 
+```
+
+This code performs a *breadth-first search (BFS)* starting from node 3, visiting all reachable nodes. You'll learn more about BFS and other graph algorithms in later sections.
+
+
 == Depth-First Search (DFS) //chap3
 
 #v(0.5em)
@@ -4299,5 +4793,314 @@ The `parent` array stores which node we came from to reach each node along the s
 4. *Not initializing distances to infinity*: If you don't initialize all distances to `INF` except the source, the algorithm won't work correctly.
 
 For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
+
+== Floyd-Warshall Algorithm //chap3
+
+#v(0.5em)
+
+Let's say you have a weighted graph with $n$ vertices. You want to find the shortest path between *every pair of vertices*. One way to solve this would be to run Dijkstra's algorithm from each vertex, which would take $O(n^2 log n)$ time. However, there's a simpler algorithm that can solve this problem in $O(n^3)$ time called the *Floyd-Warshall algorithm*.
+
+The Floyd-Warshall algorithm works on graphs with negative edge weights, as long as there are no negative cycles. It's based on a simple idea: for every pair of vertices $(i, j)$, we try using each vertex $k$ as an intermediate point and see if going through $k$ gives us a shorter path than the direct path from $i$ to $j$.
+
+=== The Algorithm
+
+The algorithm maintains a 2D array `dist[i][j]` which stores the shortest distance from vertex $i$ to vertex $j$. Initially, `dist[i][j]` is set to the weight of the edge from $i$ to $j$ if such an edge exists, or infinity ($infinity$) if no edge exists. For each vertex, the distance to itself is 0, so `dist[i][i] = 0`.
+
+The core idea is to iteratively improve our estimates of the shortest paths. For each intermediate vertex $k$, we check if going from $i$ to $j$ through $k$ is shorter than the current best path from $i$ to $j$. Mathematically:
+
+$
+  "dist"[i][j] = min("dist"[i][j], "dist"[i][k] + "dist"[k][j])
+$
+
+We do this for all pairs $(i, j)$ and all possible intermediate vertices $k$. The key insight is that after considering all vertices from 1 to $k$ as intermediate points, `dist[i][j]` contains the shortest path from $i$ to $j$ that only uses vertices 1 through $k$ as intermediate points.
+
+Here's a visual example. Consider this graph:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+    
+    circle((0, 0), radius: 0.3, name: "v1")
+    content((name: "v1"), [1])
+    
+    circle((3, 0), radius: 0.3, name: "v2")
+    content((name: "v2"), [2])
+    
+    circle((1.5, 2), radius: 0.3, name: "v3")
+    content((name: "v3"), [3])
+    
+    circle((1.5, -2), radius: 0.3, name: "v4")
+    content((name: "v4"), [4])
+    
+    set-style(mark: (end: ">"))
+    
+    line((0.3, 0), (2.7, 0))
+    content((1.5, 0.3), [4])
+    
+    line((0.2, 0.2), (1.3, 1.8))
+    content((0.5, 1.2), [2])
+    
+    line((1.7, 1.8), (2.8, 0.2))
+    content((2.5, 1.2), [1])
+    
+    line((0.2, -0.2), (1.3, -1.8))
+    content((0.5, -1.2), [1])
+    
+    line((1.7, -1.8), (2.8, -0.2))
+    content((2.5, -1.2), [3])
+    
+    line((1.5, 1.7), (1.5, -1.7))
+    content((1.8, 0), [5])
+  })
+]
+
+The adjacency matrix and initial distance matrix would look like:
+
+#align(center)[
+  #table(
+    columns: 5,
+    align: center,
+    [], [1], [2], [3], [4],
+    [1], [0], [4], [2], [1],
+    [2], [$infinity$], [0], [1], [3],
+    [3], [$infinity$], [$infinity$], [0], [5],
+    [4], [$infinity$], [$infinity$], [$infinity$], [0]
+  )
+]
+
+After running Floyd-Warshall, the shortest distances between all pairs would be:
+
+#align(center)[
+  #table(
+    columns: 5,
+    align: center,
+    [], [1], [2], [3], [4],
+    [1], [0], [3], [2], [1],
+    [2], [$infinity$], [0], [1], [3],
+    [3], [$infinity$], [$infinity$], [0], [5],
+    [4], [$infinity$], [$infinity$], [$infinity$], [0]
+  )
+]
+
+Notice that `dist[1][2]` changed from 4 to 3, because the path $1 arrow.r 3 arrow.r 2$ (length $2 + 1 = 3$) is shorter than the direct edge $1 arrow.r 2$ (length 4).
+
+=== Implementation
+
+Here's the implementation of the Floyd-Warshall algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9; // Use a large value to represent infinity
+
+int main(){
+  int n, m;
+  cin >> n >> m; // n = number of vertices, m = number of edges
+  
+  // Initialize distance matrix with infinity
+  vector<vector<int>> dist(n + 1, vector<int>(n + 1, INF));
+  
+  // Distance from a vertex to itself is 0
+  for(int i = 1; i <= n; i++)
+    dist[i][i] = 0;
+  
+  // Read the edges
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w; // edge from u to v with weight w
+    dist[u][v] = min(dist[u][v], w); // in case of multiple edges, keep the minimum
+  }
+  
+  // Floyd-Warshall algorithm
+  for(int k = 1; k <= n; k++){ // intermediate vertex
+    for(int i = 1; i <= n; i++){ // source vertex
+      for(int j = 1; j <= n; j++){ // destination vertex
+        if(dist[i][k] != INF && dist[k][j] != INF)
+          dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+      }
+    }
+  }
+  
+  // Print the shortest distances
+  cout << "Shortest distances between all pairs:" << endl;
+  for(int i = 1; i <= n; i++){
+    for(int j = 1; j <= n; j++){
+      if(dist[i][j] == INF)
+        cout << "INF ";
+      else
+        cout << dist[i][j] << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+  ```
+  4 6
+  1 2 4
+  1 3 2
+  3 2 1
+  1 4 1
+  2 4 3
+  3 4 5
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  Shortest distances between all pairs:
+  0 3 2 1 
+  INF 0 INF 3 
+  INF 1 0 4 
+  INF INF INF 0
+  ```
+]
+
+=== Detecting Negative Cycles
+
+One useful property of Floyd-Warshall is that it can detect negative cycles. A *negative cycle* is a cycle in the graph where the sum of edge weights is negative. If such a cycle exists, there is no shortest path because you can keep going around the cycle to make the path arbitrarily short.
+
+After running Floyd-Warshall, if `dist[i][i] < 0` for any vertex $i$, then there exists a negative cycle in the graph. This is because the distance from a vertex to itself should always be 0 unless you can reach it again through a path with negative total weight.
+
+Here's how to check for negative cycles:
+
+```cpp
+// After running Floyd-Warshall
+bool hasNegativeCycle = false;
+for(int i = 1; i <= n; i++){
+  if(dist[i][i] < 0){
+    hasNegativeCycle = true;
+    break;
+  }
+}
+
+if(hasNegativeCycle)
+  cout << "Graph contains a negative cycle!" << endl;
+```
+
+=== Path Reconstruction
+
+If you want to not only find the shortest distance but also reconstruct the actual path, you can maintain a `next` matrix. `next[i][j]` stores the next vertex to visit on the shortest path from $i$ to $j$.
+
+Here's the modified implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<int>> dist(n + 1, vector<int>(n + 1, INF));
+  vector<vector<int>> next(n + 1, vector<int>(n + 1, -1));
+  
+  for(int i = 1; i <= n; i++)
+    dist[i][i] = 0;
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    if(w < dist[u][v]){
+      dist[u][v] = w;
+      next[u][v] = v; // next vertex after u on the path to v is v itself
+    }
+  }
+  
+  // Floyd-Warshall with path reconstruction
+  for(int k = 1; k <= n; k++){
+    for(int i = 1; i <= n; i++){
+      for(int j = 1; j <= n; j++){
+        if(dist[i][k] != INF && dist[k][j] != INF){
+          if(dist[i][k] + dist[k][j] < dist[i][j]){
+            dist[i][j] = dist[i][k] + dist[k][j];
+            next[i][j] = next[i][k]; // to go from i to j, first go to where we go from i to k
+          }
+        }
+      }
+    }
+  }
+  
+  // Function to reconstruct path from u to v
+  auto getPath = [&](int u, int v) -> vector<int> {
+    if(next[u][v] == -1)
+      return {}; // no path exists
+    
+    vector<int> path = {u};
+    while(u != v){
+      u = next[u][v];
+      path.push_back(u);
+    }
+    return path;
+  };
+  
+  // Example: print path from vertex 1 to vertex 2
+  vector<int> path = getPath(1, 2);
+  if(path.empty())
+    cout << "No path from 1 to 2" << endl;
+  else{
+    cout << "Path from 1 to 2: ";
+    for(int i = 0; i < path.size(); i++){
+      cout << path[i];
+      if(i != path.size() - 1)
+        cout << " -> ";
+    }
+    cout << " (distance: " << dist[1][2] << ")" << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#no-codly[
+  ```
+  4 6
+  1 2 4
+  1 3 2
+  3 2 1
+  1 4 1
+  2 4 3
+  3 4 5
+  ```
+]
+
+Output:
+
+#no-codly[
+  ```
+  Path from 1 to 2: 1 -> 3 -> 2 (distance: 3)
+  ```
+]
+
+=== Time and Space Complexity
+
+The Floyd-Warshall algorithm has a time complexity of $O(n^3)$ because of the three nested loops over all vertices. The space complexity is $O(n^2)$ for storing the distance matrix.
+
+While $O(n^3)$ might seem slow, for small graphs (say $n <= 400$), Floyd-Warshall is often the simplest and most practical choice for finding all-pairs shortest paths. For larger graphs or when you only need shortest paths from a single source, other algorithms like Dijkstra's or Bellman-Ford might be more appropriate.
+
+=== When to Use Floyd-Warshall
+
+Use Floyd-Warshall when:
+- You need shortest paths between *all pairs* of vertices
+- The graph is small ($n <= 400$ typically)
+- The graph may have negative edge weights (but no negative cycles)
+- You want a simple, easy-to-implement solution
+
+Don't use Floyd-Warshall when:
+- You only need shortest paths from a single source (use Dijkstra's or Bellman-Ford instead)
+- The graph is very large ($n > 1000$) as $O(n^3)$ will be too slow
+- You're working with an unweighted graph (use BFS instead)
 
 
