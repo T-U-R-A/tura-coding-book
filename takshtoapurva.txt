@@ -3,3 +3,6 @@ dfs concept step 2
 bfs concept step 2
 bellman ford concept step 2
 dijkstara concept step 2
+intro to graph concept step 2
+floyd warshall concept step 2
+dsu concept step 2
