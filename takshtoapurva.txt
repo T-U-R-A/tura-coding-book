@@ -1,1 +1,5 @@
 dynamic programming concept step 2
+dfs concept step 2
+bfs concept step 2
+bellman ford concept step 2
+dijkstara concept step 2
