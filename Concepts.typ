@@ -7400,7 +7400,7 @@ Let's look at some examples to understand the concept better:
     *Example 1: Graph with Hamiltonian Path*
     
     #canvas(length: 1cm, {
-      import draw: *
+      import cetz.draw: *
       
       // Draw vertices
       circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
@@ -7439,7 +7439,7 @@ Let's look at some examples to understand the concept better:
     *Example 2: Graph with Hamiltonian Cycle*
     
     #canvas(length: 1cm, {
-      import draw: *
+      import cetz.draw: *
       
       // Draw vertices in a square
       circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
