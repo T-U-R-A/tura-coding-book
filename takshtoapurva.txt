@@ -16,6 +16,8 @@ strongly connected components step 2
 graph dp bitmask step 2
 segment tree step 2
 binary lifting step 2
+lazy propogation step 2
+
 
 
 
