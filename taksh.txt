@@ -1,5 +1,4 @@
 dynamic programming concept step 3
-Minimizing Coins step1
 Coin Combinations I step1
 Coin Combinations II step1
 Removing Digits step1

@@ -87,7 +87,21 @@ int main() {
 \
 *Explanation* :
 
-[To be added]
+
+We are given `n` coin denominations and a target sum. Our goal is to find the minimum number of coins needed to form exactly that sum, where each coin can be used any number of times.
+
+Key Observation:
+The greedy approach (always picking the largest coin) does not always work. For example, with coins `[1, 3, 4]` and target `6`, greedy gives `4 + 1 + 1 = 3` coins, but optimal is `3 + 3 = 2` coins.
+
+Dynamic Programming Insight:
+Instead of exploring all combinations, we build the solution bottom-up. For any sum `x`, we form it by taking one coin `c` and adding it to the optimal solution for sum `x - c`. We try all possible coins and pick the best.
+
+Building the Solution:
+Start with `dp[0] = 0` (zero coins for sum 0). For each sum from `1` to `target`, try every coin. If using coin `c` gives a better result, update `dp[sum] = min(dp[sum], dp[sum - c] + 1)`. Mark impossible sums with a large value.
+
+Why This Works:
+When computing `dp[sum]`, all smaller values are already solved. By processing sums in increasing order, every subproblem is solved before we need it. This avoids recalculation and guarantees the optimal solution.
+\
 
 \
 *Code :*
@@ -124,7 +138,8 @@ int main() {
 
     if (dp[target] == INF) {
         cout << -1 << '\n';
-    } else {
+    } 
+    else {
         cout << dp[target] << '\n';
     }
 
