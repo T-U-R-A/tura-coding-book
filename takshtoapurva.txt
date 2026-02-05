@@ -21,6 +21,7 @@ dynamic segment tree step 2
 offline queries step 2
 deque step 2
 difference array step 2
+edmond karp step 2
 
 
 
