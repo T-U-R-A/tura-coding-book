@@ -2,7 +2,7 @@
 #import "@preview/board-n-pieces:0.7.0": *
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
-#import "@preview/cetz:0.2.2": canvas
+// #import "@preview/cetz:0.2.2": canvas
 
 #show: codly-init.with()
 #codly(languages: codly-languages)
@@ -7399,7 +7399,7 @@ Let's look at some examples to understand the concept better:
   #box[
     *Example 1: Graph with Hamiltonian Path*
     
-    #canvas(length: 1cm, {
+    #cetz.canvas(length: 1cm, {
       import cetz.draw: *
       
       // Draw vertices
@@ -7438,7 +7438,7 @@ Let's look at some examples to understand the concept better:
   #box[
     *Example 2: Graph with Hamiltonian Cycle*
     
-    #canvas(length: 1cm, {
+    #cetz.canvas(length: 1cm, {
       import cetz.draw: *
       
       // Draw vertices in a square
@@ -7472,7 +7472,7 @@ Let's look at some examples to understand the concept better:
   #box[
     *Example 3: Graph without Hamiltonian Path*
     
-    #canvas(length: 1cm, {
+    #cetz.canvas(length: 1cm, {
       import cetz.draw: *
       
       // Draw vertices
@@ -7807,7 +7807,7 @@ Here's a visual representation:
 #import "@preview/cetz:0.2.2": canvas, draw
 
 #align(center)[
-  #canvas(length: 1cm, {
+  #cetz.canvas(length: 1cm, {
     import cetz.draw: *
     
     // Draw vertices
