@@ -2439,6 +2439,232 @@ This function checks if parentheses, braces, and brackets are properly balanced 
 - Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
 - Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
 
+== Deque //chap1
+
+A *deque* (pronounced "deck") stands for *double-ended queue*. Unlike a regular queue where you can only add elements at the back and remove from the front, a deque allows you to efficiently add and remove elements from both ends.
+
+In C++, the deque data structure is already implemented as `std::deque`.
+
+Some of the operations a `deque` supports are:
+
++ `push_back()` adds an element to the back of the deque in $O(1)$ time.
++ `push_front()` adds an element to the front of the deque in $O(1)$ time.
++ `pop_back()` removes the element from the back of the deque in $O(1)$ time.
++ `pop_front()` removes the element from the front of the deque in $O(1)$ time.
++ `front()` gets the value of the element at the front without removing it in $O(1)$ time.
++ `back()` gets the value of the element at the back without removing it in $O(1)$ time.
+
+Let's look at a basic problem to understand how deques work:
+
+*Problem:* You're managing a special queue where VIP customers can join at the front of the line, regular customers join at the back, and you can serve customers from either end. Implement this system.
+
+*Solution:*
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n;
+  cin >> n;
+  
+  deque<string> dq;
+  
+  for(int i = 0; i < n; i++){
+    string operation, name;
+    cin >> operation >> name;
+    
+    if(operation == "VIP"){
+      dq.push_front(name); // VIP joins at front
+      cout << name << " joined at the front" << endl;
+    }
+    else if(operation == "REGULAR"){
+      dq.push_back(name); // Regular customer joins at back
+      cout << name << " joined at the back" << endl;
+    }
+    else if(operation == "SERVE_FRONT"){
+      cout << "Serving " << dq.front() << " from the front" << endl;
+      dq.pop_front();
+    }
+    else if(operation == "SERVE_BACK"){
+      cout << "Serving " << dq.back() << " from the back" << endl;
+      dq.pop_back();
+    }
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+```
+7
+REGULAR Alice
+VIP Bob
+REGULAR Charlie
+SERVE_FRONT x
+REGULAR Diana
+SERVE_BACK x
+SERVE_FRONT x
+```
+
+Output:
+```
+Alice joined at the back
+Bob joined at the front
+Charlie joined at the back
+Serving Bob from the front
+Diana joined at the back
+Serving Diana from the back
+Serving Alice from the front
+```
+
+=== Sliding Window Maximum - Converting $O(n^2)$ to $O(n)$
+
+One of the most powerful applications of a deque is in solving the *sliding window maximum* problem, which demonstrates how deques can optimize algorithms from $O(n^2)$ to $O(n)$.
+
+*Problem:* You have an array of $n$ integers and a window of size $k$ that moves from left to right. At each position, you need to find the maximum element in the current window. For example, with array `[1, 3, -1, -3, 5, 3, 6, 7]` and `k = 3`, the maximums are `[3, 3, 5, 5, 6, 7]`.
+
+The naive approach would be to loop through each window and find the maximum, which takes $O(n times k)$ time. With a deque, we can solve this in $O(n)$.
+
+The key idea is to maintain a deque that stores indices of elements in the current window, keeping them in decreasing order of their values. This means the front of the deque always contains the index of the maximum element in the current window.
+
+Here's how it works:
+
+1. When adding a new element, remove all elements from the back that are smaller than it (they can never be the maximum).
+2. Remove elements from the front if they're outside the current window.
+3. The front element is always the maximum of the current window.
+
+*Solution:*
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, k;
+  cin >> n >> k;
+  
+  vector<int> arr(n);
+  for(int i = 0; i < n; i++)
+    cin >> arr[i];
+  
+  deque<int> dq; // stores indices, not values
+  vector<int> result;
+  
+  for(int i = 0; i < n; i++){
+    // Remove elements outside the current window from front
+    while(!dq.empty() && dq.front() <= i - k)
+      dq.pop_front();
+    
+    // Remove elements from back that are smaller than current element
+    // They can never be the maximum
+    while(!dq.empty() && arr[dq.back()] <= arr[i])
+      dq.pop_back();
+    
+    // Add current element index to the back
+    dq.push_back(i);
+    
+    // The front element is the maximum of current window
+    // Start recording results once we have a full window
+    if(i >= k - 1)
+      result.push_back(arr[dq.front()]);
+  }
+  
+  for(int x : result)
+    cout << x << " ";
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+```
+8 3
+1 3 -1 -3 5 3 6 7
+```
+
+Output:
+```
+3 3 5 5 6 7
+```
+
+Let's trace through the first few iterations with `k = 3`:
+
+- `i = 0`, `arr[0] = 1`: deque = `[0]`
+- `i = 1`, `arr[1] = 3`: Remove index 0 (because `arr[0] = 1 < 3`), deque = `[1]`
+- `i = 2`, `arr[2] = -1`: Add index 2, deque = `[1, 2]`, output first maximum: `arr[1] = 3`
+- `i = 3`, `arr[3] = -3`: Remove index 0 (outside window), add index 3, deque = `[1, 2, 3]`, maximum: `arr[1] = 3`
+- `i = 4`, `arr[4] = 5`: Remove indices 1, 2, 3 (all smaller than 5), deque = `[4]`, maximum: `arr[4] = 5`
+
+By maintaining this monotonic deque, each element is added and removed at most once, giving us $O(n)$ time complexity instead of $O(n times k)$.
+
+=== Sliding Window Minimum
+
+The same technique works for finding minimums - just reverse the comparison:
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+  int n, k;
+  cin >> n >> k;
+  
+  vector<int> arr(n);
+  for(int i = 0; i < n; i++)
+    cin >> arr[i];
+  
+  deque<int> dq;
+  vector<int> result;
+  
+  for(int i = 0; i < n; i++){
+    // Remove elements outside the current window
+    while(!dq.empty() && dq.front() <= i - k)
+      dq.pop_front();
+    
+    // Remove elements from back that are LARGER than current element
+    while(!dq.empty() && arr[dq.back()] >= arr[i])
+      dq.pop_back();
+    
+    dq.push_back(i);
+    
+    if(i >= k - 1)
+      result.push_back(arr[dq.front()]);
+  }
+  
+  for(int x : result)
+    cout << x << " ";
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+```
+8 3
+1 3 -1 -3 5 3 6 7
+```
+
+Output:
+```
+-1 -3 -3 -3 3 3
+```
+
+=== When to Use a Deque
+
+Use a deque when you need to:
+- Add or remove elements from both ends efficiently
+- Implement a sliding window algorithm
+- Maintain elements in a specific order (like monotonic deques)
+- Need random access to elements (deques support indexing like vectors)
+
+The deque is particularly useful in optimization problems where you need to maintain a "best so far" value within a moving window.
+
+For the `std::deque` documentation, click #link("https://en.cppreference.com/w/cpp/container/deque")[here].
+
+
+
+
 == Dynamic Programming <dp> //chap3
 
 #let fibNode(n, repeated: false) = {
