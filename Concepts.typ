@@ -2,7 +2,6 @@
 #import "@preview/board-n-pieces:0.7.0": *
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
-#import "@preview/cetz:0.2.2": canvas
 
 #show: codly-init.with()
 #codly(languages: codly-languages)
@@ -2668,9 +2667,13 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 == Dynamic Programming <dp> //chap3
 
 #let fibNode(n, repeated: false) = {
-  let fillColor = if repeated { rgb(255, 200, 200) } else { rgb(200, 225, 255) }
+  let fillColor = if repeated { 
+      rgb(255, 200, 200) 
+    } else { 
+      rgb(200, 225, 255) 
+    }
   box(
-    inset: 2pt,
+    inset: 5pt,
     fill: fillColor,
     stroke: 0.5pt,
     radius: 2pt,
@@ -2739,9 +2742,8 @@ int fib(int n) {
 }
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   memset(memo, -1, sizeof(memo));
   int n;
@@ -2776,9 +2778,8 @@ For Fibonacci, the smallest subproblems are $F(0) = 0$ and $F(1) = 1$. Since eac
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n;
   cin >> n;
@@ -2823,16 +2824,15 @@ The base cases are $"dp"[1] = 1$ (the only way is a single step) and $"dp"[2] = 
   )
 ]
 
-This recurrence is identical to Fibonacci—only the base cases differ slightly. This is a common theme in DP: problems that look different on the surface often share the same underlying structure.
+This recurrence is identical to Fibonacci, only the base cases differ slightly. This is a common theme in DP: problems that look different on the surface often share the same underlying structure.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n;
   cin >> n;
@@ -2885,9 +2885,8 @@ The minimum is $2$, so $"dp"[6] = 2$. This corresponds to using two coins of den
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n, amount;
   cin >> n >> amount;
@@ -2911,7 +2910,7 @@ int main() {
 }
 ```
 
-We initialize `dp` to `INT_MAX`—a very large number representing "infinity"—for every amount except $0$. If some amount can never be formed with the given coins, its value stays at `INT_MAX` and we output $-1$. We also check `dp[i - c] != INT_MAX` before adding $1$ to it, because adding to `INT_MAX` would cause an integer overflow.
+We initialize `dp` to `INT_MAX`, which is the largest value an integer can hold which behaves like "infinity", for every amount except $0$. If some amount can never be formed with the given coins, its value stays at `INT_MAX` and we output $-1$. We also check `dp[i - c] != INT_MAX` before adding $1$ to it, because adding to `INT_MAX` would cause an integer overflow.
 
 The time complexity here is $O(n times "amount")$, where $n$ is the number of coin denominations.
 
