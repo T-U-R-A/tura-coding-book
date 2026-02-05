@@ -2,7 +2,6 @@
 #import "@preview/board-n-pieces:0.7.0": *
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
-#import "@preview/cetz:0.2.2": canvas
 
 #show: codly-init.with()
 #codly(languages: codly-languages)
@@ -2668,9 +2667,13 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 == Dynamic Programming <dp> //chap3
 
 #let fibNode(n, repeated: false) = {
-  let fillColor = if repeated { rgb(255, 200, 200) } else { rgb(200, 225, 255) }
+  let fillColor = if repeated { 
+      rgb(255, 200, 200) 
+    } else { 
+      rgb(200, 225, 255) 
+    }
   box(
-    inset: 2pt,
+    inset: 5pt,
     fill: fillColor,
     stroke: 0.5pt,
     radius: 2pt,
@@ -2739,9 +2742,8 @@ int fib(int n) {
 }
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   memset(memo, -1, sizeof(memo));
   int n;
@@ -2776,9 +2778,8 @@ For Fibonacci, the smallest subproblems are $F(0) = 0$ and $F(1) = 1$. Since eac
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n;
   cin >> n;
@@ -2823,16 +2824,15 @@ The base cases are $"dp"[1] = 1$ (the only way is a single step) and $"dp"[2] = 
   )
 ]
 
-This recurrence is identical to Fibonacci—only the base cases differ slightly. This is a common theme in DP: problems that look different on the surface often share the same underlying structure.
+This recurrence is identical to Fibonacci, only the base cases differ slightly. This is a common theme in DP: problems that look different on the surface often share the same underlying structure.
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n;
   cin >> n;
@@ -2885,9 +2885,8 @@ The minimum is $2$, so $"dp"[6] = 2$. This corresponds to using two coins of den
 using namespace std;
 
 int main() {
-  ios_base::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+  ios_base::sync_with_stdio(false);
+  cin.tie(nullptr);
 
   int n, amount;
   cin >> n >> amount;
@@ -2911,7 +2910,7 @@ int main() {
 }
 ```
 
-We initialize `dp` to `INT_MAX`—a very large number representing "infinity"—for every amount except $0$. If some amount can never be formed with the given coins, its value stays at `INT_MAX` and we output $-1$. We also check `dp[i - c] != INT_MAX` before adding $1$ to it, because adding to `INT_MAX` would cause an integer overflow.
+We initialize `dp` to `INT_MAX`, which is the largest value an integer can hold which behaves like "infinity", for every amount except $0$. If some amount can never be formed with the given coins, its value stays at `INT_MAX` and we output $-1$. We also check `dp[i - c] != INT_MAX` before adding $1$ to it, because adding to `INT_MAX` would cause an integer overflow.
 
 The time complexity here is $O(n times "amount")$, where $n$ is the number of coin denominations.
 
@@ -9083,368 +9082,195 @@ When solving graph problems with bitmasks, remember:
 
 For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
 
-== Edmonds-Karp Algorithm //chap3
 
-#import "@preview/cetz:0.2.2"
+== Edmonds-Karp Algorithm //chap3
 
 #v(0.5em)
 
-The *Edmonds-Karp algorithm* is a specific implementation of the Ford-Fulkerson method for computing the maximum flow in a flow network. While Ford-Fulkerson uses any arbitrary method to find augmenting paths, Edmonds-Karp specifically uses *breadth-first search (BFS)* to find the shortest augmenting path in terms of the number of edges.
+The *Edmonds-Karp algorithm* is a specific implementation of the *Ford-Fulkerson method* for computing the maximum flow in a flow network. It uses BFS (Breadth-First Search) to find augmenting paths, which guarantees a time complexity of $O(V E^2)$ where $V$ is the number of vertices and $E$ is the number of edges.
 
-=== Understanding Flow Networks
+=== What is Maximum Flow?
 
-Before diving into the algorithm, let's understand what a flow network is. A *flow network* is a directed graph where each edge has a *capacity* - the maximum amount of flow that can pass through that edge. Additionally, there is a *source* node $s$ (where flow originates) and a *sink* node $t$ (where flow terminates).
+Imagine a network of pipes connecting a source to a sink. Each pipe has a maximum capacity of water it can carry. The *maximum flow problem* asks: what's the maximum amount of water that can flow from the source to the sink without exceeding any pipe's capacity?
 
-For example, think of a water pipe system where:
-- Pipes are edges with limited capacity (how much water can flow through)
-- Water enters at the source
-- Water exits at the sink
-- The goal is to find the maximum amount of water that can flow from source to sink
+More formally, given a directed graph where each edge has a capacity, we want to find the maximum amount of "flow" that can be sent from a source vertex $s$ to a sink vertex $t$ such that:
+1. The flow on each edge doesn't exceed its capacity
+2. For every vertex except $s$ and $t$, the incoming flow equals the outgoing flow (conservation of flow)
 
-Here's a simple flow network:
+Let's visualize a simple flow network:
+
+#align(center)[
+  #import "@preview/cetz:0.2.2"
+  #cetz.canvas({
+    import cetz.draw: *
+    
+    // Nodes
+    circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "s")
+    content("s", [*s*])
+    
+    circle((3, 1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "a")
+    content("a", [*A*])
+    
+    circle((3, -1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "b")
+    content("b", [*B*])
+    
+    circle((6, 0), radius: 0.3, fill: rgb(200, 255, 220), name: "t")
+    content("t", [*t*])
+    
+    // Edges with capacities
+    set-style(mark: (end: ">", fill: black))
+    
+    line("s", "a", name: "sa")
+    content((name: "sa", anchor: 50%), anchor: "south", padding: 0.1, [10])
+    
+    line("s", "b", name: "sb")
+    content((name: "sb", anchor: 50%), anchor: "north", padding: 0.1, [10])
+    
+    line("a", "b", name: "ab")
+    content((name: "ab", anchor: 50%), anchor: "west", padding: 0.1, [2])
+    
+    line("a", "t", name: "at")
+    content((name: "at", anchor: 50%), anchor: "south", padding: 0.1, [10])
+    
+    line("b", "t", name: "bt")
+    content((name: "bt", anchor: 50%), anchor: "north", padding: 0.1, [10])
+  })
+]
+
+In this network, the numbers on edges represent capacities. The source is $s$ and the sink is $t$. The maximum flow turns out to be 20.
+
+=== The Residual Graph
+
+The key concept in flow algorithms is the *residual graph*. For each edge in the original graph with capacity $c$ and current flow $f$, the residual graph contains:
+- A forward edge with capacity $c - f$ (remaining capacity)
+- A backward edge with capacity $f$ (allows us to "undo" flow)
+
+This backward edge is crucial because it allows the algorithm to redirect flow if it finds a better path later.
+
+=== How Edmonds-Karp Works
+
+The algorithm works as follows:
+
+1. Start with zero flow on all edges
+2. Use BFS to find the shortest augmenting path from $s$ to $t$ in the residual graph
+3. Find the minimum capacity along this path (the bottleneck)
+4. Add this flow to all edges on the path
+5. Update the residual graph
+6. Repeat until no augmenting path exists
+
+Let's trace through our example network step by step:
+
+*Step 1:* Initial state (all flows are 0)
 
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
     
-    // Define node positions
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
+    circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "s")
+    content("s", [*s*])
+    circle((3, 1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "a")
+    content("a", [*A*])
+    circle((3, -1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "b")
+    content("b", [*B*])
+    circle((6, 0), radius: 0.3, fill: rgb(200, 255, 220), name: "t")
+    content("t", [*t*])
     
-    // Draw nodes
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
+    set-style(mark: (end: ">", fill: black))
     
-    // Draw edges with capacities
-    set-style(mark: (end: ">", scale: 0.8))
+    line("s", "a", name: "sa")
+    content((name: "sa", anchor: 50%), anchor: "south", padding: 0.1, [0/10])
     
-    // From source
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 10pt)[10])
+    line("s", "b", name: "sb")
+    content((name: "sb", anchor: 50%), anchor: "north", padding: 0.1, [0/10])
     
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 10pt)[10])
+    line("a", "b", name: "ab")
+    content((name: "ab", anchor: 50%), anchor: "west", padding: 0.1, [0/2])
     
-    // Middle edges
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 10pt)[4])
+    line("a", "t", name: "at")
+    content((name: "at", anchor: 50%), anchor: "south", padding: 0.1, [0/10])
     
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 10pt)[8])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 10pt)[9])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 10pt)[6])
-    
-    // To sink
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 10pt)[10])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 10pt)[10])
+    line("b", "t", name: "bt")
+    content((name: "bt", anchor: 50%), anchor: "north", padding: 0.1, [0/10])
   })
 ]
 
-In this network, the numbers on the edges represent capacities. The goal is to find the maximum flow from $s$ to $t$.
+BFS finds path: $s arrow.r A arrow.r t$ with bottleneck = 10
 
-=== The Key Concepts
-
-The Edmonds-Karp algorithm relies on several important concepts:
-
-*1. Augmenting Path:* A path from source to sink where you can still push more flow. The bottleneck of this path (minimum capacity along the path) determines how much flow can be added.
-
-*2. Residual Graph:* For each edge with capacity $c$ and current flow $f$, the residual graph contains:
-- A forward edge with residual capacity $c - f$ (remaining capacity)
-- A backward edge with residual capacity $f$ (flow that can be "undone")
-
-*3. The Algorithm:* Repeatedly find the shortest augmenting path using BFS and push flow along it until no more augmenting paths exist.
-
-=== Why BFS? The Time Complexity Guarantee
-
-The crucial insight of Edmonds-Karp is using BFS instead of DFS. This guarantees a time complexity of $O(V E^2)$ where $V$ is the number of vertices and $E$ is the number of edges.
-
-The reason is that BFS finds the shortest path (in terms of number of edges), and it can be proven that the shortest path length can only increase as the algorithm progresses. Since the shortest path can be at most $V - 1$ edges long, and each edge can become critical (bottleneck) at most $V$ times, we get $O(V E^2)$.
-
-=== Step-by-Step Example
-
-Let's trace through the algorithm on our example network. Initially, all flows are 0:
-
-*Initial State:*
+*Step 2:* After sending flow 10 along $s arrow.r A arrow.r t$
 
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
     
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
+    circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "s")
+    content("s", [*s*])
+    circle((3, 1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "a")
+    content("a", [*A*])
+    circle((3, -1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "b")
+    content("b", [*B*])
+    circle((6, 0), radius: 0.3, fill: rgb(200, 255, 220), name: "t")
+    content("t", [*t*])
     
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
+    set-style(mark: (end: ">", fill: black))
     
-    set-style(mark: (end: ">", scale: 0.8))
+    line("s", "a", name: "sa", stroke: rgb(255, 0, 0))
+    content((name: "sa", anchor: 50%), anchor: "south", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
     
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 9pt)[0/10])
+    line("s", "b", name: "sb")
+    content((name: "sb", anchor: 50%), anchor: "north", padding: 0.1, [0/10])
     
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 9pt)[0/10])
+    line("a", "b", name: "ab")
+    content((name: "ab", anchor: 50%), anchor: "west", padding: 0.1, [0/2])
     
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 9pt)[0/4])
+    line("a", "t", name: "at", stroke: rgb(255, 0, 0))
+    content((name: "at", anchor: 50%), anchor: "south", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
     
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 9pt)[0/8])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 9pt)[0/9])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 9pt)[0/6])
-    
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 9pt)[0/10])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 9pt)[0/10])
+    line("b", "t", name: "bt")
+    content((name: "bt", anchor: 50%), anchor: "north", padding: 0.1, [0/10])
   })
 ]
 
-*Iteration 1:* BFS finds path $s arrow.r a arrow.r c arrow.r t$ with bottleneck capacity 4.
+BFS finds path: $s arrow.r B arrow.r t$ with bottleneck = 10
+
+*Step 3:* After sending flow 10 along $s arrow.r B arrow.r t$
 
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
     
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
+    circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "s")
+    content("s", [*s*])
+    circle((3, 1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "a")
+    content("a", [*A*])
+    circle((3, -1.5), radius: 0.3, fill: rgb(255, 220, 200), name: "b")
+    content("b", [*B*])
+    circle((6, 0), radius: 0.3, fill: rgb(200, 255, 220), name: "t")
+    content("t", [*t*])
     
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
+    set-style(mark: (end: ">", fill: black))
     
-    set-style(mark: (end: ">", scale: 0.8))
+    line("s", "a", name: "sa", stroke: rgb(255, 0, 0))
+    content((name: "sa", anchor: 50%), anchor: "south", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
     
-    // Highlighted path
-    set-style(stroke: (paint: red, thickness: 2pt), mark: (end: ">", fill: red, scale: 0.8))
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 9pt, fill: red, weight: "bold")[4/10])
+    line("s", "b", name: "sb", stroke: rgb(255, 0, 0))
+    content((name: "sb", anchor: 50%), anchor: "north", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
     
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 9pt, fill: red, weight: "bold")[4/4])
+    line("a", "b", name: "ab")
+    content((name: "ab", anchor: 50%), anchor: "west", padding: 0.1, [0/2])
     
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 9pt, fill: red, weight: "bold")[4/10])
+    line("a", "t", name: "at", stroke: rgb(255, 0, 0))
+    content((name: "at", anchor: 50%), anchor: "south", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
     
-    // Other edges
-    set-style(stroke: black, mark: (end: ">", fill: black, scale: 0.8))
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 9pt)[0/10])
-    
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 9pt)[0/8])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 9pt)[0/9])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 9pt)[0/6])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 9pt)[0/10])
+    line("b", "t", name: "bt", stroke: rgb(255, 0, 0))
+    content((name: "bt", anchor: 50%), anchor: "north", padding: 0.1, text(fill: rgb(255, 0, 0))[10/10])
   })
 ]
 
-*Iteration 2:* BFS finds path $s arrow.r a arrow.r d arrow.r t$ with bottleneck capacity 6.
+No more augmenting paths exist. Maximum flow = 20.
 
-#align(center)[
-  #cetz.canvas({
-    import cetz.draw: *
-    
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
-    
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
-    
-    set-style(mark: (end: ">", scale: 0.8))
-    
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 9pt)[10/10])
-    
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 9pt)[4/4])
-    
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 9pt)[4/10])
-    
-    // Highlighted path
-    set-style(stroke: (paint: red, thickness: 2pt), mark: (end: ">", fill: red, scale: 0.8))
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 9pt, fill: red, weight: "bold")[6/10])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 9pt, fill: red, weight: "bold")[6/6])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 9pt, fill: red, weight: "bold")[6/10])
-    
-    // Other edges
-    set-style(stroke: black, mark: (end: ">", fill: black, scale: 0.8))
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 9pt)[0/8])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 9pt)[0/9])
-  })
-]
+=== The Code Implementation
 
-Wait, we made a mistake! We pushed 6 units through $s arrow.r b arrow.r d arrow.r t$, but we already had 4 units through $s arrow.r a$. Let me correct this. After iteration 1, $s arrow.r a$ has flow 4. In iteration 2, we can only push 6 more units from $s$ since $s arrow.r a$ is at capacity 10 (4 used, 6 remaining). Let me recalculate.
-
-Actually, after iteration 1, we have:
-- $s arrow.r a$: 4/10
-- $a arrow.r c$: 4/4 (saturated!)
-- $c arrow.r t$: 4/10
-
-In iteration 2, BFS finds $s arrow.r b arrow.r d arrow.r t$ with bottleneck 6 (limited by $b arrow.r d$).
-
-*Iteration 3:* BFS finds path $s arrow.r b arrow.r c arrow.r t$ with bottleneck capacity 4.
-
-#align(center)[
-  #cetz.canvas({
-    import cetz.draw: *
-    
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
-    
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
-    
-    set-style(mark: (end: ">", scale: 0.8))
-    
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 9pt)[4/10])
-    
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 9pt)[4/4])
-    
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 9pt)[0/8])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 9pt)[6/6])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 9pt)[6/10])
-    
-    // Highlighted path
-    set-style(stroke: (paint: red, thickness: 2pt), mark: (end: ">", fill: red, scale: 0.8))
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 9pt, fill: red, weight: "bold")[10/10])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 9pt, fill: red, weight: "bold")[4/9])
-    
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 9pt, fill: red, weight: "bold")[8/10])
-  })
-]
-
-*Iteration 4:* BFS finds path $s arrow.r a arrow.r d arrow.r t$ with bottleneck capacity 4 (limited by $d arrow.r t$ which has 10 - 6 = 4 remaining).
-
-*Final State:*
-
-#align(center)[
-  #cetz.canvas({
-    import cetz.draw: *
-    
-    let nodes = (
-      s: (0, 0),
-      a: (2, 1),
-      b: (2, -1),
-      c: (4, 1),
-      d: (4, -1),
-      t: (6, 0),
-    )
-    
-    for (name, pos) in nodes {
-      circle(pos, radius: 0.3, fill: white, stroke: black)
-      content(pos, text(size: 12pt, weight: "bold")[#name])
-    }
-    
-    set-style(mark: (end: ">", scale: 0.8))
-    
-    line(nodes.s, nodes.a, name: "sa")
-    content((rel: (0.5, 0.3), to: "sa.mid"), text(size: 9pt, weight: "bold")[8/10])
-    
-    line(nodes.s, nodes.b, name: "sb")
-    content((rel: (0.5, -0.3), to: "sb.mid"), text(size: 9pt, weight: "bold")[10/10])
-    
-    line(nodes.a, nodes.c, name: "ac")
-    content((rel: (0.5, 0.3), to: "ac.mid"), text(size: 9pt, weight: "bold")[4/4])
-    
-    line(nodes.a, nodes.d, name: "ad")
-    content((rel: (0.5, 0), to: "ad.mid"), text(size: 9pt, weight: "bold")[4/8])
-    
-    line(nodes.b, nodes.c, name: "bc")
-    content((rel: (0.5, 0), to: "bc.mid"), text(size: 9pt, weight: "bold")[4/9])
-    
-    line(nodes.b, nodes.d, name: "bd")
-    content((rel: (0.5, -0.3), to: "bd.mid"), text(size: 9pt, weight: "bold")[6/6])
-    
-    line(nodes.c, nodes.t, name: "ct")
-    content((rel: (0.5, 0.3), to: "ct.mid"), text(size: 9pt, weight: "bold")[8/10])
-    
-    line(nodes.d, nodes.t, name: "dt")
-    content((rel: (0.5, -0.3), to: "dt.mid"), text(size: 9pt, weight: "bold")[10/10])
-  })
-]
-
-No augmenting path exists anymore. The maximum flow is 8 + 10 = *18*.
-
-=== C++ Implementation
-
-Here's the complete implementation of the Edmonds-Karp algorithm:
+Here's the complete implementation of Edmonds-Karp:
 
 ```cpp
 #include <bits/stdc++.h>
@@ -9453,375 +9279,461 @@ using namespace std;
 const int INF = 1e9;
 
 struct Edge {
-  int to, cap, flow;
-  Edge(int to, int cap) : to(to), cap(cap), flow(0) {}
+    int to, cap, flow;
+    Edge(int to, int cap) : to(to), cap(cap), flow(0) {}
 };
 
 class EdmondsKarp {
 private:
-  int n; // number of vertices
-  vector<Edge> edges; // list of all edges
-  vector<vector<int>> graph; // graph[u] contains indices of edges starting from u
-  vector<int> parent; // parent[v] stores the edge index used to reach v in BFS
-  
-  // BFS to find shortest augmenting path
-  bool bfs(int s, int t) {
-    parent.assign(n, -1);
-    parent[s] = -2; // mark source as visited
-    queue<pair<int, int>> q; // {node, min_capacity_so_far}
-    q.push({s, INF});
+    int n; // number of vertices
+    vector<Edge> edges;
+    vector<vector<int>> g; // adjacency list storing edge indices
+    vector<int> parent; // stores parent edges in BFS path
     
-    while (!q.empty()) {
-      int u = q.front().first;
-      int flow = q.front().second;
-      q.pop();
-      
-      // Check all edges from u
-      for (int edge_idx : graph[u]) {
-        Edge& e = edges[edge_idx];
+    // BFS to find augmenting path and return bottleneck capacity
+    int bfs(int s, int t) {
+        fill(parent.begin(), parent.end(), -1);
+        parent[s] = -2; // mark source as visited
+        queue<pair<int, int>> q; // {vertex, min_capacity_to_reach_it}
+        q.push({s, INF});
         
-        // If not visited and has remaining capacity
-        if (parent[e.to] == -1 && e.cap > e.flow) {
-          parent[e.to] = edge_idx;
-          int new_flow = min(flow, e.cap - e.flow);
-          
-          if (e.to == t) {
-            return true; // reached sink
-          }
-          
-          q.push({e.to, new_flow});
+        while (!q.empty()) {
+            int u = q.front().first;
+            int flow = q.front().second;
+            q.pop();
+            
+            // Check all edges from u
+            for (int idx : g[u]) {
+                Edge& e = edges[idx];
+                // If not visited and has remaining capacity
+                if (parent[e.to] == -1 && e.cap > e.flow) {
+                    parent[e.to] = idx; // store edge index as parent
+                    int new_flow = min(flow, e.cap - e.flow);
+                    
+                    if (e.to == t) {
+                        return new_flow; // found path to sink
+                    }
+                    
+                    q.push({e.to, new_flow});
+                }
+            }
         }
-      }
+        
+        return 0; // no path found
     }
     
-    return false; // no augmenting path found
-  }
-  
 public:
-  EdmondsKarp(int n) : n(n), graph(n) {}
-  
-  // Add edge from u to v with capacity cap
-  void addEdge(int u, int v, int cap) {
-    graph[u].push_back(edges.size());
-    edges.push_back(Edge(v, cap));
+    EdmondsKarp(int n) : n(n), g(n), parent(n) {}
     
-    // Add reverse edge with 0 capacity (for residual graph)
-    graph[v].push_back(edges.size());
-    edges.push_back(Edge(u, 0));
-  }
-  
-  // Calculate maximum flow from source s to sink t
-  int maxFlow(int s, int t) {
-    int flow = 0;
-    
-    // While there exists an augmenting path
-    while (bfs(s, t)) {
-      // Find minimum capacity along the path
-      int path_flow = INF;
-      int v = t;
-      
-      while (v != s) {
-        int edge_idx = parent[v];
-        Edge& e = edges[edge_idx];
-        path_flow = min(path_flow, e.cap - e.flow);
-        v = edges[edge_idx ^ 1].to; // go to parent using reverse edge
-      }
-      
-      // Update flow along the path
-      v = t;
-      while (v != s) {
-        int edge_idx = parent[v];
-        edges[edge_idx].flow += path_flow;
-        edges[edge_idx ^ 1].flow -= path_flow; // update reverse edge
-        v = edges[edge_idx ^ 1].to;
-      }
-      
-      flow += path_flow;
+    // Add edge from u to v with capacity cap
+    void addEdge(int u, int v, int cap) {
+        g[u].push_back(edges.size());
+        edges.push_back(Edge(v, cap));
+        
+        g[v].push_back(edges.size());
+        edges.push_back(Edge(u, 0)); // reverse edge with 0 capacity
     }
     
-    return flow;
-  }
-  
-  // Print all edges with their flows (for debugging)
-  void printFlow() {
-    for (int i = 0; i < edges.size(); i += 2) {
-      Edge& e = edges[i];
-      if (e.cap > 0) { // only print forward edges
-        int u = edges[i + 1].to;
-        cout << u << " -> " << e.to << ": " << e.flow << "/" << e.cap << endl;
-      }
+    // Find maximum flow from source s to sink t
+    int maxFlow(int s, int t) {
+        int flow = 0;
+        int new_flow;
+        
+        // While there exists an augmenting path
+        while (new_flow = bfs(s, t)) {
+            flow += new_flow;
+            
+            // Update flows along the path
+            int cur = t;
+            while (cur != s) {
+                int idx = parent[cur];
+                edges[idx].flow += new_flow;
+                edges[idx ^ 1].flow -= new_flow; // update reverse edge
+                cur = edges[idx ^ 1].to; // move to previous vertex
+            }
+        }
+        
+        return flow;
     }
-  }
+    
+    // Get flow on edge from u to v (for debugging/visualization)
+    int getFlow(int u, int v) {
+        for (int idx : g[u]) {
+            if (edges[idx].to == v) {
+                return edges[idx].flow;
+            }
+        }
+        return 0;
+    }
 };
 
 int main() {
-  int n, m; // n vertices, m edges
-  cin >> n >> m;
-  
-  EdmondsKarp ek(n);
-  
-  for (int i = 0; i < m; i++) {
-    int u, v, cap;
-    cin >> u >> v >> cap;
-    ek.addEdge(u, v, cap);
-  }
-  
-  int s, t; // source and sink
-  cin >> s >> t;
-  
-  int max_flow = ek.maxFlow(s, t);
-  cout << "Maximum flow: " << max_flow << endl;
-  
-  cout << "\nFlow on each edge:" << endl;
-  ek.printFlow();
-  
-  return 0;
+    int n, m; // vertices, edges
+    cin >> n >> m;
+    
+    EdmondsKarp ek(n);
+    
+    for (int i = 0; i < m; i++) {
+        int u, v, cap;
+        cin >> u >> v >> cap;
+        ek.addEdge(u, v, cap);
+    }
+    
+    int s, t; // source, sink
+    cin >> s >> t;
+    
+    cout << "Maximum flow: " << ek.maxFlow(s, t) << endl;
+    
+    return 0;
 }
 ```
 
-Sample input (for the graph shown above, with 0-indexed vertices):
+Sample input (for our example graph, 0-indexed):
 
 ```
-6 8
+4 5
 0 1 10
 0 2 10
-1 3 4
-1 4 8
-2 3 9
-2 4 6
-3 5 10
-4 5 10
-0 5
+1 2 2
+1 3 10
+2 3 10
+0 3
 ```
 
 Output:
 
 ```
-Maximum flow: 18
-
-Flow on each edge:
-0 -> 1: 8/10
-0 -> 2: 10/10
-1 -> 3: 4/4
-1 -> 4: 4/8
-2 -> 3: 4/9
-2 -> 4: 6/6
-3 -> 5: 8/10
-4 -> 5: 10/10
+Maximum flow: 20
 ```
 
 === Understanding the Code
 
 Let's break down the key parts:
 
-*1. Edge Structure:* Each edge stores its destination (`to`), capacity (`cap`), and current flow (`flow`). The residual capacity is `cap - flow`.
+*Edge Storage:* We store edges in a single vector and use an adjacency list `g` to store indices. Each edge has a reverse edge for flow cancellation. Notice the clever trick: if forward edge is at index `i`, reverse edge is at `i ^ 1` (XOR with 1).
 
-*2. Reverse Edges:* For every edge from $u$ to $v$, we also store a reverse edge from $v$ to $u$ with capacity 0. This is crucial for the residual graph. When we push flow along $u arrow.r v$, we increase the capacity of the reverse edge, allowing us to "undo" flow if needed.
+*BFS Function:* Unlike standard BFS, this returns the bottleneck capacity of the path found. We track the minimum capacity encountered so far as we traverse the graph.
 
-The trick `edge_idx ^ 1` (XOR with 1) is used because we store edges in pairs: if forward edge is at index $i$, reverse edge is at index $i + 1$ (if $i$ is even) or $i - 1$ (if $i$ is odd). XOR with 1 flips the last bit, giving us the paired edge.
+*Parent Array:* Stores the edge index used to reach each vertex, not the vertex itself. This makes it easy to traverse back and update flows.
 
-*3. BFS Function:* Finds the shortest augmenting path using BFS. Returns `true` if a path exists, and stores the path in the `parent` array.
+*Flow Update:* When we find an augmenting path, we increase flow on forward edges and decrease flow on backward edges (which is equivalent to increasing negative flow, allowing cancellation).
 
-*4. Max Flow Calculation:* Repeatedly finds augmenting paths and pushes flow until no more paths exist.
+=== Why Use Edge Indices?
 
-=== Cheeky Uses and Applications
+You might wonder why we store edge indices in the adjacency list instead of just the destination vertices. This is because we need quick access to both the forward and reverse edges when updating flows. By storing indices and using the XOR trick, we can instantly find the reverse edge.
 
-The Edmonds-Karp algorithm isn't just for water pipes. Here are some clever applications:
+=== Time Complexity Analysis
 
-*1. Bipartite Matching*
+The BFS runs in $O(E)$ time. In the worst case, each BFS finds an augmenting path that increases the flow by 1. Since the maximum flow is at most $O(V E)$ (bounded by the number of edges times their maximum capacity, but more precisely $O(V E)$ because BFS finds shortest paths), we get:
 
-You can solve the maximum bipartite matching problem using max flow. Create a source connected to all nodes in the left set with capacity 1, connect matching edges with capacity 1, and connect all nodes in the right set to a sink with capacity 1. The max flow equals the maximum matching.
+$
+  O(V E^2)
+$
+
+This is much better than the basic Ford-Fulkerson which can take $O(E f)$ where $f$ is the maximum flow value.
+
+=== Practical Applications
+
+The maximum flow problem appears in many real-world scenarios:
+
+*1. Network Routing:* Determining maximum data throughput in computer networks.
+
+*2. Bipartite Matching:* Finding maximum matching in bipartite graphs (which we'll explore next).
+
+*3. Project Selection:* Choosing optimal subset of projects with dependencies.
+
+*4. Image Segmentation:* Separating foreground from background in images.
+
+*5. Airline Scheduling:* Optimizing flight crew assignments.
+
+=== Bipartite Matching with Edmonds-Karp
+
+One of the most common applications is finding maximum matching in a bipartite graph. A *bipartite graph* has vertices divided into two sets such that all edges go between the sets, never within a set.
 
 #align(center)[
   #cetz.canvas({
     import cetz.draw: *
     
-    // Source
-    circle((0, 0), radius: 0.3, fill: white, stroke: black)
-    content((0, 0), text(size: 12pt, weight: "bold")[s])
-    
     // Left set
-    let left = ((1.5, 1.5), (1.5, 0.5), (1.5, -0.5), (1.5, -1.5))
-    for (i, pos) in left.enumerate() {
-      circle(pos, radius: 0.25, fill: rgb(200, 230, 255), stroke: black)
-      content(pos, text(size: 10pt)[L#(i+1)])
+    for i in range(0, 3) {
+      circle((0, i * 1.5), radius: 0.25, fill: rgb(200, 220, 255), name: "L" + str(i))
+      content("L" + str(i), text(size: 10pt)[#(i + 1)])
     }
     
     // Right set
-    let right = ((3.5, 1), (3.5, 0), (3.5, -1))
-    for (i, pos) in right.enumerate() {
-      circle(pos, radius: 0.25, fill: rgb(255, 230, 200), stroke: black)
-      content(pos, text(size: 10pt)[R#(i+1)])
+    for i in range(0, 3) {
+      circle((4, i * 1.5), radius: 0.25, fill: rgb(255, 220, 200), name: "R" + str(i))
+      content("R" + str(i), text(size: 10pt)[#(i + 1)])
     }
     
-    // Sink
-    circle((5, 0), radius: 0.3, fill: white, stroke: black)
-    content((5, 0), text(size: 12pt, weight: "bold")[t])
-    
-    set-style(mark: (end: ">", scale: 0.6))
-    
-    // Source to left
-    for pos in left {
-      line((0, 0), pos)
-    }
-    
-    // Left to right (bipartite edges)
-    line(left.at(0), right.at(0))
-    line(left.at(0), right.at(1))
-    line(left.at(1), right.at(1))
-    line(left.at(2), right.at(2))
-    line(left.at(3), right.at(1))
-    line(left.at(3), right.at(2))
-    
-    // Right to sink
-    for pos in right {
-      line(pos, (5, 0))
-    }
+    // Edges
+    line("L0", "R0")
+    line("L0", "R1")
+    line("L1", "R1")
+    line("L1", "R2")
+    line("L2", "R0")
+    line("L2", "R2")
   })
 ]
 
-*2. Multiple Sources/Sinks*
+To find maximum matching:
+1. Create a source $s$ connected to all left vertices (capacity 1)
+2. Create a sink $t$ connected from all right vertices (capacity 1)
+3. All original edges have capacity 1
+4. Run max flow
 
-If you have multiple sources or sinks, create a super-source connected to all sources with infinite capacity, and a super-sink connected from all sinks with infinite capacity. Then run max flow as usual.
+The maximum flow equals the maximum matching!
 
-*3. Edge Demands*
-
-Sometimes edges have a minimum flow requirement (demand). Transform the network by:
-- Subtract the demand from each edge's capacity
-- Add the demand to a "circulation" that must be satisfied
-- Check if the resulting max flow satisfies all demands
-
-*4. Maximum Edge-Disjoint Paths*
-
-To find the maximum number of edge-disjoint paths from $s$ to $t$ (paths that don't share any edges), set all capacities to 1 and find max flow. The flow value equals the number of disjoint paths.
-
-*5. Project Selection Problem*
-
-Given projects with profits and costs, and dependencies between projects, find the maximum profit subset. This can be modeled as a min-cut problem (dual of max flow).
-
-=== Common Pitfalls and Tips
-
-*1. Integer Overflow:* If capacities are large, use `long long` instead of `int` for flow calculations.
-
-*2. Multiple Edges:* The implementation handles multiple edges between the same pair of nodes naturally through the edge list structure.
-
-*3. Undirected Graphs:* For undirected edges, add two directed edges in both directions with the same capacity.
-
-*4. Checking for Saturated Edges:* After finding max flow, an edge is saturated if `e.flow == e.cap`.
-
-*5. Finding Min Cut:* After running max flow, do one final BFS. All nodes reachable from the source are on one side of the min cut, others are on the other side. The cut edges are those crossing between these two sets.
-
-Here's code to find the min cut:
-
-```cpp
-vector<bool> minCut(int s) {
-  vector<bool> visited(n, false);
-  queue<int> q;
-  q.push(s);
-  visited[s] = true;
-  
-  while (!q.empty()) {
-    int u = q.front();
-    q.pop();
-    
-    for (int edge_idx : graph[u]) {
-      Edge& e = edges[edge_idx];
-      if (!visited[e.to] && e.cap > e.flow) {
-        visited[e.to] = true;
-        q.push(e.to);
-      }
-    }
-  }
-  
-  return visited; // visited[i] = true means i is on source side of cut
-}
-```
-
-=== Practice Problem
-
-*Problem:* You have $n$ students and $m$ projects. Each student has a list of projects they're interested in. Each project can be assigned to at most one student. Find the maximum number of students who can be assigned to projects they're interested in.
-
-*Solution:* This is a bipartite matching problem. Create a flow network with:
-- Source $s$
-- Nodes for each student (left set)
-- Nodes for each project (right set)  
-- Sink $t$
-- Edges from $s$ to each student with capacity 1
-- Edges from each student to their interested projects with capacity 1
-- Edges from each project to $t$ with capacity 1
-
-The max flow equals the maximum number of assignments.
+Here's the code:
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
-// ... (include EdmondsKarp class from above)
+const int INF = 1e9;
+
+struct Edge {
+    int to, cap, flow;
+    Edge(int to, int cap) : to(to), cap(cap), flow(0) {}
+};
+
+class EdmondsKarp {
+private:
+    int n;
+    vector<Edge> edges;
+    vector<vector<int>> g;
+    vector<int> parent;
+    
+    int bfs(int s, int t) {
+        fill(parent.begin(), parent.end(), -1);
+        parent[s] = -2;
+        queue<pair<int, int>> q;
+        q.push({s, INF});
+        
+        while (!q.empty()) {
+            int u = q.front().first;
+            int flow = q.front().second;
+            q.pop();
+            
+            for (int idx : g[u]) {
+                Edge& e = edges[idx];
+                if (parent[e.to] == -1 && e.cap > e.flow) {
+                    parent[e.to] = idx;
+                    int new_flow = min(flow, e.cap - e.flow);
+                    
+                    if (e.to == t) {
+                        return new_flow;
+                    }
+                    
+                    q.push({e.to, new_flow});
+                }
+            }
+        }
+        
+        return 0;
+    }
+    
+public:
+    EdmondsKarp(int n) : n(n), g(n), parent(n) {}
+    
+    void addEdge(int u, int v, int cap) {
+        g[u].push_back(edges.size());
+        edges.push_back(Edge(v, cap));
+        g[v].push_back(edges.size());
+        edges.push_back(Edge(u, 0));
+    }
+    
+    int maxFlow(int s, int t) {
+        int flow = 0;
+        int new_flow;
+        
+        while (new_flow = bfs(s, t)) {
+            flow += new_flow;
+            int cur = t;
+            while (cur != s) {
+                int idx = parent[cur];
+                edges[idx].flow += new_flow;
+                edges[idx ^ 1].flow -= new_flow;
+                cur = edges[idx ^ 1].to;
+            }
+        }
+        
+        return flow;
+    }
+    
+    // Get all matched pairs for bipartite matching
+    vector<pair<int, int>> getMatching(int leftSize, int s) {
+        vector<pair<int, int>> matching;
+        
+        // Check edges from left vertices
+        for (int u = 1; u <= leftSize; u++) {
+            for (int idx : g[u]) {
+                Edge& e = edges[idx];
+                // If flow goes through this edge and it's to a right vertex
+                if (e.flow == 1 && e.to != s && e.to > leftSize) {
+                    matching.push_back({u, e.to - leftSize});
+                }
+            }
+        }
+        
+        return matching;
+    }
+};
 
 int main() {
-  int n, m; // n students, m projects
-  cin >> n >> m;
-  
-  // Nodes: 0 = source, 1..n = students, n+1..n+m = projects, n+m+1 = sink
-  EdmondsKarp ek(n + m + 2);
-  
-  int source = 0;
-  int sink = n + m + 1;
-  
-  // Connect source to all students
-  for (int i = 1; i <= n; i++) {
-    ek.addEdge(source, i, 1);
-  }
-  
-  // Read interests and connect students to projects
-  for (int i = 1; i <= n; i++) {
-    int k; // number of projects student i is interested in
-    cin >> k;
-    for (int j = 0; j < k; j++) {
-      int proj;
-      cin >> proj;
-      ek.addEdge(i, n + proj, 1);
+    int n, m; // left vertices, right vertices
+    int edges;
+    cin >> n >> m >> edges;
+    
+    // Vertices: 0 = source, 1..n = left, n+1..n+m = right, n+m+1 = sink
+    int s = 0;
+    int t = n + m + 1;
+    
+    EdmondsKarp ek(n + m + 2);
+    
+    // Connect source to all left vertices
+    for (int i = 1; i <= n; i++) {
+        ek.addEdge(s, i, 1);
     }
-  }
-  
-  // Connect projects to sink
-  for (int i = 1; i <= m; i++) {
-    ek.addEdge(n + i, sink, 1);
-  }
-  
-  int max_assignments = ek.maxFlow(source, sink);
-  cout << "Maximum assignments: " << max_assignments << endl;
-  
-  return 0;
+    
+    // Connect all right vertices to sink
+    for (int i = 1; i <= m; i++) {
+        ek.addEdge(n + i, t, 1);
+    }
+    
+    // Add bipartite edges
+    for (int i = 0; i < edges; i++) {
+        int u, v; // u in left set, v in right set
+        cin >> u >> v;
+        ek.addEdge(u, n + v, 1);
+    }
+    
+    int maxMatch = ek.maxFlow(s, t);
+    cout << "Maximum matching: " << maxMatch << endl;
+    
+    vector<pair<int, int>> matching = ek.getMatching(n, s);
+    cout << "Matched pairs:" << endl;
+    for (auto [u, v] : matching) {
+        cout << "L" << u << " - R" << v << endl;
+    }
+    
+    return 0;
 }
 ```
 
-Sample input:
+Sample input (for the bipartite graph shown above, 1-indexed):
 
 ```
-3 4
-2 1 2
-3 1 2 3
-1 3
+3 3 6
+1 1
+1 2
+2 2
+2 3
+3 1
+3 3
 ```
-
-This means:
-- Student 1 is interested in projects 1 and 2
-- Student 2 is interested in projects 1, 2, and 3
-- Student 3 is interested in project 3
 
 Output:
 
 ```
-Maximum assignments: 3
+Maximum matching: 3
+Matched pairs:
+L1 - R2
+L2 - R3
+L3 - R1
 ```
 
-All three students can be assigned to projects (for example: student 1 → project 1, student 2 → project 2, student 3 → project 3).
+This shows all three left vertices are matched to distinct right vertices, achieving a perfect matching!
 
-=== Conclusion
+=== Min-Cut Using Max-Flow
 
-The Edmonds-Karp algorithm is a powerful tool for solving maximum flow problems with a guaranteed $O(V E^2)$ time complexity. By using BFS to find augmenting paths, it provides a reliable and efficient solution for a wide range of network flow problems. Remember to think creatively about how to model your problem as a flow network - many seemingly unrelated problems can be elegantly solved using max flow!
+Another beautiful application is finding the minimum cut. By the *Max-Flow Min-Cut theorem*, the maximum flow value equals the minimum cut capacity.
 
+A *cut* is a partition of vertices into two sets $S$ and $T$ where $s in S$ and $t in T$. The cut's capacity is the sum of capacities of edges going from $S$ to $T$.
+
+After running max flow, vertices reachable from $s$ in the residual graph form set $S$. The min-cut consists of saturated edges crossing from $S$ to $T$.
+
+Here's code to find the min-cut:
+
+```cpp
+// Add this method to the EdmondsKarp class
+
+vector<pair<int, int>> getMinCut(int s) {
+    // Find all vertices reachable from s in residual graph
+    vector<bool> reachable(n, false);
+    queue<int> q;
+    q.push(s);
+    reachable[s] = true;
+    
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        
+        for (int idx : g[u]) {
+            Edge& e = edges[idx];
+            // If edge has remaining capacity and not visited
+            if (!reachable[e.to] && e.cap > e.flow) {
+                reachable[e.to] = true;
+                q.push(e.to);
+            }
+        }
+    }
+    
+    // Find edges from reachable to non-reachable (the min-cut)
+    vector<pair<int, int>> minCut;
+    for (int u = 0; u < n; u++) {
+        if (reachable[u]) {
+            for (int idx : g[u]) {
+                Edge& e = edges[idx];
+                // Forward edge only (skip reverse edges)
+                if (!reachable[e.to] && e.cap > 0) {
+                    minCut.push_back({u, e.to});
+                }
+            }
+        }
+    }
+    
+    return minCut;
+}
+```
+
+This finds which edges, if removed, would disconnect $s$ from $t$ with minimum total capacity.
+
+=== Edge Cases and Tips
+
+*Undirected Graphs:* For undirected edges, add two directed edges with the same capacity in both directions.
+
+*Multiple Sources/Sinks:* Create a super-source connected to all sources, and a super-sink connected from all sinks, all with infinite capacity.
+
+*Integer Capacities:* If all capacities are integers, the maximum flow is also an integer.
+
+*Negative Flows:* Don't exist! Flow is always non-negative due to capacity constraints.
+
+*Debugging:* Print the flow on each edge after running the algorithm to verify correctness.
+
+=== Common Mistakes
+
+1. *Forgetting reverse edges:* Every edge needs a reverse edge, even if its capacity is 0.
+
+2. *Using vertex indices as parents:* Store edge indices instead for easy flow updates.
+
+3. *Not handling disconnected graphs:* If $t$ is unreachable from $s$, max flow is 0.
+
+4. *Wrong XOR trick:* Only works if you add edges in pairs (forward then reverse).
+
+=== Advanced: Scaling Edmonds-Karp
+
+For very large capacities, you can use *capacity scaling*. Process edges in order of decreasing capacity (powers of 2). This improves time complexity to $O(E^2 log C)$ where $C$ is the maximum capacity.
+
+However, for most competitive programming problems, the standard implementation is sufficient.
+
+=== Practice Problem
+
+*Problem:* You have $n$ workers and $m$ jobs. Each worker can do certain jobs. Find the maximum number of jobs that can be assigned such that each job is done by exactly one worker.
+
+*Solution:* This is bipartite matching! Workers are the left set, jobs are the right set. Add edges for compatible worker-job pairs. The max flow gives the maximum assignment.
+
+The Edmonds-Karp algorithm is a powerful tool in your algorithmic toolkit. Understanding flow networks opens doors to solving complex optimization problems elegantly!
 
 
 
