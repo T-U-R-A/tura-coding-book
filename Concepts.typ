@@ -7945,3 +7945,2912 @@ Key takeaways:
 - DP with bitmasks: $O(2^n times n^2)$, better for small $n$
 - TSP is a weighted version of finding minimum Hamiltonian cycle
 
+== Dynamic Programming on Graphs //chap3
+
+#v(0.5em)
+
+Dynamic programming (DP) is a technique where you break down a problem into smaller subproblems, solve each subproblem once, and store the results to avoid redundant calculations. When combined with graphs, DP becomes a powerful tool for solving path-related problems, tree problems, and optimization problems on graphs.
+
+The key insight is that many graph problems have *optimal substructure* - the optimal solution to a problem contains optimal solutions to its subproblems. For example, the shortest path from A to C through B contains the shortest path from A to B.
+
+=== Shortest Path with DP
+
+Let's start with a classic problem: finding the shortest path in a Directed Acyclic Graph (DAG). Unlike Dijkstra's algorithm which works on any graph with non-negative weights, we can use a simpler DP approach for DAGs.
+
+Consider the following directed acyclic graph:
+
+#let graph1_nodes = (
+  (0, "A", 1, 2),
+  (1, "B", 3, 2),
+  (2, "C", 1, 0),
+  (3, "D", 3, 0),
+  (4, "E", 5, 1),
+)
+
+#let graph1_edges = (
+  (0, 1, 2),   // A -> B (weight 2)
+  (0, 2, 4),   // A -> C (weight 4)
+  (1, 3, 3),   // B -> D (weight 3)
+  (2, 1, 1),   // C -> B (weight 1)
+  (2, 3, 5),   // C -> D (weight 5)
+  (1, 4, 2),   // B -> E (weight 2)
+  (3, 4, 1),   // D -> E (weight 1)
+)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw nodes
+    for node in graph1_nodes {
+      let (id, label, x, y) = node
+      circle((x, y), radius: 0.3, fill: rgb(220, 230, 255), name: "node" + str(id))
+      content((x, y), text(weight: "bold")[#label])
+    }
+
+    // Draw edges
+    set-style(mark: (end: ">"))
+    for edge in graph1_edges {
+      let (from, to, weight) = edge
+      let from_node = graph1_nodes.at(from)
+      let to_node = graph1_nodes.at(to)
+      let (_, _, x1, y1) = from_node
+      let (_, _, x2, y2) = to_node
+      
+      line((x1, y1), (x2, y2))
+      
+      // Add weight label
+      let mid_x = (x1 + x2) / 2
+      let mid_y = (y1 + y2) / 2
+      content((mid_x + 0.15, mid_y + 0.15), box(fill: white, inset: 2pt)[#text(size: 9pt)[#weight]])
+    }
+  })
+]
+
+To find the shortest path from node A to all other nodes, we can use DP with the following recurrence:
+
+$
+  "dp"[v] = cases(
+    0 quad &"if" v = "start",
+    min_(u arrow v) ("dp"[u] + "weight"(u arrow v)) quad &"otherwise"
+  )
+$
+
+The key is to process nodes in *topological order*. This ensures that when we compute `dp[v]`, all nodes that can reach `v` have already been processed.
+
+Here's the implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int n, m;
+vector<pair<int, int>> adj[100005]; // adj[u] = {v, weight}
+int dp[100005];
+bool visited[100005];
+vector<int> topo_order;
+
+void dfs(int u) {
+    visited[u] = true;
+    for (auto [v, w] : adj[u]) {
+        if (!visited[v])
+            dfs(v);
+    }
+    topo_order.push_back(u); // Add to topological order after visiting all children
+}
+
+int main() {
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+    }
+    
+    // Compute topological order
+    for (int i = 0; i < n; i++) {
+        if (!visited[i])
+            dfs(i);
+    }
+    
+    reverse(topo_order.begin(), topo_order.end());
+    
+    // Initialize DP
+    fill(dp, dp + n, INF);
+    dp[0] = 0; // Assuming 0 is the source
+    
+    // Process in topological order
+    for (int u : topo_order) {
+        if (dp[u] == INF) continue; // Unreachable node
+        
+        for (auto [v, w] : adj[u]) {
+            dp[v] = min(dp[v], dp[u] + w);
+        }
+    }
+    
+    // Output shortest distances
+    for (int i = 0; i < n; i++) {
+        if (dp[i] == INF)
+            cout << "INF" << " ";
+        else
+            cout << dp[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+0 1 2
+0 2 4
+1 3 3
+2 1 1
+2 3 5
+1 4 2
+3 4 1
+```
+
+Output:
+
+```
+0 2 4 5 6
+```
+
+The algorithm works in $O(V + E)$ time where $V$ is the number of vertices and $E$ is the number of edges. This is faster than Dijkstra's $O((V + E) log V)$ for DAGs.
+
+=== Counting Paths with DP
+
+Another common use of DP on graphs is counting the number of paths between two nodes. Let's say we want to count all paths from node A to node E in our previous graph.
+
+The recurrence relation is:
+
+$
+  "paths"[v] = cases(
+    1 quad &"if" v = "start",
+    sum_(u arrow v) "paths"[u] quad &"otherwise"
+  )
+$
+
+Here's the code:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MOD = 1e9 + 7; // Use modulo to prevent overflow
+
+int n, m;
+vector<int> adj[100005];
+long long paths[100005];
+bool visited[100005];
+vector<int> topo_order;
+
+void dfs(int u) {
+    visited[u] = true;
+    for (int v : adj[u]) {
+        if (!visited[v])
+            dfs(v);
+    }
+    topo_order.push_back(u);
+}
+
+int main() {
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+    }
+    
+    // Compute topological order
+    for (int i = 0; i < n; i++) {
+        if (!visited[i])
+            dfs(i);
+    }
+    
+    reverse(topo_order.begin(), topo_order.end());
+    
+    // Initialize: 1 path to the source (itself)
+    paths[0] = 1;
+    
+    // Process in topological order
+    for (int u : topo_order) {
+        for (int v : adj[u]) {
+            paths[v] = (paths[v] + paths[u]) % MOD;
+        }
+    }
+    
+    // Output number of paths to each node
+    for (int i = 0; i < n; i++) {
+        cout << paths[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+0 1
+0 2
+1 3
+2 1
+2 3
+1 4
+3 4
+```
+
+Output:
+
+```
+1 2 1 3 5
+```
+
+This means there are 5 different paths from node 0 to node 4.
+
+=== Tree DP
+
+Trees are special graphs (connected acyclic graphs), and DP on trees is particularly useful. A common pattern is to compute something for each subtree and combine the results.
+
+Let's solve a classic problem: find the diameter of a tree (the longest path between any two nodes).
+
+Here's a tree example:
+
+#let tree_nodes = (
+  (0, "1", 2, 3),
+  (1, "2", 1, 2),
+  (2, "3", 3, 2),
+  (3, "4", 0, 1),
+  (4, "5", 2, 1),
+  (5, "6", 4, 1),
+  (6, "7", 1, 0),
+)
+
+#let tree_edges = (
+  (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (3, 6)
+)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw edges first (so they appear behind nodes)
+    for edge in tree_edges {
+      let (from, to) = edge
+      let from_node = tree_nodes.at(from)
+      let to_node = tree_nodes.at(to)
+      let (_, _, x1, y1) = from_node
+      let (_, _, x2, y2) = to_node
+      
+      line((x1, y1), (x2, y2), stroke: 1.5pt)
+    }
+
+    // Draw nodes
+    for node in tree_nodes {
+      let (id, label, x, y) = node
+      circle((x, y), radius: 0.25, fill: rgb(220, 255, 230))
+      content((x, y), text(weight: "bold")[#label])
+    }
+  })
+]
+
+For each node, we'll compute:
+- `dp[u]` = the maximum depth of the subtree rooted at `u`
+- During the computation, we'll track the maximum sum of two depths from the same node (the diameter)
+
+The recurrence is:
+
+$
+  "dp"[u] = 1 + max_(v in "children"(u)) "dp"[v]
+$
+
+And the diameter passing through node $u$ is the sum of the two largest depths among its children.
+
+Here's the implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> adj[100005];
+int dp[100005]; // Maximum depth of subtree
+int diameter = 0;
+
+void dfs(int u, int parent) {
+    vector<int> child_depths;
+    
+    for (int v : adj[u]) {
+        if (v == parent) continue;
+        
+        dfs(v, u);
+        child_depths.push_back(dp[v]);
+    }
+    
+    // dp[u] is 1 + max depth of children
+    dp[u] = 1;
+    if (!child_depths.empty()) {
+        dp[u] += *max_element(child_depths.begin(), child_depths.end());
+    }
+    
+    // Update diameter: sum of two largest child depths
+    sort(child_depths.rbegin(), child_depths.rend()); // Sort descending
+    
+    if (child_depths.size() >= 2) {
+        diameter = max(diameter, child_depths[0] + child_depths[1]);
+    }
+    if (child_depths.size() >= 1) {
+        diameter = max(diameter, child_depths[0]);
+    }
+}
+
+int main() {
+    cin >> n;
+    
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    dfs(0, -1); // Start DFS from node 0
+    
+    cout << "Tree diameter: " << diameter << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+7
+0 1
+0 2
+1 3
+1 4
+2 5
+3 6
+```
+
+Output:
+
+```
+Tree diameter: 4
+```
+
+The diameter is 4, corresponding to the path from node 6 to node 5 (or 6 to 4): $6 arrow 3 arrow 1 arrow 0 arrow 2 arrow 5$.
+
+== Bitmasking in Graphs //chap3
+
+#v(0.5em)
+
+Bitmasking is a technique where we use the bits of an integer to represent a set. For example, if we have 5 elements, we can represent any subset using a 5-bit number. The bit at position $i$ is 1 if element $i$ is in the subset, and 0 otherwise.
+
+In graph problems, bitmasking is particularly useful when we need to:
+- Track which nodes we've visited
+- Enumerate all possible subsets of nodes
+- Solve problems on small graphs (typically $n <= 20$)
+
+The most famous application is the *Traveling Salesman Problem (TSP)*.
+
+=== Understanding Bitmasks
+
+Before diving into graph algorithms, let's understand basic bitmask operations:
+
+```cpp
+// Setting the i-th bit (add element i to the set)
+mask |= (1 << i);
+
+// Clearing the i-th bit (remove element i from the set)
+mask &= ~(1 << i);
+
+// Toggling the i-th bit
+mask ^= (1 << i);
+
+// Checking if the i-th bit is set (is element i in the set?)
+bool is_set = mask & (1 << i);
+
+// Iterating through all subsets
+for (int mask = 0; mask < (1 << n); mask++) {
+    // Process subset represented by mask
+}
+
+// Iterating through all set bits in a mask
+for (int i = 0; i < n; i++) {
+    if (mask & (1 << i)) {
+        // Bit i is set
+    }
+}
+
+// Number of set bits (size of the set)
+int count = __builtin_popcount(mask);
+```
+
+Let's visualize what a bitmask represents. For $n = 5$ nodes, the bitmask `10110` (binary) = 22 (decimal) represents the set $\{1, 2, 4\}$:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+    
+    let positions = ((0, 0), (1, 0), (2, 0), (3, 0), (4, 0))
+    let mask_bits = (0, 1, 1, 0, 1)
+    let indices = (4, 3, 2, 1, 0)
+    
+    for i in range(5) {
+      let (x, y) = positions.at(i)
+      
+      // Draw box
+      rect((x, y), (x + 0.8, y + 0.8), 
+           fill: if mask_bits.at(i) == 1 { rgb(200, 255, 200) } else { rgb(255, 200, 200) })
+      
+      // Draw bit value
+      content((x + 0.4, y + 0.4), text(size: 16pt, weight: "bold")[#mask_bits.at(i)])
+      
+      // Draw index below
+      content((x + 0.4, y - 0.3), text(size: 10pt)[bit #indices.at(i)])
+    }
+    
+    // Arrow and explanation
+    content((2.5, -1.0), text[Represents set: \{1, 2, 4\}])
+  })
+]
+
+=== Traveling Salesman Problem (TSP)
+
+The TSP asks: Given a complete graph with $n$ cities and distances between each pair, what is the shortest route that visits each city exactly once and returns to the starting city?
+
+Let's consider a small example with 4 cities:
+
+#let tsp_nodes = (
+  (0, "A", 0, 2),
+  (1, "B", 2, 2),
+  (2, "C", 2, 0),
+  (3, "D", 0, 0),
+)
+
+#let tsp_edges = (
+  (0, 1, 10), (0, 2, 15), (0, 3, 20),
+  (1, 2, 35), (1, 3, 25),
+  (2, 3, 30),
+)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw edges
+    for edge in tsp_edges {
+      let (from, to, weight) = edge
+      let from_node = tsp_nodes.at(from)
+      let to_node = tsp_nodes.at(to)
+      let (_, _, x1, y1) = from_node
+      let (_, _, x2, y2) = to_node
+      
+      line((x1, y1), (x2, y2), stroke: 1.5pt)
+      
+      // Add weight label
+      let mid_x = (x1 + x2) / 2
+      let mid_y = (y1 + y2) / 2
+      content((mid_x, mid_y), box(fill: white, inset: 3pt, stroke: 0.5pt)[#text(size: 9pt)[#weight]])
+    }
+
+    // Draw nodes
+    for node in tsp_nodes {
+      let (id, label, x, y) = node
+      circle((x, y), radius: 0.3, fill: rgb(255, 230, 220))
+      content((x, y), text(weight: "bold", size: 12pt)[#label])
+    }
+  })
+]
+
+The DP approach uses the following state:
+
+$
+  "dp"["mask"]["i"] = "minimum cost to visit all cities in mask, ending at city" i
+$
+
+The recurrence relation is:
+
+$
+  "dp"["mask"]["i"] = min_(j in "mask", j != i) ("dp"["mask" without i]["j"] + "dist"[j][i])
+$
+
+Here's the complete implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+const int MAXN = 20;
+
+int n;
+int dist[MAXN][MAXN]; // Distance matrix
+int dp[1 << MAXN][MAXN]; // dp[mask][i] = min cost to visit cities in mask, ending at i
+
+int tsp() {
+    // Initialize DP table
+    for (int mask = 0; mask < (1 << n); mask++) {
+        for (int i = 0; i < n; i++) {
+            dp[mask][i] = INF;
+        }
+    }
+    
+    // Base case: start at city 0
+    dp[1][0] = 0; // mask = 1 means only city 0 is visited
+    
+    // Iterate through all masks
+    for (int mask = 1; mask < (1 << n); mask++) {
+        // For each city in the current mask
+        for (int i = 0; i < n; i++) {
+            if (!(mask & (1 << i))) continue; // City i not in mask
+            if (dp[mask][i] == INF) continue; // This state is unreachable
+            
+            // Try to go to each unvisited city
+            for (int j = 0; j < n; j++) {
+                if (mask & (1 << j)) continue; // City j already visited
+                
+                int new_mask = mask | (1 << j); // Add city j to the mask
+                dp[new_mask][j] = min(dp[new_mask][j], dp[mask][i] + dist[i][j]);
+            }
+        }
+    }
+    
+    // Find minimum cost to visit all cities and return to start
+    int all_visited = (1 << n) - 1; // All bits set
+    int ans = INF;
+    
+    for (int i = 0; i < n; i++) {
+        ans = min(ans, dp[all_visited][i] + dist[i][0]);
+    }
+    
+    return ans;
+}
+
+int main() {
+    cin >> n;
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> dist[i][j];
+        }
+    }
+    
+    cout << "Minimum TSP cost: " << tsp() << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+4
+0 10 15 20
+10 0 35 25
+15 35 0 30
+20 25 30 0
+```
+
+Output:
+
+```
+Minimum TSP cost: 80
+```
+
+The optimal tour is $A arrow B arrow D arrow C arrow A$ with cost $10 + 25 + 30 + 15 = 80$.
+
+The time complexity is $O(2^n times n^2)$ and space complexity is $O(2^n times n)$. This works well for $n <= 20$.
+
+=== Hamiltonian Path
+
+A closely related problem is finding whether a Hamiltonian path exists (a path that visits each vertex exactly once).
+
+We can modify the TSP approach:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<int> adj[20];
+bool dp[1 << 20][20]; // dp[mask][i] = can we visit cities in mask, ending at i?
+
+bool has_hamiltonian_path() {
+    // Base case: each single city is reachable
+    for (int i = 0; i < n; i++) {
+        dp[1 << i][i] = true;
+    }
+    
+    // Fill DP table
+    for (int mask = 1; mask < (1 << n); mask++) {
+        for (int i = 0; i < n; i++) {
+            if (!(mask & (1 << i))) continue;
+            if (!dp[mask][i]) continue;
+            
+            // Try extending to each neighbor
+            for (int j : adj[i]) {
+                if (mask & (1 << j)) continue; // Already visited
+                
+                int new_mask = mask | (1 << j);
+                dp[new_mask][j] = true;
+            }
+        }
+    }
+    
+    // Check if we can visit all nodes
+    int all_visited = (1 << n) - 1;
+    for (int i = 0; i < n; i++) {
+        if (dp[all_visited][i]) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+int main() {
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        // For undirected graph, add: adj[v].push_back(u);
+    }
+    
+    if (has_hamiltonian_path()) {
+        cout << "Hamiltonian path exists!" << endl;
+    } else {
+        cout << "No Hamiltonian path." << endl;
+    }
+    
+    return 0;
+}
+```
+
+Sample input (directed graph):
+
+```
+4 5
+0 1
+1 2
+2 3
+0 2
+1 3
+```
+
+Output:
+
+```
+Hamiltonian path exists!
+```
+
+One possible path is $0 arrow 1 arrow 2 arrow 3$.
+
+=== Subset Sum DP on Graphs
+
+Another application of bitmasking is when we want to select a subset of vertices that satisfies certain properties. For example, finding the maximum independent set (a set of vertices with no edges between them).
+
+Here's an example for a small graph:
+
+#let indep_nodes = (
+  (0, "1", 1, 2),
+  (1, "2", 3, 2),
+  (2, "3", 2, 1),
+  (3, "4", 0, 0),
+  (4, "5", 2, 0),
+  (5, "6", 4, 0),
+)
+
+#let indep_edges = (
+  (0, 1), (0, 2), (1, 2), (2, 3), (2, 4), (2, 5), (4, 5)
+)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw edges
+    for edge in indep_edges {
+      let (from, to) = edge
+      let from_node = indep_nodes.at(from)
+      let to_node = indep_nodes.at(to)
+      let (_, _, x1, y1) = from_node
+      let (_, _, x2, y2) = to_node
+      
+      line((x1, y1), (x2, y2), stroke: 1.5pt)
+    }
+
+    // Draw nodes
+    for node in indep_nodes {
+      let (id, label, x, y) = node
+      circle((x, y), radius: 0.25, fill: rgb(255, 220, 255))
+      content((x, y), text(weight: "bold")[#label])
+    }
+  })
+]
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+bool adj[20][20]; // Adjacency matrix
+int max_independent_set = 0;
+
+bool is_independent_set(int mask) {
+    // Check if any two vertices in the mask are connected
+    for (int i = 0; i < n; i++) {
+        if (!(mask & (1 << i))) continue;
+        
+        for (int j = i + 1; j < n; j++) {
+            if (!(mask & (1 << j))) continue;
+            
+            if (adj[i][j]) {
+                return false; // There's an edge between i and j
+            }
+        }
+    }
+    return true;
+}
+
+int main() {
+    cin >> n >> m;
+    
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u][v] = adj[v][u] = true;
+    }
+    
+    // Try all possible subsets
+    for (int mask = 0; mask < (1 << n); mask++) {
+        if (is_independent_set(mask)) {
+            int size = __builtin_popcount(mask);
+            max_independent_set = max(max_independent_set, size);
+        }
+    }
+    
+    cout << "Maximum independent set size: " << max_independent_set << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+6 7
+0 1
+0 2
+1 2
+2 3
+2 4
+2 5
+4 5
+```
+
+Output:
+
+```
+Maximum independent set size: 3
+```
+
+One maximum independent set is $\{1, 3, 5\}$ with size 3.
+
+=== Bitmask DP for Graph Coloring
+
+Another classic problem is determining if a graph can be colored with $k$ colors such that no two adjacent vertices have the same color.
+
+For small graphs, we can use bitmask DP where each state represents which color is assigned to each vertex:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m, k; // n vertices, m edges, k colors
+vector<int> adj[20];
+int color[20]; // color[i] = color of vertex i
+bool found = false;
+
+void try_coloring(int u) {
+    if (found) return;
+    
+    if (u == n) {
+        found = true;
+        return;
+    }
+    
+    // Try each color for vertex u
+    for (int c = 0; c < k; c++) {
+        bool valid = true;
+        
+        // Check if this color conflicts with any neighbor
+        for (int v : adj[u]) {
+            if (v < u && color[v] == c) {
+                valid = false;
+                break;
+            }
+        }
+        
+        if (valid) {
+            color[u] = c;
+            try_coloring(u + 1);
+            if (found) return;
+        }
+    }
+}
+
+int main() {
+    cin >> n >> m >> k;
+    
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    try_coloring(0);
+    
+    if (found) {
+        cout << "Graph can be colored with " << k << " colors!" << endl;
+        cout << "Coloring: ";
+        for (int i = 0; i < n; i++) {
+            cout << color[i] << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "Cannot color with " << k << " colors." << endl;
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+4 4 3
+0 1
+1 2
+2 3
+3 0
+```
+
+Output:
+
+```
+Graph can be colored with 3 colors!
+Coloring: 0 1 0 1
+```
+
+This represents a valid 3-coloring where vertices 0 and 2 have color 0, and vertices 1 and 3 have color 1.
+
+=== Summary of Bitmask Techniques
+
+When solving graph problems with bitmasks, remember:
+
+1. *Size Limit*: Bitmasks work for small $n$ (typically $n <= 20$). Beyond this, $2^n$ becomes too large.
+
+2. *State Representation*: Think carefully about what your bitmask represents - visited nodes, selected nodes, assigned properties, etc.
+
+3. *Transitions*: When filling your DP table, ensure you're iterating through masks in the correct order (usually increasing order).
+
+4. *Space Optimization*: Sometimes you can reduce space by only storing the previous layer of DP states.
+
+5. *Combining Techniques*: Bitmask DP often combines well with other techniques like tree DP or graph algorithms.
+
+For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
+
+== Segment Tree //chap2
+
+#v(0.5em)
+
+In the previous section, we learned about Binary Indexed Trees (Fenwick Trees) which can handle range sum queries and point updates in $O(log n)$ time. However, what if we want to perform more complex operations? What if we need to find the minimum, maximum, or GCD of elements in a range? Or what if we need to update entire ranges at once?
+
+This is where *segment trees* come in. A segment tree is a binary tree data structure that allows us to:
+- Answer range queries (sum, min, max, GCD, etc.) in $O(log n)$ time
+- Update a single element in $O(log n)$ time  
+- Update entire ranges in $O(log n)$ time (with lazy propagation)
+
+The key idea is that each node in the segment tree represents an interval (or segment) of the array, and stores some information about that interval.
+
+=== Understanding the Structure
+
+Let's look at an example array and see how a segment tree is built from it:
+
+#let arr = (5, -6, 4, 3, 12, 6, -7, -3)
+
+$
+  "arr" = #arr.map(str).join(", ", last: ", ")
+$
+
+For a segment tree that computes range sums, the tree would look like this:
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+
+    // Helper function to draw a node
+    let draw-node(pos, value, range-text) = {
+      circle(pos, radius: 0.5, name: "node")
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    // Root node [0,7] = 14
+    draw-node((8, 0), "14", "[0,7]")
+    
+    // Level 1
+    draw-node((4, -2.5), "3", "[0,3]")
+    draw-node((12, -2.5), "11", "[4,7]")
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    
+    // Level 2
+    draw-node((2, -5), "-1", "[0,1]")
+    draw-node((6, -5), "4", "[2,3]")
+    draw-node((10, -5), "18", "[4,5]")
+    draw-node((14, -5), "-10", "[6,7]")
+    line((3.6, -2.9), (2.4, -4.6))
+    line((4.4, -2.9), (5.6, -4.6))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    
+    // Level 3 (leaves)
+    draw-node((1, -7.5), "5", "[0,0]")
+    draw-node((3, -7.5), "-6", "[1,1]")
+    draw-node((5, -7.5), "4", "[2,2]")
+    draw-node((7, -7.5), "3", "[3,3]")
+    draw-node((9, -7.5), "12", "[4,4]")
+    draw-node((11, -7.5), "6", "[5,5]")
+    draw-node((13, -7.5), "-7", "[6,6]")
+    draw-node((15, -7.5), "-3", "[7,7]")
+    
+    line((1.6, -5.4), (1.4, -7.1))
+    line((2.4, -5.4), (2.6, -7.1))
+    line((5.6, -5.4), (5.4, -7.1))
+    line((6.4, -5.4), (6.6, -7.1))
+    line((9.6, -5.4), (9.4, -7.1))
+    line((10.4, -5.4), (10.6, -7.1))
+    line((13.6, -5.4), (13.4, -7.1))
+    line((14.4, -5.4), (14.6, -7.1))
+  })
+]
+
+Each node contains:
+- The *sum* of elements in its range (shown in the circle)
+- The *range* it represents (shown below the node)
+
+Notice how:
+- Leaf nodes represent single elements: `[0,0]`, `[1,1]`, etc.
+- Each parent node represents the union of its children's ranges
+- The value at each node is the sum of values in its children nodes
+
+=== How Range Queries Work
+
+Let's say we want to find the sum of elements from index 2 to 6 (inclusive). The query range is `[2,6]`.
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+
+    let draw-node(pos, value, range-text, highlight: false) = {
+      if highlight {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(255, 200, 200))
+      } else {
+        circle(pos, radius: 0.5, name: "node")
+      }
+      content((name: "node", anchor: "center"), text(size: 10pt, fill: if highlight {red} else {black})[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    // Root node [0,7]
+    draw-node((8, 0), "14", "[0,7]")
+    
+    // Level 1
+    draw-node((4, -2.5), "3", "[0,3]")
+    draw-node((12, -2.5), "11", "[4,7]")
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    
+    // Level 2 - [2,3] and [4,5] highlighted
+    draw-node((2, -5), "-1", "[0,1]")
+    draw-node((6, -5), "4", "[2,3]", highlight: true)
+    draw-node((10, -5), "18", "[4,5]", highlight: true)
+    draw-node((14, -5), "-10", "[6,7]")
+    line((3.6, -2.9), (2.4, -4.6))
+    line((4.4, -2.9), (5.6, -4.6))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    
+    // Level 3 - [6,6] highlighted
+    draw-node((1, -7.5), "5", "[0,0]")
+    draw-node((3, -7.5), "-6", "[1,1]")
+    draw-node((5, -7.5), "4", "[2,2]")
+    draw-node((7, -7.5), "3", "[3,3]")
+    draw-node((9, -7.5), "12", "[4,4]")
+    draw-node((11, -7.5), "6", "[5,5]")
+    draw-node((13, -7.5), "-7", "[6,6]", highlight: true)
+    draw-node((15, -7.5), "-3", "[7,7]")
+    
+    line((1.6, -5.4), (1.4, -7.1))
+    line((2.4, -5.4), (2.6, -7.1))
+    line((5.6, -5.4), (5.4, -7.1))
+    line((6.4, -5.4), (6.6, -7.1))
+    line((9.6, -5.4), (9.4, -7.1))
+    line((10.4, -5.4), (10.6, -7.1))
+    line((13.6, -5.4), (13.4, -7.1))
+    line((14.4, -5.4), (14.6, -7.1))
+  })
+]
+
+To answer the query `sum(2, 6)`, we only need to look at the highlighted nodes:
+- Node `[2,3]` with value 4 (covers indices 2 and 3)
+- Node `[4,5]` with value 18 (covers indices 4 and 5)
+- Node `[6,6]` with value -7 (covers index 6)
+
+Answer: $4 + 18 + (-7) = 15$
+
+Instead of checking all 5 elements, we only visited 3 nodes! This is the power of segment trees.
+
+=== Building the Segment Tree (Recursive)
+
+The segment tree is typically stored in an array. For an array of size $n$, we need an array of size $4n$ for the segment tree (this ensures enough space even in the worst case).
+
+The tree uses 1-based indexing where:
+- Node at index `i` has left child at `2*i` and right child at `2*i + 1`
+- The root is at index 1
+
+Here's how we build the tree recursively:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> arr;
+vector<int> seg;
+
+void build(int node, int start, int end) {
+  if (start == end) {
+    // Leaf node - store the array element
+    seg[node] = arr[start];
+  } else {
+    int mid = (start + end) / 2;
+    int left_child = 2 * node;
+    int right_child = 2 * node + 1;
+    
+    // Recursively build left and right subtrees
+    build(left_child, start, mid);
+    build(right_child, mid + 1, end);
+    
+    // Internal node stores the sum of its children
+    seg[node] = seg[left_child] + seg[right_child];
+  }
+}
+
+int main() {
+  cin >> n;
+  arr.resize(n);
+  seg.resize(4 * n);
+  
+  for (int i = 0; i < n; i++)
+    cin >> arr[i];
+  
+  build(1, 0, n - 1); // Build tree starting at root (node 1)
+  
+  return 0;
+}
+```
+
+Let's trace through building the tree for our example array:
+
+*Step 1:* Start with `build(1, 0, 7)` (root node)
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, highlight: false) = {
+      if highlight {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(200, 255, 200))
+      } else {
+        circle(pos, radius: 0.5, name: "node", stroke: rgb(200, 200, 200))
+      }
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "?", "[0,7]", highlight: true)
+    draw-node((4, -2.5), "?", "[0,3]")
+    draw-node((12, -2.5), "?", "[4,7]")
+    line((7.6, -0.4), (4.4, -2.1), stroke: rgb(200, 200, 200))
+    line((8.4, -0.4), (11.6, -2.1), stroke: rgb(200, 200, 200))
+  })
+]
+
+*Step 2:* Recursively build left child `build(2, 0, 3)`
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, highlight: false) = {
+      if highlight {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(200, 255, 200))
+      } else {
+        circle(pos, radius: 0.5, name: "node", stroke: rgb(200, 200, 200))
+      }
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "?", "[0,7]")
+    draw-node((4, -2.5), "?", "[0,3]", highlight: true)
+    draw-node((12, -2.5), "?", "[4,7]")
+    draw-node((2, -5), "?", "[0,1]")
+    draw-node((6, -5), "?", "[2,3]")
+    
+    line((7.6, -0.4), (4.4, -2.1), stroke: rgb(200, 200, 200))
+    line((8.4, -0.4), (11.6, -2.1), stroke: rgb(200, 200, 200))
+    line((3.6, -2.9), (2.4, -4.6), stroke: rgb(200, 200, 200))
+    line((4.4, -2.9), (5.6, -4.6), stroke: rgb(200, 200, 200))
+  })
+]
+
+*Step 3:* Continue recursing until we hit leaf nodes, then build back up
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, filled: false) = {
+      if filled {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(200, 200, 255))
+      } else {
+        circle(pos, radius: 0.5, name: "node", stroke: rgb(200, 200, 200))
+      }
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "?", "[0,7]")
+    draw-node((4, -2.5), "?", "[0,3]")
+    draw-node((12, -2.5), "?", "[4,7]")
+    draw-node((2, -5), "-1", "[0,1]", filled: true)
+    draw-node((6, -5), "?", "[2,3]")
+    draw-node((1, -7.5), "5", "[0,0]", filled: true)
+    draw-node((3, -7.5), "-6", "[1,1]", filled: true)
+    
+    line((7.6, -0.4), (4.4, -2.1), stroke: rgb(200, 200, 200))
+    line((8.4, -0.4), (11.6, -2.1), stroke: rgb(200, 200, 200))
+    line((3.6, -2.9), (2.4, -4.6), stroke: rgb(200, 200, 200))
+    line((4.4, -2.9), (5.6, -4.6), stroke: rgb(200, 200, 200))
+    line((1.6, -5.4), (1.4, -7.1), stroke: rgb(200, 200, 200))
+    line((2.4, -5.4), (2.6, -7.1), stroke: rgb(200, 200, 200))
+  })
+]
+
+The leaves `[0,0]` and `[1,1]` are filled with values 5 and -6. Then node `[0,1]` is computed as $5 + (-6) = -1$.
+
+=== Range Query (Recursive)
+
+To query the sum in a range `[L, R]`, we recursively traverse the tree:
+
+```cpp
+int query(int node, int start, int end, int L, int R) {
+  // Case 1: Range represented by node is completely outside [L, R]
+  if (R < start || end < L)
+    return 0; // Return identity value (0 for sum)
+  
+  // Case 2: Range represented by node is completely inside [L, R]
+  if (L <= start && end <= R)
+    return seg[node];
+  
+  // Case 3: Range represented by node is partially inside [L, R]
+  int mid = (start + end) / 2;
+  int left_child = 2 * node;
+  int right_child = 2 * node + 1;
+  
+  int left_sum = query(left_child, start, mid, L, R);
+  int right_sum = query(right_child, mid + 1, end, L, R);
+  
+  return left_sum + right_sum;
+}
+```
+
+Let's trace `query(1, 0, 7, 2, 6)` (sum from index 2 to 6):
+
+*Step 1:* At root `[0,7]` - partially overlaps, so recurse
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, color) = {
+      circle(pos, radius: 0.5, name: "node", fill: color)
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    // yellow = partial overlap, need to recurse
+    draw-node((8, 0), "14", "[0,7]", rgb(255, 255, 200))
+    draw-node((4, -2.5), "3", "[0,3]", rgb(255, 255, 200))
+    draw-node((12, -2.5), "11", "[4,7]", rgb(255, 255, 200))
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+  })
+]
+
+*Step 2:* At `[0,3]` - partially overlaps. At `[4,7]` - partially overlaps.
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, color) = {
+      circle(pos, radius: 0.5, name: "node", fill: color)
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "14", "[0,7]", rgb(255, 255, 200))
+    draw-node((4, -2.5), "3", "[0,3]", rgb(255, 255, 200))
+    draw-node((12, -2.5), "11", "[4,7]", rgb(255, 255, 200))
+    
+    // gray = completely outside query range
+    draw-node((2, -5), "-1", "[0,1]", rgb(220, 220, 220))
+    // green = completely inside query range
+    draw-node((6, -5), "4", "[2,3]", rgb(200, 255, 200))
+    draw-node((10, -5), "18", "[4,5]", rgb(200, 255, 200))
+    // yellow = partial overlap
+    draw-node((14, -5), "-10", "[6,7]", rgb(255, 255, 200))
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    line((3.6, -2.9), (2.4, -4.6))
+    line((4.4, -2.9), (5.6, -4.6))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+  })
+]
+
+*Step 3:* Final nodes accessed:
+- `[0,1]` is outside `[2,6]` → return 0
+- `[2,3]` is inside `[2,6]` → return 4
+- `[4,5]` is inside `[2,6]` → return 18
+- `[6,7]` partially overlaps → recurse further
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, color) = {
+      circle(pos, radius: 0.5, name: "node", fill: color)
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "14", "[0,7]", rgb(255, 255, 200))
+    draw-node((4, -2.5), "3", "[0,3]", rgb(255, 255, 200))
+    draw-node((12, -2.5), "11", "[4,7]", rgb(255, 255, 200))
+    draw-node((2, -5), "-1", "[0,1]", rgb(220, 220, 220))
+    draw-node((6, -5), "4", "[2,3]", rgb(200, 255, 200))
+    draw-node((10, -5), "18", "[4,5]", rgb(200, 255, 200))
+    draw-node((14, -5), "-10", "[6,7]", rgb(255, 255, 200))
+    
+    // [6,6] inside, [7,7] outside
+    draw-node((13, -7.5), "-7", "[6,6]", rgb(200, 255, 200))
+    draw-node((15, -7.5), "-3", "[7,7]", rgb(220, 220, 220))
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    line((3.6, -2.9), (2.4, -4.6))
+    line((4.4, -2.9), (5.6, -4.6))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    line((13.6, -5.4), (13.4, -7.1))
+    line((14.4, -5.4), (14.6, -7.1))
+  })
+]
+
+Green nodes are returned: $4 + 18 + (-7) = 15$ ✓
+
+=== Point Update (Recursive)
+
+To update a single element at index `idx` with a new value:
+
+```cpp
+void update(int node, int start, int end, int idx, int val) {
+  if (start == end) {
+    // Leaf node - update the value
+    arr[idx] = val;
+    seg[node] = val;
+  } else {
+    int mid = (start + end) / 2;
+    int left_child = 2 * node;
+    int right_child = 2 * node + 1;
+    
+    // Update the appropriate child
+    if (idx <= mid)
+      update(left_child, start, mid, idx, val);
+    else
+      update(right_child, mid + 1, end, idx, val);
+    
+    // Recalculate this node's value
+    seg[node] = seg[left_child] + seg[right_child];
+  }
+}
+```
+
+Let's trace `update(1, 0, 7, 4, 20)` (change `arr[4]` from 12 to 20):
+
+*Before update:*
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text) = {
+      circle(pos, radius: 0.5, name: "node")
+      content((name: "node", anchor: "center"), text(size: 10pt)[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "14", "[0,7]")
+    draw-node((4, -2.5), "3", "[0,3]")
+    draw-node((12, -2.5), "11", "[4,7]")
+    draw-node((10, -5), "18", "[4,5]")
+    draw-node((14, -5), "-10", "[6,7]")
+    draw-node((9, -7.5), "12", "[4,4]")
+    draw-node((11, -7.5), "6", "[5,5]")
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    line((9.6, -5.4), (9.4, -7.1))
+    line((10.4, -5.4), (10.6, -7.1))
+  })
+]
+
+*After update - path to index 4 is updated:*
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, range-text, highlight: false) = {
+      if highlight {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(255, 200, 200))
+      } else {
+        circle(pos, radius: 0.5, name: "node")
+      }
+      content((name: "node", anchor: "center"), text(size: 10pt, fill: if highlight {red} else {black})[#value])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "22", "[0,7]", highlight: true)
+    draw-node((4, -2.5), "3", "[0,3]")
+    draw-node((12, -2.5), "19", "[4,7]", highlight: true)
+    draw-node((10, -5), "26", "[4,5]", highlight: true)
+    draw-node((14, -5), "-10", "[6,7]")
+    draw-node((9, -7.5), "20", "[4,4]", highlight: true)
+    draw-node((11, -7.5), "6", "[5,5]")
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    line((9.6, -5.4), (9.4, -7.1))
+    line((10.4, -5.4), (10.6, -7.1))
+  })
+]
+
+Notice how only the nodes on the path from root to the updated leaf change (highlighted in red). The change is $+8$, so:
+- `[4,4]`: $12 → 20$ (+8)
+- `[4,5]`: $18 → 26$ (+8)
+- `[4,7]`: $11 → 19$ (+8)
+- `[0,7]`: $14 → 22$ (+8)
+
+=== Complete Implementation (Recursive)
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> arr;
+vector<int> seg;
+
+void build(int node, int start, int end) {
+  if (start == end) {
+    seg[node] = arr[start];
+  } else {
+    int mid = (start + end) / 2;
+    build(2 * node, start, mid);
+    build(2 * node + 1, mid + 1, end);
+    seg[node] = seg[2 * node] + seg[2 * node + 1];
+  }
+}
+
+void update(int node, int start, int end, int idx, int val) {
+  if (start == end) {
+    arr[idx] = val;
+    seg[node] = val;
+  } else {
+    int mid = (start + end) / 2;
+    if (idx <= mid)
+      update(2 * node, start, mid, idx, val);
+    else
+      update(2 * node + 1, mid + 1, end, idx, val);
+    seg[node] = seg[2 * node] + seg[2 * node + 1];
+  }
+}
+
+int query(int node, int start, int end, int L, int R) {
+  if (R < start || end < L)
+    return 0;
+  if (L <= start && end <= R)
+    return seg[node];
+  
+  int mid = (start + end) / 2;
+  int left_sum = query(2 * node, start, mid, L, R);
+  int right_sum = query(2 * node + 1, mid + 1, end, L, R);
+  return left_sum + right_sum;
+}
+
+int main() {
+  int q;
+  cin >> n >> q;
+  
+  arr.resize(n);
+  seg.resize(4 * n);
+  
+  for (int i = 0; i < n; i++)
+    cin >> arr[i];
+  
+  build(1, 0, n - 1);
+  
+  for (int i = 0; i < q; i++) {
+    int t;
+    cin >> t;
+    if (t == 1) {  // update queries
+      int idx, val;
+      cin >> idx >> val;
+      update(1, 0, n - 1, idx, val);
+    } else if (t == 2) {  // range sum queries
+      int L, R;
+      cin >> L >> R;
+      cout << query(1, 0, n - 1, L, R) << endl;
+    }
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+8 6
+5 -6 4 3 12 6 -7 -3
+2 2 6
+1 4 20
+2 2 6
+2 0 7
+1 3 10
+2 0 3
+```
+
+Output:
+
+```
+15
+23
+22
+16
+```
+
+=== Iterative Implementation
+
+The recursive implementation is elegant, but we can also build segment trees iteratively. The iterative approach is often faster and uses less memory.
+
+In the iterative version, we store the tree differently:
+- Leaf nodes are at indices `[n, 2n)` 
+- Internal nodes are at indices `[1, n)`
+- Parent of node `i` is at `i / 2`
+- Children of node `i` are at `2*i` and `2*i + 1`
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> seg;
+
+void build() {
+  // Internal nodes: combine children
+  for (int i = n - 1; i > 0; i--)
+    seg[i] = seg[2 * i] + seg[2 * i + 1];
+}
+
+void update(int idx, int val) {
+  // Update leaf
+  idx += n;  // Convert to tree index
+  seg[idx] = val;
+  
+  // Update all ancestors
+  for (idx /= 2; idx >= 1; idx /= 2)
+    seg[idx] = seg[2 * idx] + seg[2 * idx + 1];
+}
+
+int query(int L, int R) {
+  // Convert to tree indices
+  L += n;
+  R += n;
+  
+  int sum = 0;
+  while (L <= R) {
+    // If L is a right child, include it and move to parent's right
+    if (L % 2 == 1) {
+      sum += seg[L];
+      L++;
+    }
+    // If R is a left child, include it and move to parent's left
+    if (R % 2 == 0) {
+      sum += seg[R];
+      R--;
+    }
+    // Move to parents
+    L /= 2;
+    R /= 2;
+  }
+  return sum;
+}
+
+int main() {
+  int q;
+  cin >> n >> q;
+  
+  seg.resize(2 * n);
+  
+  // Read input directly into leaves [n, 2n)
+  for (int i = 0; i < n; i++)
+    cin >> seg[n + i];
+  
+  build();
+  
+  for (int i = 0; i < q; i++) {
+    int t;
+    cin >> t;
+    if (t == 1) {
+      int idx, val;
+      cin >> idx >> val;
+      update(idx, val);
+    } else if (t == 2) {
+      int L, R;
+      cin >> L >> R;
+      cout << query(L, R) << endl;
+    }
+  }
+  
+  return 0;
+}
+```
+
+The iterative query works by moving inward from both ends:
+- If left boundary is a right child, we can't include its sibling, so add it and move right
+- If right boundary is a left child, we can't include its sibling, so add it and move left
+- Move both boundaries up to their parents
+
+=== Other Operations (Min/Max/GCD)
+
+Segment trees aren't limited to sums! You can perform any *associative* operation. Here's a minimum segment tree:
+
+```cpp
+const int INF = 1e9;
+
+void build(int node, int start, int end) {
+  if (start == end) {
+    seg[node] = arr[start];
+  } else {
+    int mid = (start + end) / 2;
+    build(2 * node, start, mid);
+    build(2 * node + 1, mid + 1, end);
+    seg[node] = min(seg[2 * node], seg[2 * node + 1]);  // MIN instead of +
+  }
+}
+
+int query(int node, int start, int end, int L, int R) {
+  if (R < start || end < L)
+    return INF;  // Return infinity for min queries
+  if (L <= start && end <= R)
+    return seg[node];
+  
+  int mid = (start + end) / 2;
+  int left_min = query(2 * node, start, mid, L, R);
+  int right_min = query(2 * node + 1, mid + 1, end, L, R);
+  return min(left_min, right_min);  // MIN instead of +
+}
+
+void update(int node, int start, int end, int idx, int val) {
+  if (start == end) {
+    arr[idx] = val;
+    seg[node] = val;
+  } else {
+    int mid = (start + end) / 2;
+    if (idx <= mid)
+      update(2 * node, start, mid, idx, val);
+    else
+      update(2 * node + 1, mid + 1, end, idx, val);
+    seg[node] = min(seg[2 * node], seg[2 * node + 1]);  // MIN instead of +
+  }
+}
+```
+
+For maximum queries, use `max()` instead of `min()` and return `-INF` for out-of-range queries.
+
+For GCD queries:
+
+```cpp
+int gcd(int a, int b) {
+  return b == 0 ? a : gcd(b, a % b);
+}
+
+// In build and update:
+seg[node] = gcd(seg[2 * node], seg[2 * node + 1]);
+
+// In query:
+if (R < start || end < L)
+  return 0;  // GCD identity
+// ... rest same, using gcd() instead of +
+```
+
+=== Range Updates with Lazy Propagation
+
+What if we want to update an entire range efficiently? For example, add 5 to all elements from index 2 to 6?
+
+Without optimization, this would take $O(n log n)$ because we'd update each element individually. *Lazy propagation* allows us to do range updates in $O(log n)$.
+
+The idea: when we update a range, we don't immediately update all affected nodes. Instead, we mark nodes as "lazy" and defer updates to their children until necessary.
+
+```cpp
+vector<int> lazy;  // lazy[i] = pending update for node i
+
+void push(int node, int start, int end) {
+  if (lazy[node] != 0) {
+    // Apply pending update to this node
+    seg[node] += (end - start + 1) * lazy[node];
+    
+    // If not a leaf, propagate to children
+    if (start != end) {
+      lazy[2 * node] += lazy[node];
+      lazy[2 * node + 1] += lazy[node];
+    }
+    
+    lazy[node] = 0;  // Clear lazy value
+  }
+}
+
+void update_range(int node, int start, int end, int L, int R, int val) {
+  push(node, start, end);  // Apply any pending updates
+  
+  if (R < start || end < L)
+    return;  // No overlap
+  
+  if (L <= start && end <= R) {
+    // Complete overlap - mark as lazy
+    lazy[node] += val;
+    push(node, start, end);  // Apply immediately to this node
+    return;
+  }
+  
+  // Partial overlap - recurse
+  int mid = (start + end) / 2;
+  update_range(2 * node, start, mid, L, R, val);
+  update_range(2 * node + 1, mid + 1, end, L, R, val);
+  
+  push(2 * node, start, mid);
+  push(2 * node + 1, mid + 1, end);
+  seg[node] = seg[2 * node] + seg[2 * node + 1];
+}
+
+int query(int node, int start, int end, int L, int R) {
+  push(node, start, end);  // Apply pending updates before querying
+  
+  if (R < start || end < L)
+    return 0;
+  if (L <= start && end <= R)
+    return seg[node];
+  
+  int mid = (start + end) / 2;
+  int left_sum = query(2 * node, start, mid, L, R);
+  int right_sum = query(2 * node + 1, mid + 1, end, L, R);
+  return left_sum + right_sum;
+}
+```
+
+Example: Add 5 to range `[2, 6]`
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    
+    let draw-node(pos, value, lazy-val, range-text, highlight: false) = {
+      if highlight {
+        circle(pos, radius: 0.5, name: "node", fill: rgb(255, 200, 200))
+      } else {
+        circle(pos, radius: 0.5, name: "node")
+      }
+      
+      let display = if lazy-val > 0 {
+        str(value) + " [+" + str(lazy-val) + "]"
+      } else {
+        str(value)
+      }
+      
+      content((name: "node", anchor: "center"), text(size: 9pt, fill: if highlight {red} else {black})[#display])
+      content((pos.at(0), pos.at(1) - 0.8), text(size: 8pt)[#range-text])
+    }
+
+    draw-node((8, 0), "14", 0, "[0,7]")
+    draw-node((4, -2.5), "3", 0, "[0,3]")
+    draw-node((12, -2.5), "11", 0, "[4,7]")
+    draw-node((6, -5), "7", 5, "[2,3]", highlight: true)
+    draw-node((10, -5), "28", 5, "[4,5]", highlight: true)
+    draw-node((14, -5), "-10", 0, "[6,7]")
+    draw-node((13, -7.5), "-7", 5, "[6,6]", highlight: true)
+    draw-node((15, -7.5), "-3", 0, "[7,7]")
+    
+    line((7.6, -0.4), (4.4, -2.1))
+    line((8.4, -0.4), (11.6, -2.1))
+    line((4.4, -2.9), (5.6, -4.6))
+    line((11.6, -2.9), (10.4, -4.6))
+    line((12.4, -2.9), (13.6, -4.6))
+    line((13.6, -5.4), (13.4, -7.1))
+    line((14.4, -5.4), (14.6, -7.1))
+  })
+]
+
+Nodes with `[+5]` have lazy values. The actual values will be updated when we query or update those nodes later.
+
+=== Complete Lazy Propagation Example
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<int> arr;
+vector<long long> seg, lazy;
+
+void build(int node, int start, int end) {
+  if (start == end) {
+    seg[node] = arr[start];
+  } else {
+    int mid = (start + end) / 2;
+    build(2 * node, start, mid);
+    build(2 * node + 1, mid + 1, end);
+    seg[node] = seg[2 * node] + seg[2 * node + 1];
+  }
+}
+
+void push(int node, int start, int end) {
+  if (lazy[node] != 0) {
+    seg[node] += (end - start + 1) * lazy[node];
+    if (start != end) {
+      lazy[2 * node] += lazy[node];
+      lazy[2 * node + 1] += lazy[node];
+    }
+    lazy[node] = 0;
+  }
+}
+
+void update_range(int node, int start, int end, int L, int R, int val) {
+  push(node, start, end);
+  if (R < start || end < L)
+    return;
+  
+  if (L <= start && end <= R) {
+    lazy[node] += val;
+    push(node, start, end);
+    return;
+  }
+  
+  int mid = (start + end) / 2;
+  update_range(2 * node, start, mid, L, R, val);
+  update_range(2 * node + 1, mid + 1, end, L, R, val);
+  
+  push(2 * node, start, mid);
+  push(2 * node + 1, mid + 1, end);
+  seg[node] = seg[2 * node] + seg[2 * node + 1];
+}
+
+long long query(int node, int start, int end, int L, int R) {
+  push(node, start, end);
+  if (R < start || end < L)
+    return 0;
+  if (L <= start && end <= R)
+    return seg[node];
+  
+  int mid = (start + end) / 2;
+  long long left_sum = query(2 * node, start, mid, L, R);
+  long long right_sum = query(2 * node + 1, mid + 1, end, L, R);
+  return left_sum + right_sum;
+}
+
+int main() {
+  int q;
+  cin >> n >> q;
+  
+  arr.resize(n);
+  seg.resize(4 * n);
+  lazy.resize(4 * n);
+  
+  for (int i = 0; i < n; i++)
+    cin >> arr[i];
+  
+  build(1, 0, n - 1);
+  
+  for (int i = 0; i < q; i++) {
+    int t;
+    cin >> t;
+    if (t == 1) {  // range update
+      int L, R, val;
+      cin >> L >> R >> val;
+      update_range(1, 0, n - 1, L, R, val);
+    } else if (t == 2) {  // range query
+      int L, R;
+      cin >> L >> R;
+      cout << query(1, 0, n - 1, L, R) << endl;
+    }
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+8 5
+5 -6 4 3 12 6 -7 -3
+2 2 6
+1 2 6 5
+2 2 6
+2 0 7
+1 0 7 -2
+```
+
+Output:
+
+```
+15
+40
+30
+```
+
+For the `std::` documentation on common segment tree use cases, there isn't a built-in implementation, but competitive programmers often use custom implementations like the ones shown above.
+
+=== Summary
+
+Segment trees are powerful data structures that support:
+- Range queries in $O(log n)$
+- Point updates in $O(log n)$
+- Range updates in $O(log n)$ (with lazy propagation)
+
+They work for any associative operation: sum, min, max, GCD, XOR, etc.
+
+Choose segment trees when:
+- You need range queries and updates
+- You need operations other than just sum (where BIT might suffice)
+- You need range updates (use lazy propagation)
+
+The recursive implementation is more intuitive, while the iterative version is often faster in practice. Both have their place in competitive programming!
+
+== Binary Lifting //chap2
+
+#v(0.5em)
+
+Binary lifting is a powerful technique used to answer queries on trees efficiently. Imagine you have a tree and you want to find the $k$-th ancestor of a node, or you want to find the *Lowest Common Ancestor (LCA)* of two nodes. Doing this naively would take $O(n)$ time per query, but with binary lifting, we can answer these queries in $O(log n)$ time after $O(n log n)$ preprocessing.
+
+The core idea is simple: instead of jumping one step at a time up the tree, we can jump in powers of 2. Think of it like this — if you want to climb 13 steps on a staircase, you could take 13 individual steps, or you could take jumps of 8, 4, and 1 (since $13 = 2^3 + 2^2 + 2^0$). Binary lifting applies this same principle to trees.
+
+=== Understanding the Tree Structure
+
+Before we dive into binary lifting, let's establish what we're working with. Consider the following tree with 10 nodes:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Node positions (x, y)
+    let nodes = (
+      (4, 0),    // 1 (root)
+      (2, -1.5), // 2
+      (6, -1.5), // 3
+      (1, -3),   // 4
+      (3, -3),   // 5
+      (5, -3),   // 6
+      (7, -3),   // 7
+      (0, -4.5), // 8
+      (2, -4.5), // 9
+      (4, -4.5), // 10
+    )
+
+    // Draw edges
+    let edges = (
+      (0, 1), (0, 2), // 1->2, 1->3
+      (1, 3), (1, 4), // 2->4, 2->5
+      (2, 5), (2, 6), // 3->6, 3->7
+      (3, 7), (3, 8), // 4->8, 4->9
+      (4, 9),         // 5->10
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    // Draw nodes
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+  })
+]
+
+This is a simple tree where node 1 is the root. Node 2 and node 3 are children of node 1. Node 4 and node 5 are children of node 2, and so on.
+
+If we want to find the parent of node 8, we look one level up and find it's node 4. If we want to find the grandparent of node 8, we go two levels up and find it's node 2. But what if we want to find the ancestor that's 3 levels up? Or 7 levels up? That's where binary lifting becomes useful.
+
+=== The Binary Lifting Table
+
+The key to binary lifting is maintaining a 2D table `up[node][j]` where `up[node][j]` represents the $2^j$-th ancestor of `node`. In other words:
+- `up[node][0]` = parent of `node` (the $2^0 = 1$st ancestor)
+- `up[node][1]` = grandparent of `node` (the $2^1 = 2$nd ancestor)
+- `up[node][2]` = the $2^2 = 4$th ancestor
+- `up[node][3]` = the $2^3 = 8$th ancestor
+- and so on...
+
+Let's visualize this table for our example tree. We'll also store the depth of each node (distance from root):
+
+#align(center)[
+  #table(
+    columns: (auto, auto, auto, auto, auto, auto, auto, auto),
+    align: center,
+    [*Node*], [*Depth*], [*up\[i\]\[0\]*], [*up\[i\]\[1\]*], [*up\[i\]\[2\]*], [*up\[i\]\[3\]*], [*Meaning (0)*], [*Meaning (1)*],
+    [1], [0], [0], [0], [0], [0], [parent], [2nd ancestor],
+    [2], [1], [1], [0], [0], [0], [parent is 1], [2nd is 0 (none)],
+    [3], [1], [1], [0], [0], [0], [parent is 1], [2nd is 0 (none)],
+    [4], [2], [2], [1], [0], [0], [parent is 2], [2nd is 1],
+    [5], [2], [2], [1], [0], [0], [parent is 2], [2nd is 1],
+    [6], [2], [3], [1], [0], [0], [parent is 3], [2nd is 1],
+    [7], [2], [3], [1], [0], [0], [parent is 3], [2nd is 1],
+    [8], [3], [4], [2], [1], [0], [parent is 4], [2nd is 2],
+    [9], [3], [4], [2], [1], [0], [parent is 4], [2nd is 2],
+    [10], [3], [5], [2], [1], [0], [parent is 5], [2nd is 2],
+  )
+]
+
+Notice how `up[8][0] = 4` (node 8's parent is node 4), `up[8][1] = 2` (node 8's 2nd ancestor is node 2), and `up[8][2] = 1` (node 8's 4th ancestor is node 1).
+
+The value 0 represents "no ancestor exists" — we use 0 instead of -1 or null for convenience, and we ensure node 0 points to itself.
+
+=== Building the Binary Lifting Table
+
+Now let's understand how to build this table. The key insight is:
+
+The $2^j$-th ancestor of node `u` is the same as the $2^(j-1)$-th ancestor of the $2^(j-1)$-th ancestor of `u`.
+
+In other words: `up[u][j] = up[up[u][j-1]][j-1]`
+
+Think about it: if you want to go up 8 steps, you can first go up 4 steps, then from there go up another 4 steps.
+
+Here's how we build the table step by step:
+
+*Step 1: Initialize `up[node][0]`* — This is just the direct parent of each node, which we get from the tree structure:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Show up[8][0] = 4
+    set-style(stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    line((0, -4.5), (1, -3), mark: (end: ">", fill: red))
+    content((0.5, -3.8), text(fill: red, size: 10pt)[up\[8\]\[0\] = 4])
+  })
+]
+
+*Step 2: Build `up[node][1]`* — For each node, go to its parent, then go to that node's parent:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Show up[8][1] = up[up[8][0]][0] = up[4][0] = 2
+    set-style(stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    line((0.1, -4.4), (1.1, -2.9), mark: (end: ">", fill: red))
+    content((-0.3, -3.7), text(fill: red, size: 9pt)[up\[8\]\[0\]])
+    
+    set-style(stroke: (paint: blue, thickness: 2pt, dash: "dotted"))
+    line((1.1, -2.9), (2.1, -1.4), mark: (end: ">", fill: blue))
+    content((1.3, -2.2), text(fill: blue, size: 9pt)[up\[4\]\[0\]])
+
+    content((1, -4.8), text(fill: purple, size: 10pt)[up\[8\]\[1\] = 2])
+  })
+]
+
+*Step 3: Build `up[node][2]`* — Jump 2 steps ($2^1$), then jump another 2 steps:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Show up[8][2] = up[up[8][1]][1] = up[2][1] = 1
+    set-style(stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    bezier((0.2, -4.3), (2.2, -1.3), (0.5, -3.5), (1.5, -2.2), mark: (end: ">", fill: red))
+    content((0.3, -3.2), text(fill: red, size: 9pt)[up\[8\]\[1\] = 2])
+    
+    set-style(stroke: (paint: blue, thickness: 2pt, dash: "dotted"))
+    bezier((2.2, -1.3), (4, 0.2), (2.8, -0.8), (3.5, -0.3), mark: (end: ">", fill: blue))
+    content((2.8, -0.5), text(fill: blue, size: 9pt)[up\[2\]\[1\] = 1])
+
+    content((2, -4.8), text(fill: purple, size: 10pt)[up\[8\]\[2\] = 1])
+  })
+]
+
+This pattern continues for all values of $j$ up to $log_2(n)$.
+
+=== Implementation: DFS Approach
+
+Let's look at the code to build this table using DFS (Depth-First Search):
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MAXN = 100005;
+const int LOG = 20; // log2(100000) is about 17, so 20 is safe
+
+vector<int> adj[MAXN]; // adjacency list for the tree
+int up[MAXN][LOG];     // up[node][j] = 2^j-th ancestor of node
+int depth[MAXN];       // depth[node] = distance from root
+
+void dfs(int node, int parent) {
+    up[node][0] = parent; // the parent is the 2^0 = 1st ancestor
+    
+    // Build the rest of the table using dynamic programming
+    for (int j = 1; j < LOG; j++) {
+        up[node][j] = up[up[node][j-1]][j-1];
+        // The 2^j-th ancestor is the 2^(j-1)-th ancestor of the 2^(j-1)-th ancestor
+    }
+    
+    // Process all children
+    for (int child : adj[node]) {
+        if (child != parent) { // avoid going back to parent
+            depth[child] = depth[node] + 1;
+            dfs(child, node);
+        }
+    }
+}
+
+int main() {
+    int n; // number of nodes
+    cin >> n;
+    
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    // Start DFS from node 1 (root), with parent 0 (no parent)
+    depth[1] = 0;
+    dfs(1, 0);
+    
+    return 0;
+}
+```
+
+The time complexity of this preprocessing is $O(n log n)$ because for each of the $n$ nodes, we fill $O(log n)$ values in the table.
+
+=== Finding the K-th Ancestor
+
+Now that we have the table built, how do we find the $k$-th ancestor of a node? The key is to express $k$ in binary representation and use the corresponding jumps.
+
+For example, if we want to find the 13th ancestor of node 8:
+- $13 = 8 + 4 + 1 = 2^3 + 2^2 + 2^0$ (binary: 1101)
+- So we jump up by 8, then by 4, then by 1
+
+Let's visualize this with a diagram showing the process for finding the 5th ancestor of node 8:
+
+$5 = 4 + 1 = 2^2 + 2^0$ (binary: 101)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Step 1: Jump 4 steps (2^2) from node 8 to node 2
+    set-style(stroke: (paint: red, thickness: 2.5pt))
+    bezier((0.2, -4.3), (2, -1.3), (0.5, -3.5), (1.5, -2.2), mark: (end: ">", fill: red, size: 0.3))
+    content((0.5, -3), text(fill: red, size: 11pt, weight: "bold")[Jump $2^2 = 4$])
+
+    // Step 2: Jump 1 step (2^0) from node 2 to node 1
+    set-style(stroke: (paint: blue, thickness: 2.5pt))
+    line((2.1, -1.4), (3.9, -0.1), mark: (end: ">", fill: blue, size: 0.3))
+    content((3.2, -0.8), text(fill: blue, size: 11pt, weight: "bold")[Jump $2^0 = 1$])
+
+    content((2, -5.3), text(fill: purple, size: 12pt, weight: "bold")[5th ancestor of node 8 is node 1])
+  })
+]
+
+Here's the code for the k-th ancestor query:
+
+```cpp
+int kth_ancestor(int node, int k) {
+    // If k is larger than the depth, no such ancestor exists
+    if (depth[node] < k) {
+        return 0; // or -1 to indicate "doesn't exist"
+    }
+    
+    // Process each bit of k from least significant to most significant
+    for (int j = 0; j < LOG; j++) {
+        if (k & (1 << j)) { // if the j-th bit of k is set
+            node = up[node][j]; // jump by 2^j steps
+            if (node == 0) return 0; // reached beyond root
+        }
+    }
+    
+    return node;
+}
+```
+
+Let's trace through an example. Say we want `kth_ancestor(8, 5)`:
+
+- $k = 5$ in binary is `101`
+- $j = 0$: bit is 1, so `node = up[8][0] = 4`
+- $j = 1$: bit is 0, skip
+- $j = 2$: bit is 1, so `node = up[4][2] = 1`
+- Result: node 1
+
+The time complexity is $O(log k)$, which is at most $O(log n)$.
+
+=== Alternative Implementation: Iterative Building
+
+Instead of using DFS, we can build the table iteratively by processing nodes level by level using BFS:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MAXN = 100005;
+const int LOG = 20;
+
+vector<int> adj[MAXN];
+int up[MAXN][LOG];
+int depth[MAXN];
+
+void build_binary_lifting(int root, int n) {
+    // BFS to assign parents and depths
+    queue<int> q;
+    q.push(root);
+    depth[root] = 0;
+    up[root][0] = 0; // root has no parent
+    
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        
+        for (int child : adj[node]) {
+            if (depth[child] == -1) { // not visited
+                depth[child] = depth[node] + 1;
+                up[child][0] = node; // set parent
+                q.push(child);
+            }
+        }
+    }
+    
+    // Build the rest of the binary lifting table
+    for (int j = 1; j < LOG; j++) {
+        for (int node = 1; node <= n; node++) {
+            up[node][j] = up[up[node][j-1]][j-1];
+        }
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+    
+    // Initialize depths to -1 (unvisited)
+    memset(depth, -1, sizeof(depth));
+    
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    build_binary_lifting(1, n);
+    
+    return 0;
+}
+```
+
+Both approaches have the same time complexity of $O(n log n)$, but the iterative approach separates the parent assignment from the table building, which can sometimes be clearer.
+
+=== Lowest Common Ancestor (LCA)
+
+One of the most powerful applications of binary lifting is finding the *Lowest Common Ancestor* of two nodes. The LCA of two nodes $u$ and $v$ is the deepest node that is an ancestor of both $u$ and $v$.
+
+Let's visualize the LCA of different pairs of nodes:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Highlight LCA(8, 10) = 2
+    circle(nodes.at(7), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(7), text(size: 14pt, weight: "bold")[8])
+    
+    circle(nodes.at(9), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(9), text(size: 14pt, weight: "bold")[10])
+    
+    circle(nodes.at(1), radius: 0.35, fill: rgb(144, 238, 144), stroke: (paint: green, thickness: 3pt))
+    content(nodes.at(1), text(size: 14pt, weight: "bold")[2])
+
+    content((4, -5.5), text(fill: green, size: 12pt, weight: "bold")[LCA(8, 10) = 2])
+  })
+]
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Highlight LCA(8, 7) = 1
+    circle(nodes.at(7), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(7), text(size: 14pt, weight: "bold")[8])
+    
+    circle(nodes.at(6), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(6), text(size: 14pt, weight: "bold")[7])
+    
+    circle(nodes.at(0), radius: 0.35, fill: rgb(144, 238, 144), stroke: (paint: green, thickness: 3pt))
+    content(nodes.at(0), text(size: 14pt, weight: "bold")[1])
+
+    content((4, -5.5), text(fill: green, size: 12pt, weight: "bold")[LCA(8, 7) = 1])
+  })
+]
+
+The algorithm for finding LCA using binary lifting works in three steps:
+
+1. *Make both nodes at the same depth* — If one node is deeper than the other, bring it up to the same level
+2. *Binary search for LCA* — Jump both nodes upward together using powers of 2, but stop just before they meet
+3. *Move up one step* — The LCA is one step above where we stopped
+
+Here's a detailed walkthrough of finding LCA(9, 6):
+
+*Initial state:* node 9 is at depth 3, node 6 is at depth 2
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    circle(nodes.at(8), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(8), text(size: 14pt, weight: "bold")[9])
+    
+    circle(nodes.at(5), radius: 0.32, fill: rgb(200, 200, 255), stroke: (paint: blue, thickness: 2pt))
+    content(nodes.at(5), text(size: 14pt, weight: "bold")[6])
+
+    content((0, -5.5), text(fill: red, size: 11pt)[Node 9: depth = 3])
+    content((6, -5.5), text(fill: blue, size: 11pt)[Node 6: depth = 2])
+  })
+]
+
+*Step 1:* Bring node 9 up by 1 to match depth of node 6
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    circle(nodes.at(4), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(4), text(size: 14pt, weight: "bold")[5])
+    
+    circle(nodes.at(5), radius: 0.32, fill: rgb(200, 200, 255), stroke: (paint: blue, thickness: 2pt))
+    content(nodes.at(5), text(size: 14pt, weight: "bold")[6])
+
+    set-style(stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    line((2, -4.4), (3, -3.1), mark: (end: ">", fill: red))
+    content((2.3, -3.8), text(fill: red, size: 10pt)[up 1])
+
+    content((1, -5.5), text(fill: red, size: 11pt)[Node 9 → 5: depth = 2])
+    content((6, -5.5), text(fill: blue, size: 11pt)[Node 6: depth = 2])
+  })
+]
+
+*Step 2:* Both at depth 2. Now try jumping up by $2^1 = 2$:
+- `up[5][1] = 1` and `up[6][1] = 1` — they would meet at node 1
+- This is too much, so we don't jump
+
+*Step 3:* Try jumping up by $2^0 = 1$:
+- `up[5][0] = 2` and `up[6][0] = 3` — they're different
+- So we jump both up by 1
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    circle(nodes.at(1), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(1), text(size: 14pt, weight: "bold")[2])
+    
+    circle(nodes.at(2), radius: 0.32, fill: rgb(200, 200, 255), stroke: (paint: blue, thickness: 2pt))
+    content(nodes.at(2), text(size: 14pt, weight: "bold")[3])
+
+    set-style(stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    line((3, -3.1), (2.1, -1.6), mark: (end: ">", fill: red))
+    
+    set-style(stroke: (paint: blue, thickness: 2pt, dash: "dashed"))
+    line((5, -3.1), (5.9, -1.6), mark: (end: ">", fill: blue))
+
+    content((1, -5.5), text(fill: red, size: 11pt)[Node 5 → 2: depth = 1])
+    content((6.5, -5.5), text(fill: blue, size: 11pt)[Node 6 → 3: depth = 1])
+  })
+]
+
+*Step 4:* Now node 9 is at node 2 and node 6 is at node 3. We can't jump anymore (they're different), so the LCA is their parent: `up[2][0] = up[3][0] = 1`
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    circle(nodes.at(0), radius: 0.35, fill: rgb(144, 238, 144), stroke: (paint: green, thickness: 3pt))
+    content(nodes.at(0), text(size: 14pt, weight: "bold")[1])
+
+    content((4, -5.5), text(fill: green, size: 12pt, weight: "bold")[LCA(9, 6) = 1])
+  })
+]
+
+Here's the code for finding LCA:
+
+```cpp
+int lca(int u, int v) {
+    // Make sure u is the deeper node
+    if (depth[u] < depth[v]) {
+        swap(u, v);
+    }
+    
+    // Step 1: Bring u up to the same level as v
+    int diff = depth[u] - depth[v];
+    for (int j = 0; j < LOG; j++) {
+        if (diff & (1 << j)) {
+            u = up[u][j];
+        }
+    }
+    
+    // If they're now the same node, that node is the LCA
+    if (u == v) {
+        return u;
+    }
+    
+    // Step 2: Binary search - jump both upward together
+    // but stop just before they meet
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[u][j] != up[v][j]) {
+            u = up[u][j];
+            v = up[v][j];
+        }
+    }
+    
+    // Step 3: The LCA is one step above where we stopped
+    return up[u][0];
+}
+```
+
+The algorithm works from largest jumps to smallest. If jumping by $2^j$ would make the nodes meet, we skip that jump. Otherwise, we take it. At the end, both nodes are one step below their LCA, so we return their parent.
+
+The time complexity is $O(log n)$ per query.
+
+=== Computing Distance Between Nodes
+
+With binary lifting and LCA, we can also compute the distance between any two nodes in the tree. The distance between nodes $u$ and $v$ is:
+
+$ "distance"(u, v) = "depth"[u] + "depth"[v] - 2 times "depth"["LCA"(u, v)] $
+
+Let's visualize why this formula works for distance(8, 7):
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      (4, 0), (2, -1.5), (6, -1.5), (1, -3), (3, -3),
+      (5, -3), (7, -3), (0, -4.5), (2, -4.5), (4, -4.5),
+    )
+
+    let edges = (
+      (0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6), (3, 7), (3, 8), (4, 9),
+    )
+
+    for edge in edges {
+      line(nodes.at(edge.at(0)), nodes.at(edge.at(1)), stroke: 1.5pt)
+    }
+
+    for i in range(nodes.len()) {
+      circle(nodes.at(i), radius: 0.3, fill: rgb(200, 220, 255), stroke: 2pt)
+      content(nodes.at(i), text(size: 14pt, weight: "bold")[#(i + 1)])
+    }
+
+    // Highlight path from 8 to 7
+    set-style(stroke: (paint: red, thickness: 3pt))
+    line((0, -4.5), (1, -3))
+    line((1, -3), (2, -1.5))
+    line((2, -1.5), (4, 0))
+    line((4, 0), (6, -1.5))
+    line((6, -1.5), (7, -3))
+
+    circle(nodes.at(7), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(7), text(size: 14pt, weight: "bold")[8])
+    
+    circle(nodes.at(6), radius: 0.32, fill: rgb(255, 200, 200), stroke: (paint: red, thickness: 2pt))
+    content(nodes.at(6), text(size: 14pt, weight: "bold")[7])
+    
+    circle(nodes.at(0), radius: 0.35, fill: rgb(144, 238, 144), stroke: (paint: green, thickness: 2pt))
+    content(nodes.at(0), text(size: 14pt, weight: "bold")[1])
+
+    content((1, -5.5), text(size: 11pt)[depth\[8\] = 3])
+    content((7, -5.5), text(size: 11pt)[depth\[7\] = 2])
+    content((4, -6), text(size: 11pt)[LCA(8,7) = 1, depth = 0])
+    content((4, -6.5), text(fill: purple, size: 11pt, weight: "bold")[distance = 3 + 2 - 2×0 = 5])
+  })
+]
+
+The path goes: 8 → 4 → 2 → 1 → 3 → 7, which is 5 edges.
+
+Here's the code:
+
+```cpp
+int distance(int u, int v) {
+    int lca_node = lca(u, v);
+    return depth[u] + depth[v] - 2 * depth[lca_node];
+}
+```
+
+=== Complete Example with Sample Input/Output
+
+Here's a complete program that demonstrates all the functions:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int MAXN = 100005;
+const int LOG = 20;
+
+vector<int> adj[MAXN];
+int up[MAXN][LOG];
+int depth[MAXN];
+int n;
+
+void dfs(int node, int parent) {
+    up[node][0] = parent;
+    
+    for (int j = 1; j < LOG; j++) {
+        up[node][j] = up[up[node][j-1]][j-1];
+    }
+    
+    for (int child : adj[node]) {
+        if (child != parent) {
+            depth[child] = depth[node] + 1;
+            dfs(child, node);
+        }
+    }
+}
+
+int kth_ancestor(int node, int k) {
+    if (depth[node] < k) {
+        return 0;
+    }
+    
+    for (int j = 0; j < LOG; j++) {
+        if (k & (1 << j)) {
+            node = up[node][j];
+            if (node == 0) return 0;
+        }
+    }
+    
+    return node;
+}
+
+int lca(int u, int v) {
+    if (depth[u] < depth[v]) {
+        swap(u, v);
+    }
+    
+    int diff = depth[u] - depth[v];
+    for (int j = 0; j < LOG; j++) {
+        if (diff & (1 << j)) {
+            u = up[u][j];
+        }
+    }
+    
+    if (u == v) {
+        return u;
+    }
+    
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[u][j] != up[v][j]) {
+            u = up[u][j];
+            v = up[v][j];
+        }
+    }
+    
+    return up[u][0];
+}
+
+int distance(int u, int v) {
+    int lca_node = lca(u, v);
+    return depth[u] + depth[v] - 2 * depth[lca_node];
+}
+
+int main() {
+    int q;
+    cin >> n >> q;
+    
+    for (int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    depth[1] = 0;
+    dfs(1, 0);
+    
+    for (int i = 0; i < q; i++) {
+        int type;
+        cin >> type;
+        
+        if (type == 1) { // k-th ancestor query
+            int node, k;
+            cin >> node >> k;
+            cout << kth_ancestor(node, k) << endl;
+        }
+        else if (type == 2) { // LCA query
+            int u, v;
+            cin >> u >> v;
+            cout << lca(u, v) << endl;
+        }
+        else if (type == 3) { // distance query
+            int u, v;
+            cin >> u >> v;
+            cout << distance(u, v) << endl;
+        }
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+10 8
+1 2
+1 3
+2 4
+2 5
+3 6
+3 7
+4 8
+4 9
+5 10
+1 8 3
+1 8 5
+2 8 10
+2 9 6
+2 8 7
+3 8 10
+3 9 7
+3 6 10
+```
+
+Output:
+
+```
+2
+0
+2
+1
+1
+5
+4
+5
+```
+
+Explanation of queries:
+- `1 8 3`: 3rd ancestor of node 8 is node 2
+- `1 8 5`: 5th ancestor of node 8 doesn't exist (only 3 levels deep), returns 0
+- `2 8 10`: LCA(8, 10) = 2
+- `2 9 6`: LCA(9, 6) = 1
+- `2 8 7`: LCA(8, 7) = 1
+- `3 8 10`: distance(8, 10) = 5
+- `3 9 7`: distance(9, 7) = 4
+- `3 6 10`: distance(6, 10) = 5
+
+=== Advanced Application: Path Queries
+
+Binary lifting can be extended to answer more complex queries. For example, if each edge has a weight, we can find the maximum edge weight on the path between any two nodes.
+
+The idea is to store not just the ancestor, but also the maximum edge weight encountered when jumping to that ancestor:
+
+```cpp
+int up[MAXN][LOG];        // up[node][j] = 2^j-th ancestor
+int max_edge[MAXN][LOG];  // max_edge[node][j] = max edge weight when jumping 2^j steps
+
+void dfs(int node, int parent, int parent_edge_weight) {
+    up[node][0] = parent;
+    max_edge[node][0] = parent_edge_weight;
+    
+    for (int j = 1; j < LOG; j++) {
+        up[node][j] = up[up[node][j-1]][j-1];
+        max_edge[node][j] = max(max_edge[node][j-1], 
+                                 max_edge[up[node][j-1]][j-1]);
+    }
+    
+    for (auto [child, edge_weight] : adj[node]) {
+        if (child != parent) {
+            depth[child] = depth[node] + 1;
+            dfs(child, node, edge_weight);
+        }
+    }
+}
+
+int max_edge_on_path(int u, int v) {
+    if (depth[u] < depth[v]) swap(u, v);
+    
+    int max_weight = 0;
+    
+    // Bring u to same level as v
+    int diff = depth[u] - depth[v];
+    for (int j = 0; j < LOG; j++) {
+        if (diff & (1 << j)) {
+            max_weight = max(max_weight, max_edge[u][j]);
+            u = up[u][j];
+        }
+    }
+    
+    if (u == v) return max_weight;
+    
+    // Binary search for LCA
+    for (int j = LOG - 1; j >= 0; j--) {
+        if (up[u][j] != up[v][j]) {
+            max_weight = max(max_weight, max_edge[u][j]);
+            max_weight = max(max_weight, max_edge[v][j]);
+            u = up[u][j];
+            v = up[v][j];
+        }
+    }
+    
+    // Add edges to LCA
+    max_weight = max(max_weight, max_edge[u][0]);
+    max_weight = max(max_weight, max_edge[v][0]);
+    
+    return max_weight;
+}
+```
+
+This technique can be extended to track minimum values, sums, XOR values, or any other information that can be combined when jumping up the tree.
+
+=== Time and Space Complexity Summary
+
+*Preprocessing:*
+- Time: $O(n log n)$ — for each of $n$ nodes, we compute $O(log n)$ ancestors
+- Space: $O(n log n)$ — we store a table of size $n times log n$
+
+*Queries:*
+- K-th ancestor: $O(log n)$
+- LCA: $O(log n)$
+- Distance: $O(log n)$
+
+Binary lifting is one of the most important tree algorithms in competitive programming, appearing in problems about tree paths, tree queries, and dynamic programming on trees. The ability to jump up the tree in logarithmic time opens up solutions to many complex problems.
+
+

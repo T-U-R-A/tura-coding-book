@@ -13,6 +13,11 @@ eularian path step 2
 eularian cicruit step 2
 strongly connected components step 2
 
+graph dp bitmask step 2
+segment tree step 2
+binary lifting step 2
+
+
 
 step 1 - first writing
 step 2 - first review (with prob many changes)
