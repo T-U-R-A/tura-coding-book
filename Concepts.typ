@@ -7473,7 +7473,7 @@ Let's look at some examples to understand the concept better:
     *Example 3: Graph without Hamiltonian Path*
     
     #canvas(length: 1cm, {
-      import draw: *
+      import cetz.draw: *
       
       // Draw vertices
       circle((1.5, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
@@ -7808,7 +7808,7 @@ Here's a visual representation:
 
 #align(center)[
   #canvas(length: 1cm, {
-    import draw: *
+    import cetz.draw: *
     
     // Draw vertices
     circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "A")

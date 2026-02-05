@@ -6,5 +6,6 @@ This book is designed to introduce you to the world of computer science by expla
 
 Please download Book.pdf from the [latest release](https://github.com/PuddingisPOG/tura-coding-book/releases/) to get a finished book. If you want the work in progress version, download what's there on the latest commit.
 
-# Acknowledgment
+# Acknowledgements
 
+1. https://www.reddit.com/user/pjl1967/ - Changed cover page
