@@ -81,3 +81,8 @@ Range Updates and Sums step1
 Polynomial Queries step1
 Range Queries and Copies step1
 Missing Coin Sum Queries step1
+
+step 1 - first writing
+step 2 - first review (with prob many changes)
+step 3 - second review
+step 4 - final fomatting
