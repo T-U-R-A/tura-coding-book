@@ -9082,6 +9082,815 @@ When solving graph problems with bitmasks, remember:
 
 For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
 
+== Maximum Flow and Edmonds-Karp Algorithm //chap3
+
+#v(0.5em)
+
+Imagine you have a water pipe network where each pipe has a maximum capacity. You want to find the maximum amount of water that can flow from a source to a sink. This is the *maximum flow problem*, and the *Edmonds-Karp algorithm* gives us an efficient way to solve it.
+
+The maximum flow problem is defined on a *flow network*, which is a directed graph where:
+- Each edge has a non-negative capacity $c(u, v)$
+- There is a source vertex $s$ where flow originates
+- There is a sink vertex $t$ where flow terminates
+- Flow must satisfy capacity constraints and conservation of flow
+
+The *Edmonds-Karp algorithm* is an implementation of the Ford-Fulkerson method that uses BFS (Breadth-First Search) to find augmenting paths. This gives us a time complexity of $O(V E^2)$ where $V$ is the number of vertices and $E$ is the number of edges.
+
+Let's start with a simple example. Consider the following flow network:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    // Draw nodes
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    // Draw edges with capacities
+    let edges = (
+      (from: "s", to: "a", cap: "10", bend: 0),
+      (from: "s", to: "b", cap: "10", bend: 0),
+      (from: "a", to: "b", cap: "2", bend: 0),
+      (from: "a", to: "c", cap: "4", bend: 0),
+      (from: "a", to: "d", cap: "8", bend: 0),
+      (from: "b", to: "d", cap: "9", bend: 0),
+      (from: "c", to: "t", cap: "10", bend: 0),
+      (from: "d", to: "c", cap: "6", bend: 0),
+      (from: "d", to: "t", cap: "10", bend: 0),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      line(from-pos, to-pos, name: "edge")
+      
+      // Label with capacity
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#edge.cap])
+    }
+  })
+]
+
+In this network, the numbers on edges represent the maximum capacity. Our goal is to find the maximum flow from $s$ to $t$.
+
+=== The Residual Graph
+
+The key concept in the Ford-Fulkerson method (and thus Edmonds-Karp) is the *residual graph*. For each edge $(u, v)$ with capacity $c(u, v)$ and current flow $f(u, v)$, the residual graph contains:
+
+- A forward edge with capacity $c(u, v) - f(u, v)$ (remaining capacity)
+- A backward edge with capacity $f(u, v)$ (flow that can be "pushed back")
+
+Initially, all flows are 0, so the residual graph is the same as the original graph. As we push flow, the residual capacities change.
+
+=== How Edmonds-Karp Works
+
+The algorithm works in iterations:
+
+1. Use BFS to find the shortest path from $s$ to $t$ in the residual graph
+2. Find the minimum capacity along this path (the *bottleneck*)
+3. Push this amount of flow along the path
+4. Update the residual graph
+5. Repeat until no path exists from $s$ to $t$
+
+The reason we use BFS specifically is that it guarantees we find the shortest augmenting path (in terms of number of edges), which gives us the $O(V E^2)$ time complexity.
+
+Let's trace through our example step by step:
+
+==== Iteration 1: Path $s arrow.r a arrow.r c arrow.r t$
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    let edges = (
+      (from: "s", to: "a", cap: "10", highlight: true),
+      (from: "s", to: "b", cap: "10", highlight: false),
+      (from: "a", to: "b", cap: "2", highlight: false),
+      (from: "a", to: "c", cap: "4", highlight: true),
+      (from: "a", to: "d", cap: "8", highlight: false),
+      (from: "b", to: "d", cap: "9", highlight: false),
+      (from: "c", to: "t", cap: "10", highlight: true),
+      (from: "d", to: "c", cap: "6", highlight: false),
+      (from: "d", to: "t", cap: "10", highlight: false),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      if edge.highlight {
+        line(from-pos, to-pos, name: "edge", stroke: (paint: red, thickness: 2pt))
+      } else {
+        line(from-pos, to-pos, name: "edge")
+      }
+      
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#edge.cap])
+    }
+  })
+]
+
+BFS finds path $s arrow.r a arrow.r c arrow.r t$ with capacities $[10, 4, 10]$. The bottleneck is $min(10, 4, 10) = 4$. We push 4 units of flow.
+
+==== After Iteration 1:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    let edges = (
+      (from: "s", to: "a", cap: "6/10"),
+      (from: "s", to: "b", cap: "10/10"),
+      (from: "a", to: "b", cap: "2/2"),
+      (from: "a", to: "c", cap: "0/4"),
+      (from: "a", to: "d", cap: "8/8"),
+      (from: "b", to: "d", cap: "9/9"),
+      (from: "c", to: "t", cap: "6/10"),
+      (from: "d", to: "c", cap: "6/6"),
+      (from: "d", to: "t", cap: "10/10"),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      line(from-pos, to-pos, name: "edge")
+      
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#text(size: 8pt)[#edge.cap]])
+    }
+
+    content((3, 2.2), text(fill: blue)[Flow = 4])
+  })
+]
+
+The notation "6/10" means 6 remaining capacity out of 10 total (4 units are flowing).
+
+==== Iteration 2: Path $s arrow.r a arrow.r d arrow.r t$
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    let edges = (
+      (from: "s", to: "a", cap: "6", highlight: true),
+      (from: "s", to: "b", cap: "10", highlight: false),
+      (from: "a", to: "b", cap: "2", highlight: false),
+      (from: "a", to: "c", cap: "0", highlight: false),
+      (from: "a", to: "d", cap: "8", highlight: true),
+      (from: "b", to: "d", cap: "9", highlight: false),
+      (from: "c", to: "t", cap: "6", highlight: false),
+      (from: "d", to: "c", cap: "6", highlight: false),
+      (from: "d", to: "t", cap: "10", highlight: true),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      if edge.highlight {
+        line(from-pos, to-pos, name: "edge", stroke: (paint: red, thickness: 2pt))
+      } else {
+        line(from-pos, to-pos, name: "edge")
+      }
+      
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#text(size: 8pt)[#edge.cap]])
+    }
+  })
+]
+
+BFS finds path $s arrow.r a arrow.r d arrow.r t$ with remaining capacities $[6, 8, 10]$. The bottleneck is $min(6, 8, 10) = 6$. We push 6 units of flow.
+
+Total flow so far: $4 + 6 = 10$
+
+==== Iteration 3: Path $s arrow.r b arrow.r d arrow.r c arrow.r t$
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    let edges = (
+      (from: "s", to: "a", cap: "0", highlight: false),
+      (from: "s", to: "b", cap: "10", highlight: true),
+      (from: "a", to: "b", cap: "2", highlight: false),
+      (from: "a", to: "c", cap: "0", highlight: false),
+      (from: "a", to: "d", cap: "2", highlight: false),
+      (from: "b", to: "d", cap: "9", highlight: true),
+      (from: "c", to: "t", cap: "6", highlight: true),
+      (from: "d", to: "c", cap: "6", highlight: true),
+      (from: "d", to: "t", cap: "4", highlight: false),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      if edge.highlight {
+        line(from-pos, to-pos, name: "edge", stroke: (paint: red, thickness: 2pt))
+      } else {
+        line(from-pos, to-pos, name: "edge")
+      }
+      
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#text(size: 8pt)[#edge.cap]])
+    }
+  })
+]
+
+BFS finds path $s arrow.r b arrow.r d arrow.r c arrow.r t$ with capacities $[10, 9, 6, 6]$. The bottleneck is $min(10, 9, 6, 6) = 6$. We push 6 units of flow.
+
+Total flow: $10 + 6 = 16$
+
+==== Iteration 4: Path $s arrow.r b arrow.r d arrow.r t$
+
+After this iteration, BFS finds $s arrow.r b arrow.r d arrow.r t$ with bottleneck $min(4, 3, 4) = 3$.
+
+Total flow: $16 + 3 = 19$
+
+==== Final State
+
+After iteration 4, BFS cannot find any more paths from $s$ to $t$ in the residual graph. The maximum flow is *19 units*.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let nodes = (
+      s: (0, 0),
+      a: (2, 1),
+      b: (2, -1),
+      c: (4, 1),
+      d: (4, -1),
+      t: (6, 0),
+    )
+
+    for (name, pos) in nodes {
+      circle(pos, radius: 0.3, fill: white, stroke: black)
+      content(pos, text(weight: "bold")[#name])
+    }
+
+    // Final flow on edges
+    let edges = (
+      (from: "s", to: "a", flow: "10", cap: "10"),
+      (from: "s", to: "b", flow: "9", cap: "10"),
+      (from: "a", to: "b", flow: "0", cap: "2"),
+      (from: "a", to: "c", flow: "4", cap: "4"),
+      (from: "a", to: "d", flow: "6", cap: "8"),
+      (from: "b", to: "d", flow: "9", cap: "9"),
+      (from: "c", to: "t", flow: "10", cap: "10"),
+      (from: "d", to: "c", flow: "6", cap: "6"),
+      (from: "d", to: "t", flow: "9", cap: "10"),
+    )
+
+    set-style(mark: (end: ">", fill: black))
+
+    for edge in edges {
+      let from-pos = nodes.at(edge.from)
+      let to-pos = nodes.at(edge.to)
+      
+      line(from-pos, to-pos, name: "edge", stroke: (thickness: 1.5pt))
+      
+      let mid = ((from-pos.at(0) + to-pos.at(0)) / 2, (from-pos.at(1) + to-pos.at(1)) / 2)
+      content(mid, box(fill: white, inset: 2pt)[#text(size: 8pt)[#edge.flow/#edge.cap]])
+    }
+
+    content((3, 2.2), text(fill: green, weight: "bold")[Maximum Flow = 19])
+  })
+]
+
+=== Implementation in C++
+
+Here's the complete implementation of Edmonds-Karp:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+struct Edge {
+    int to, cap, flow;
+};
+
+vector<Edge> edges;
+vector<vector<int>> adj;
+int n;
+
+void add_edge(int from, int to, int cap) {
+    adj[from].push_back(edges.size());
+    edges.push_back({to, cap, 0});
+    adj[to].push_back(edges.size());
+    edges.push_back({from, 0, 0}); // reverse edge with 0 capacity
+}
+
+int bfs(int s, int t, vector<int>& parent) {
+    fill(parent.begin(), parent.end(), -1);
+    parent[s] = -2;
+    queue<pair<int, int>> q;
+    q.push({s, INF});
+    
+    while (!q.empty()) {
+        int u = q.front().first;
+        int flow = q.front().second;
+        q.pop();
+        
+        for (int edge_idx : adj[u]) {
+            Edge& e = edges[edge_idx];
+            if (parent[e.to] == -1 && e.cap > e.flow) {
+                parent[e.to] = edge_idx;
+                int new_flow = min(flow, e.cap - e.flow);
+                if (e.to == t)
+                    return new_flow;
+                q.push({e.to, new_flow});
+            }
+        }
+    }
+    
+    return 0;
+}
+
+int edmonds_karp(int s, int t) {
+    int max_flow = 0;
+    vector<int> parent(n);
+    int new_flow;
+    
+    while (new_flow = bfs(s, t, parent)) {
+        max_flow += new_flow;
+        int cur = t;
+        
+        // Update flows along the path
+        while (cur != s) {
+            int edge_idx = parent[cur];
+            edges[edge_idx].flow += new_flow;
+            edges[edge_idx ^ 1].flow -= new_flow; // update reverse edge
+            cur = edges[edge_idx ^ 1].to;
+        }
+    }
+    
+    return max_flow;
+}
+
+int main() {
+    int m, s, t;
+    cin >> n >> m >> s >> t;
+    
+    adj.resize(n);
+    
+    for (int i = 0; i < m; i++) {
+        int u, v, cap;
+        cin >> u >> v >> cap;
+        add_edge(u, v, cap);
+    }
+    
+    cout << "Maximum flow: " << edmonds_karp(s, t) << endl;
+    
+    return 0;
+}
+```
+
+Sample Input:
+
+```
+6 9 0 5
+0 1 10
+0 2 10
+1 2 2
+1 3 4
+1 4 8
+2 4 9
+3 5 10
+4 3 6
+4 5 10
+```
+
+Output:
+
+```
+Maximum flow: 19
+```
+
+=== Understanding the Implementation
+
+The key parts of the implementation:
+
+1. *Edge Structure:* Each edge stores its destination (`to`), capacity (`cap`), and current flow (`flow`). We store both forward and reverse edges in the same vector.
+
+2. *add_edge() Function:* When adding an edge from $u$ to $v$, we add both a forward edge (with given capacity) and a reverse edge (with 0 capacity). The reverse edge allows us to "undo" flow if needed. Notice we use `edge_idx ^ 1` to access the reverse edge - this works because we always add edges in pairs.
+
+3. *bfs() Function:* This finds the shortest augmenting path from $s$ to $t$ and returns the bottleneck capacity. It also stores the path in the `parent` array, where `parent[v]` stores the index of the edge that led to vertex $v$.
+
+4. *edmonds_karp() Function:* Repeatedly calls BFS to find augmenting paths and updates the flow along each path until no more paths exist.
+
+=== Time Complexity Analysis
+
+The time complexity of Edmonds-Karp is $O(V E^2)$ where:
+- $V$ is the number of vertices
+- $E$ is the number of edges
+
+This is because:
+- Each BFS takes $O(E)$ time
+- There can be at most $O(V E)$ augmenting paths (this is proven using the fact that BFS finds shortest paths)
+
+For typical competitive programming constraints ($V, E <= 10^3$), this is efficient enough.
+
+=== Cheeky Uses and Applications
+
+The maximum flow problem is surprisingly versatile and can model many different problems:
+
+==== 1. Bipartite Matching
+
+One of the most common uses is finding maximum matching in bipartite graphs. 
+
+*Problem:* You have $n$ jobs and $m$ workers. Each worker can do certain jobs. What's the maximum number of jobs that can be assigned?
+
+*Solution:* Create a flow network:
+- Add source $s$ and sink $t$
+- Add an edge from $s$ to each job with capacity 1
+- Add an edge from each job to workers who can do it, with capacity 1
+- Add an edge from each worker to $t$ with capacity 1
+- The maximum flow equals the maximum matching!
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    let jobs = ("J1", "J2", "J3")
+    let workers = ("W1", "W2", "W3")
+
+    // Source
+    circle((0, 0), radius: 0.25, fill: white)
+    content((0, 0), text(size: 9pt)[s])
+
+    // Jobs (left side)
+    for (i, job) in jobs.enumerate() {
+      let y = (i - 1) * 1.2
+      circle((2, y), radius: 0.25, fill: white)
+      content((2, y), text(size: 9pt)[#job])
+    }
+
+    // Workers (right side)
+    for (i, worker) in workers.enumerate() {
+      let y = (i - 1) * 1.2
+      circle((4, y), radius: 0.25, fill: white)
+      content((4, y), text(size: 9pt)[#worker])
+    }
+
+    // Sink
+    circle((6, 0), radius: 0.25, fill: white)
+    content((6, 0), text(size: 9pt)[t])
+
+    set-style(mark: (end: ">", fill: black))
+
+    // Source to jobs
+    for (i, job) in jobs.enumerate() {
+      let y = (i - 1) * 1.2
+      line((0.25, 0), (1.75, y))
+      content(((0.25 + 1.75) / 2, y / 2), text(size: 7pt, fill: blue)[1])
+    }
+
+    // Jobs to workers (example connections)
+    line((2.25, 1.2), (3.75, 1.2))
+    line((2.25, 1.2), (3.75, 0))
+    line((2.25, 0), (3.75, 0))
+    line((2.25, 0), (3.75, -1.2))
+    line((2.25, -1.2), (3.75, -1.2))
+
+    // Workers to sink
+    for (i, worker) in workers.enumerate() {
+      let y = (i - 1) * 1.2
+      line((4.25, y), (5.75, 0))
+      content(((4.25 + 5.75) / 2, y / 2), text(size: 7pt, fill: blue)[1])
+    }
+  })
+]
+
+Here's the code for bipartite matching:
+
+```cpp
+int bipartite_matching(int n_jobs, int n_workers, 
+                       vector<vector<int>>& can_do) {
+    // can_do[i] = list of workers who can do job i
+    
+    n = n_jobs + n_workers + 2; // jobs + workers + source + sink
+    adj.resize(n);
+    
+    int source = 0;
+    int sink = n - 1;
+    
+    // Add edges from source to jobs
+    for (int i = 1; i <= n_jobs; i++) {
+        add_edge(source, i, 1);
+    }
+    
+    // Add edges from jobs to workers
+    for (int job = 0; job < n_jobs; job++) {
+        for (int worker : can_do[job]) {
+            add_edge(job + 1, n_jobs + worker + 1, 1);
+        }
+    }
+    
+    // Add edges from workers to sink
+    for (int i = 1; i <= n_workers; i++) {
+        add_edge(n_jobs + i, sink, 1);
+    }
+    
+    return edmonds_karp(source, sink);
+}
+```
+
+==== 2. Multiple Sources and Sinks
+
+Sometimes you have multiple sources or multiple sinks. The trick is to create a *super source* that connects to all sources with infinite capacity, and a *super sink* that all sinks connect to.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Super source
+    circle((0, 0), radius: 0.3, fill: yellow.lighten(50%))
+    content((0, 0), text(weight: "bold")[S])
+
+    // Original sources
+    circle((2, 1), radius: 0.25, fill: white)
+    content((2, 1), text(size: 9pt)[#text($s_1$)])
+    circle((2, -1), radius: 0.25, fill: white)
+    content((2, -1), text(size: 9pt)[#text($s_2$)])
+
+    // Middle nodes
+    circle((4, 0.5), radius: 0.25, fill: white)
+    content((4, 0.5), text(size: 9pt)[v])
+    circle((4, -0.5), radius: 0.25, fill: white)
+    content((4, -0.5), text(size: 9pt)[u])
+
+    // Original sinks
+    circle((6, 1), radius: 0.25, fill: white)
+    content((6, 1), text(size: 9pt)[#text($t_1$)])
+    circle((6, -1), radius: 0.25, fill: white)
+    content((6, -1), text(size: 9pt)[#text($t_2$)])
+
+    // Super sink
+    circle((8, 0), radius: 0.3, fill: yellow.lighten(50%))
+    content((8, 0), text(weight: "bold")[T])
+
+    set-style(mark: (end: ">", fill: black))
+
+    line((0.3, 0), (1.75, 1))
+    content((1, 0.5), text(size: 7pt, fill: blue)[∞])
+    line((0.3, 0), (1.75, -1))
+    content((1, -0.5), text(size: 7pt, fill: blue)[∞])
+
+    line((2.25, 1), (3.75, 0.5))
+    line((2.25, -1), (3.75, -0.5))
+    line((4.25, 0.5), (5.75, 1))
+    line((4.25, -0.5), (5.75, -1))
+
+    line((6.25, 1), (7.7, 0))
+    content((7, 0.5), text(size: 7pt, fill: blue)[∞])
+    line((6.25, -1), (7.7, 0))
+    content((7, -0.5), text(size: 7pt, fill: blue)[∞])
+  })
+]
+
+==== 3. Minimum Cut
+
+By the *max-flow min-cut theorem*, the maximum flow in a network equals the capacity of the minimum cut. A cut is a partition of vertices into two sets $S$ and $T$ where $s in S$ and $t in T$. The capacity of a cut is the sum of capacities of edges going from $S$ to $T$.
+
+After running Edmonds-Karp, you can find the minimum cut by:
+1. Running one final BFS from $s$ in the residual graph
+2. All vertices reachable from $s$ are in set $S$
+3. All other vertices are in set $T$
+
+This is useful in problems like:
+- Finding bottlenecks in networks
+- Image segmentation
+- Network reliability problems
+
+==== 4. Edge-Disjoint and Vertex-Disjoint Paths
+
+To find the maximum number of edge-disjoint paths from $s$ to $t$, set all edge capacities to 1 and run max flow.
+
+For vertex-disjoint paths, split each vertex $v$ (except $s$ and $t$) into two vertices $v_"in"$ and $v_"out"$ with an edge of capacity 1 between them. All incoming edges go to $v_"in"$ and all outgoing edges come from $v_"out"$.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Original vertex
+    circle((-1, 0), radius: 0.25, fill: white)
+    content((-1, 0), text(size: 9pt)[u])
+    
+    circle((1, 0), radius: 0.25, fill: white)
+    content((1, 0), text(size: 9pt)[v])
+
+    content((0, 1), text(size: 10pt)[Original Graph])
+    
+    set-style(mark: (end: ">", fill: black))
+    line((-0.75, 0), (0.75, 0))
+
+    // Split vertices
+    circle((-1, -2.5), radius: 0.2, fill: white)
+    content((-1, -2.5), text(size: 8pt)[#text($u_"in"$)])
+    
+    circle((0, -2.5), radius: 0.2, fill: white)
+    content((0, -2.5), text(size: 8pt)[#text($u_"out"$)])
+    
+    circle((2, -2.5), radius: 0.2, fill: white)
+    content((2, -2.5), text(size: 8pt)[#text($v_"in"$)])
+    
+    circle((3, -2.5), radius: 0.2, fill: white)
+    content((3, -2.5), text(size: 8pt)[#text($v_"out"$)])
+
+    content((1, -1.3), text(size: 10pt)[Split Vertices])
+
+    line((-0.8, -2.5), (-0.2, -2.5))
+    content((-0.5, -2.25), text(size: 6pt, fill: blue)[1])
+    
+    line((2.2, -2.5), (2.8, -2.5))
+    content((2.5, -2.25), text(size: 6pt, fill: blue)[1])
+    
+    line((0.2, -2.5), (1.8, -2.5))
+  })
+]
+
+==== 5. Project Selection Problem
+
+Given $n$ projects, each with a profit (possibly negative), and dependencies between projects, select a subset of projects to maximize total profit.
+
+Model this as a flow network where:
+- Projects with positive profit connect from source with capacity = profit
+- Projects with negative profit connect to sink with capacity = |profit|
+- Dependencies are modeled with infinite capacity edges
+
+The answer is: (sum of positive profits) - (max flow).
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Source
+    circle((0, 0), radius: 0.3, fill: yellow.lighten(50%))
+    content((0, 0), text(weight: "bold", size: 9pt)[s])
+
+    // Positive profit projects
+    circle((2.5, 1), radius: 0.25, fill: green.lighten(70%))
+    content((2.5, 1), text(size: 8pt)[#text($P_1$)])
+    content((2.5, 0.5), text(size: 7pt, fill: green)[+5])
+    
+    circle((2.5, -0.5), radius: 0.25, fill: green.lighten(70%))
+    content((2.5, -0.5), text(size: 8pt)[#text($P_2$)])
+    content((2.5, -1), text(size: 7pt, fill: green)[+3])
+
+    // Negative profit project
+    circle((5, 0.25), radius: 0.25, fill: red.lighten(70%))
+    content((5, 0.25), text(size: 8pt)[#text($P_3$)])
+    content((5, -0.25), text(size: 7pt, fill: red)[-2])
+
+    // Sink
+    circle((7.5, 0), radius: 0.3, fill: yellow.lighten(50%))
+    content((7.5, 0), text(weight: "bold", size: 9pt)[t])
+
+    set-style(mark: (end: ">", fill: black))
+
+    // Edges
+    line((0.3, 0), (2.25, 1))
+    content((1.3, 0.5), text(size: 7pt, fill: blue)[5])
+    
+    line((0.3, 0), (2.25, -0.5))
+    content((1.3, -0.25), text(size: 7pt, fill: blue)[3])
+    
+    line((5.25, 0.25), (7.2, 0))
+    content((6.2, 0.125), text(size: 7pt, fill: blue)[2])
+    
+    // Dependencies
+    line((2.75, 1), (4.75, 0.25))
+    content((3.75, 0.625), text(size: 7pt)[∞])
+    
+    line((2.75, -0.5), (4.75, 0.25))
+    content((3.75, -0.125), text(size: 7pt)[∞])
+  })
+]
+
+==== 6. Circulation with Demands
+
+In some problems, vertices have demands (must consume flow) or supplies (must produce flow). You can model this by:
+- Creating a super source and super sink
+- Connecting supply nodes to super source
+- Connecting demand nodes to super sink
+- The network has a valid circulation if max flow equals total demand
+
+=== Common Pitfalls
+
+1. *Not using reverse edges:* Always add reverse edges with 0 capacity. They're essential for the algorithm to work correctly.
+
+2. *Integer overflow:* If capacities are large, make sure to use `long long` instead of `int`.
+
+3. *0-indexed vs 1-indexed:* Be consistent with your indexing. The code above uses 0-indexed vertices.
+
+4. *Modifying edges incorrectly:* Remember to update both the forward and reverse edges when pushing flow.
+
+5. *Forgetting XOR trick:* Using `edge_idx ^ 1` only works if you consistently add edges in pairs (forward then reverse).
+
+=== Practice Problems
+
+Here are some problems to practice:
+
+1. *CSES - Maximum Flow:* Direct application
+2. *CSES - Download Speed:* Maximum flow with large capacities  
+3. *Codeforces 546E - Soldier and Traveling:* Clever max flow modeling
+4. *IOI 2013 - Game:* Requires min-cut
+5. *USACO Gold - Milk Pumping:* Combines max flow with other techniques
+6. *Codeforces 2009G2 - Yunli's Subarray Queries:* Advanced flow application
+
+=== Summary
+
+The Edmonds-Karp algorithm is a powerful tool for solving maximum flow problems in $O(V E^2)$ time. Key points to remember:
+
+- Use BFS to find shortest augmenting paths
+- Maintain residual graph with forward and reverse edges
+- The maximum flow equals the minimum cut capacity
+- Many problems can be modeled as max flow: bipartite matching, edge-disjoint paths, project selection, and more
+
+The beauty of max flow is that once you recognize a problem can be modeled as a flow network, the algorithm itself is straightforward to implement and guaranteed to find the optimal solution.
+
 
 
 
