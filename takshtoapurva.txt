@@ -8,3 +8,7 @@ floyd warshall concept step 2
 dsu concept step 2
 kruskal step 2
 topological sort step 2
+hamiltonian path step 2
+eularian path step 2
+eularian cicruit step 2
+strongly connected components step 2

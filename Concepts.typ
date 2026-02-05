@@ -2,6 +2,8 @@
 #import "@preview/board-n-pieces:0.7.0": *
 #import "@preview/codly:1.3.0": *
 #import "@preview/codly-languages:0.1.1": *
+#import "@preview/cetz:0.2.2": canvas
+#import "@preview/cetz:0.2.2": draw
 
 #show: codly-init.with()
 #codly(languages: codly-languages)
@@ -6344,4 +6346,1603 @@ While Kahn's Algorithm uses BFS and in-degrees, there's also a DFS-based approac
 Both have $O(V + E)$ time complexity, so the choice often comes down to personal preference and the specific requirements of the problem.
 
 For the `std::queue` documentation used in this algorithm, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
+
+== Strongly Connected Components //chap2
+
+#v(0.5em)
+
+A *strongly connected component (SCC)* is a maximal subset of vertices in a directed graph where every vertex is reachable from every other vertex in that subset. In other words, for any two vertices $u$ and $v$ in an SCC, there exists a path from $u$ to $v$ and a path from $v$ to $u$.
+
+Understanding SCCs is crucial for many graph problems. For example, if you're modeling a network of websites with hyperlinks, an SCC would represent a group of pages where you can navigate from any page to any other page by following links.
+
+Let's visualize what an SCC looks like:
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+
+    // Define node positions
+    let nodes = (
+      (0, 2, "1"),
+      (2, 2, "2"),
+      (1, 0.5, "3"),
+      (4, 2, "4"),
+      (6, 2, "5"),
+      (5, 0.5, "6"),
+    )
+
+    // Draw nodes
+    for (x, y, label) in nodes {
+      circle((x, y), radius: 0.3, fill: white, name: "node" + label)
+      content("node" + label, text(size: 11pt)[#label])
+    }
+
+    // Draw edges with arrows
+    set-style(mark: (end: ">", fill: black))
+    
+    // SCC 1: nodes 1, 2, 3
+    line("node1", "node2")
+    line("node2", "node3")
+    line("node3", "node1")
+    
+    // SCC 2: nodes 4, 5, 6
+    line("node4", "node5")
+    line("node5", "node6")
+    line("node6", "node4")
+    
+    // Edge between SCCs
+    line("node3", "node4")
+
+    // Labels for SCCs
+    content((1, -0.5), text(fill: blue, size: 10pt)[SCC 1])
+    content((5, -0.5), text(fill: blue, size: 10pt)[SCC 2])
+  })
+]
+
+In this graph, there are two SCCs: $\{1, 2, 3\}$ and $\{4, 5, 6\}$. Within SCC 1, you can reach any vertex from any other vertex (for example, $1 arrow.r 2 arrow.r 3 arrow.r 1$). The same is true for SCC 2. However, while you can go from SCC 1 to SCC 2, you cannot return from SCC 2 to SCC 1, so they form separate components.
+
+=== Why Are SCCs Useful?
+
+SCCs have many practical applications:
+
+1. *Condensation graphs*: You can compress each SCC into a single vertex, creating a directed acyclic graph (DAG). This simplifies many graph problems.
+
+2. *Cycle detection*: If an SCC has more than one vertex, it contains a cycle.
+
+3. *Reachability*: All vertices in an SCC can reach each other, making it easier to answer reachability queries.
+
+=== Finding SCCs: Kosaraju's Algorithm
+
+There are two main algorithms for finding SCCs: *Kosaraju's algorithm* and *Tarjan's algorithm*. We'll focus on Kosaraju's algorithm because it's easier to understand and implement.
+
+Kosaraju's algorithm works in three steps:
+
+1. *First DFS*: Perform a DFS on the original graph and record the finish times of each vertex (the order in which DFS completes processing each vertex).
+
+2. *Transpose the graph*: Reverse all edges in the graph.
+
+3. *Second DFS*: Perform DFS on the transposed graph, but process vertices in decreasing order of their finish times from step 1. Each DFS tree in this step is one SCC.
+
+Let's see why this works. Consider the following graph:
+
+#align(center)[
+  #cetz.canvas(length: 1.2cm, {
+    import cetz.draw: *
+
+    let nodes = (
+      (0, 3, "A"),
+      (2, 3, "B"),
+      (4, 3, "C"),
+      (1, 1, "D"),
+      (3, 1, "E"),
+    )
+
+    for (x, y, label) in nodes {
+      circle((x, y), radius: 0.35, fill: white, name: "n" + label)
+      content("n" + label, text(size: 11pt)[#label])
+    }
+
+    set-style(mark: (end: ">", fill: black))
+    
+    line("nA", "nB")
+    line("nB", "nC")
+    line("nB", "nD")
+    line("nD", "nA")
+    line("nD", "nE")
+    line("nC", "nE")
+  })
+]
+
+After the first DFS starting from vertex A, the finish times might be: $D = 1, A = 2, E = 3, C = 4, B = 5$.
+
+Now we transpose the graph (reverse all edges):
+
+#align(center)[
+  #cetz.canvas(length: 1.2cm, {
+    import cetz.draw: *
+
+    let nodes = (
+      (0, 3, "A"),
+      (2, 3, "B"),
+      (4, 3, "C"),
+      (1, 1, "D"),
+      (3, 1, "E"),
+    )
+
+    for (x, y, label) in nodes {
+      circle((x, y), radius: 0.35, fill: white, name: "n" + label)
+      content("n" + label, text(size: 11pt)[#label])
+    }
+
+    set-style(mark: (end: ">", fill: black))
+    
+    line("nB", "nA")
+    line("nC", "nB")
+    line("nD", "nB")
+    line("nA", "nD")
+    line("nE", "nD")
+    line("nE", "nC")
+  })
+]
+
+In the second DFS on the transposed graph, we process vertices in decreasing order of finish times: $B, C, E, A, D$. 
+
+- Starting from B: We visit $B arrow.r A arrow.r D$, finding SCC $\{A, B, D\}$
+- Starting from C: We visit $C$, but it leads to already-visited vertices, so SCC $\{C\}$
+- Starting from E: We visit $E$, finding SCC $\{E\}$
+
+So the three SCCs are: $\{A, B, D\}, \{C\}, \{E\}$.
+
+Here's the implementation of Kosaraju's algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<vector<int>> adj, radj; // adj is the graph, radj is the transposed graph
+vector<bool> vis;
+vector<int> order; // stores vertices in order of finish time
+vector<int> comp; // comp[i] tells us which SCC vertex i belongs to
+
+void dfs1(int u) {
+  vis[u] = true;
+  for (int v : adj[u]) {
+    if (!vis[v])
+      dfs1(v);
+  }
+  order.push_back(u); // add to order when finishing this vertex
+}
+
+void dfs2(int u, int c) {
+  comp[u] = c; // assign this vertex to component c
+  for (int v : radj[u]) {
+    if (comp[v] == -1)
+      dfs2(v, c);
+  }
+}
+
+void kosaraju() {
+  // Step 1: First DFS to get finish times
+  vis.assign(n, false);
+  for (int i = 0; i < n; i++) {
+    if (!vis[i])
+      dfs1(i);
+  }
+
+  // Step 2: Transpose graph (already done while reading input)
+
+  // Step 3: Second DFS in reverse order of finish times
+  comp.assign(n, -1);
+  int scc_count = 0;
+  reverse(order.begin(), order.end()); // process in decreasing finish time
+  
+  for (int u : order) {
+    if (comp[u] == -1) {
+      dfs2(u, scc_count);
+      scc_count++;
+    }
+  }
+
+  cout << "Number of SCCs: " << scc_count << endl;
+  
+  // Print which vertices belong to which SCC
+  for (int i = 0; i < scc_count; i++) {
+    cout << "SCC " << i + 1 << ": ";
+    for (int j = 0; j < n; j++) {
+      if (comp[j] == i)
+        cout << j << " ";
+    }
+    cout << endl;
+  }
+}
+
+int main() {
+  cin >> n >> m;
+  adj.resize(n);
+  radj.resize(n);
+
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    radj[v].push_back(u); // reversed edge for transpose
+  }
+
+  kosaraju();
+
+  return 0;
+}
+```
+
+Sample input (for the graph shown earlier with A=0, B=1, C=2, D=3, E=4):
+
+#block[
+  ```
+  5 6
+  0 1
+  1 2
+  1 3
+  3 0
+  3 4
+  2 4
+  ```
+]
+
+Output:
+
+#block[
+  ```
+  Number of SCCs: 3
+  SCC 1: 4 
+  SCC 2: 2 
+  SCC 3: 0 1 3
+  ```
+]
+
+=== Time Complexity
+
+Kosaraju's algorithm runs in $O(n + m)$ time where $n$ is the number of vertices and $m$ is the number of edges:
+
+- First DFS: $O(n + m)$
+- Transposing the graph: $O(m)$ (done during input)
+- Second DFS: $O(n + m)$
+
+The space complexity is also $O(n + m)$ for storing both the original and transposed graphs.
+
+=== Practical Application: 2-SAT Problem
+
+One important application of SCCs is solving the *2-SAT problem*. In 2-SAT, you have boolean variables and clauses with exactly two literals each. The goal is to determine if there's an assignment that satisfies all clauses.
+
+For example: $(x_1 or x_2) and (not x_1 or x_3) and (not x_2 or not x_3)$
+
+We can model this as a graph where for each clause $(a or b)$, we add edges $not a arrow.r b$ and $not b arrow.r a$ (meaning "if not a is true, then b must be true").
+
+The 2-SAT problem is satisfiable if and only if for every variable $x_i$, the vertices $x_i$ and $not x_i$ are in different SCCs. If they're in the same SCC, it means $x_i arrow.r not x_i$ and $not x_i arrow.r x_i$, which is a contradiction.
+
+Here's an example of solving 2-SAT:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<vector<int>> adj, radj;
+vector<bool> vis;
+vector<int> order, comp;
+
+void dfs1(int u) {
+  vis[u] = true;
+  for (int v : adj[u])
+    if (!vis[v]) dfs1(v);
+  order.push_back(u);
+}
+
+void dfs2(int u, int c) {
+  comp[u] = c;
+  for (int v : radj[u])
+    if (comp[v] == -1) dfs2(v, c);
+}
+
+bool solve2SAT() {
+  vis.assign(2 * n, false);
+  order.clear();
+  
+  for (int i = 0; i < 2 * n; i++)
+    if (!vis[i]) dfs1(i);
+
+  comp.assign(2 * n, -1);
+  reverse(order.begin(), order.end());
+  
+  int scc_count = 0;
+  for (int u : order) {
+    if (comp[u] == -1) {
+      dfs2(u, scc_count);
+      scc_count++;
+    }
+  }
+
+  // Check if any variable and its negation are in the same SCC
+  for (int i = 0; i < n; i++) {
+    if (comp[2 * i] == comp[2 * i + 1])
+      return false; // unsatisfiable
+  }
+  return true; // satisfiable
+}
+
+int main() {
+  cin >> n >> m; // n variables, m clauses
+  adj.resize(2 * n); // 2*i is x_i, 2*i+1 is NOT x_i
+  radj.resize(2 * n);
+
+  for (int i = 0; i < m; i++) {
+    int a, b;
+    cin >> a >> b;
+    // a and b are signed: positive means the variable, negative means its negation
+    // Convert to vertex indices
+    int va = (a > 0) ? 2 * (a - 1) : 2 * (-a - 1) + 1;
+    int vb = (b > 0) ? 2 * (b - 1) : 2 * (-b - 1) + 1;
+    int nota = (a > 0) ? 2 * (a - 1) + 1 : 2 * (-a - 1);
+    int notb = (b > 0) ? 2 * (b - 1) + 1 : 2 * (-b - 1);
+
+    // (a OR b) means (NOT a => b) and (NOT b => a)
+    adj[nota].push_back(vb);
+    radj[vb].push_back(nota);
+    adj[notb].push_back(va);
+    radj[va].push_back(notb);
+  }
+
+  if (solve2SAT())
+    cout << "Satisfiable" << endl;
+  else
+    cout << "Not satisfiable" << endl;
+
+  return 0;
+}
+```
+
+Sample input (3 variables, 3 clauses: $(x_1 or x_2) and (not x_1 or x_3) and (not x_2 or not x_3)$):
+
+#block[
+  ```
+  3 3
+  1 2
+  -1 3
+  -2 -3
+  ```
+]
+
+Output:
+
+#block[
+  ```
+  Satisfiable
+  ```
+]
+
+=== Condensation Graph
+
+Once you've found all SCCs, you can create a *condensation graph* where each SCC becomes a single vertex. This graph is always a DAG (directed acyclic graph), which makes many problems easier to solve.
+
+#align(center)[
+  #cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+
+    content((3, 4), text(size: 10pt, fill: gray)[Original Graph])
+
+    let nodes = (
+      (0, 2, "1"),
+      (1, 3, "2"),
+      (2, 2, "3"),
+      (4, 2, "4"),
+      (5, 3, "5"),
+      (6, 2, "6"),
+    )
+
+    for (x, y, label) in nodes {
+      circle((x, y), radius: 0.25, fill: white, name: "n" + label)
+      content("n" + label, text(size: 9pt)[#label])
+    }
+
+    set-style(mark: (end: ">", fill: black))
+    
+    line("n1", "n2")
+    line("n2", "n3")
+    line("n3", "n1")
+    line("n4", "n5")
+    line("n5", "n6")
+    line("n6", "n4")
+    line("n3", "n4")
+    line("n2", "n6")
+
+    // Condensation graph
+    content((3, -0.5), text(size: 10pt, fill: gray)[Condensation Graph])
+
+    circle((1, -2.5), radius: 0.4, fill: rgb(200, 220, 255), name: "scc1")
+    content("scc1", text(size: 9pt)[#text(fill: blue)[{1,2,3}]])
+    
+    circle((5, -2.5), radius: 0.4, fill: rgb(255, 220, 200), name: "scc2")
+    content("scc2", text(size: 9pt)[#text(fill: red)[{4,5,6}]])
+
+    line("scc1", "scc2")
+  })
+]
+
+For the `std::queue` documentation used in graph traversals, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
+For more on graph algorithms, see the DFS documentation at #link("https://cp-algorithms.com/graph/depth-first-search.html")[CP-Algorithms].
+
+
+== Eulerian Paths and Circuits //chap2
+
+#v(0.5em)
+
+An *Eulerian path* is a path in a graph that visits every edge exactly once. An *Eulerian circuit* (also called an Eulerian cycle) is an Eulerian path that starts and ends at the same vertex.
+
+These concepts are named after the Swiss mathematician Leonhard Euler, who solved the famous "Seven Bridges of Königsberg" problem in 1736. The problem asked whether it was possible to walk through the city crossing each of its seven bridges exactly once.
+
+Let's look at some examples to understand the difference:
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Example 1: Graph with Eulerian circuit
+    content((0, 2), text(size: 11pt)[*Graph 1: Has Eulerian Circuit*])
+    
+    circle((0, 0), radius: 0.15, fill: black, name: "A")
+    content((0, 0.4), [A])
+    
+    circle((2, 0), radius: 0.15, fill: black, name: "B")
+    content((2, 0.4), [B])
+    
+    circle((1, -1.5), radius: 0.15, fill: black, name: "C")
+    content((1, -1.9), [C])
+    
+    line((0, 0), (2, 0))
+    line((0, 0), (1, -1.5))
+    line((2, 0), (1, -1.5))
+    
+    // Example 2: Graph with Eulerian path but no circuit
+    content((5, 2), text(size: 11pt)[*Graph 2: Has Eulerian Path*])
+    
+    circle((5, 0), radius: 0.15, fill: black, name: "D")
+    content((5, 0.4), [D])
+    
+    circle((7, 0), radius: 0.15, fill: black, name: "E")
+    content((7, 0.4), [E])
+    
+    circle((6, -1.5), radius: 0.15, fill: black, name: "F")
+    content((6, -1.9), [F])
+    
+    circle((8, -1.5), radius: 0.15, fill: black, name: "G")
+    content((8, -1.9), [G])
+    
+    line((5, 0), (7, 0))
+    line((5, 0), (6, -1.5))
+    line((7, 0), (6, -1.5))
+    line((7, 0), (8, -1.5))
+    line((6, -1.5), (8, -1.5))
+    
+    // Example 3: Graph with no Eulerian path
+    content((11, 2), text(size: 11pt)[*Graph 3: No Eulerian Path*])
+    
+    circle((11, 0), radius: 0.15, fill: black, name: "H")
+    content((11, 0.4), [H])
+    
+    circle((13, 0), radius: 0.15, fill: black, name: "I")
+    content((13, 0.4), [I])
+    
+    circle((12, -1.5), radius: 0.15, fill: black, name: "J")
+    content((12, -1.9), [J])
+    
+    circle((14, -1.5), radius: 0.15, fill: black, name: "K")
+    content((14, -1.9), [K])
+    
+    line((11, 0), (13, 0))
+    line((11, 0), (12, -1.5))
+    line((13, 0), (12, -1.5))
+    line((13, 0), (14, -1.5))
+    line((12, -1.5), (14, -1.5))
+    line((11, 0), (14, -1.5))
+  })
+]
+
+In *Graph 1*, all vertices have even degree (each has degree 2), so an Eulerian circuit exists. For example: $A -> B -> C -> A$.
+
+In *Graph 2*, vertices $D$ and $G$ have odd degree (both have degree 1), while $E$ and $F$ have even degree. An Eulerian path exists from $D$ to $G$: $D -> A -> F -> E -> G -> F$ (or from $G$ to $D$).
+
+In *Graph 3*, vertices $H$, $I$, $J$, and $K$ all have odd degree (three have degree 3, one has degree 1), so no Eulerian path exists.
+
+=== Conditions for Existence
+
+The existence of Eulerian paths and circuits depends on the degrees of vertices in the graph:
+
+*For Undirected Graphs:*
+- An *Eulerian circuit* exists if and only if:
+  + The graph is connected (ignoring isolated vertices)
+  + Every vertex has an even degree
+
+- An *Eulerian path* exists if and only if:
+  + The graph is connected (ignoring isolated vertices)
+  + Exactly 0 or 2 vertices have odd degree
+  + If there are 2 vertices with odd degree, the path must start at one and end at the other
+
+*For Directed Graphs:*
+- An *Eulerian circuit* exists if and only if:
+  + The graph is strongly connected
+  + Every vertex has equal in-degree and out-degree
+
+- An *Eulerian path* exists if and only if:
+  + The graph is weakly connected
+  + At most one vertex has (out-degree - in-degree) = 1 (the start vertex)
+  + At most one vertex has (in-degree - out-degree) = 1 (the end vertex)
+  + All other vertices have equal in-degree and out-degree
+
+=== Checking for Eulerian Paths/Circuits
+
+Here's the implementation to check if an undirected graph has an Eulerian path or circuit:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> adj[100005];
+int n, m;
+
+bool isConnected() {
+  vector<bool> visited(n + 1, false);
+  
+  // Find a vertex with non-zero degree to start DFS
+  int start = -1;
+  for (int i = 1; i <= n; i++) {
+    if (adj[i].size() > 0) {
+      start = i;
+      break;
+    }
+  }
+  
+  if (start == -1) return true; // No edges
+  
+  // DFS to check connectivity
+  queue<int> q;
+  q.push(start);
+  visited[start] = true;
+  int count = 1;
+  
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    
+    for (int v : adj[u]) {
+      if (!visited[v]) {
+        visited[v] = true;
+        count++;
+        q.push(v);
+      }
+    }
+  }
+  
+  // Check if all vertices with edges are visited
+  for (int i = 1; i <= n; i++) {
+    if (adj[i].size() > 0 && !visited[i])
+      return false;
+  }
+  
+  return true;
+}
+
+void checkEulerian() {
+  if (!isConnected()) {
+    cout << "Graph is not connected. No Eulerian path or circuit exists." << endl;
+    return;
+  }
+  
+  int oddDegreeCount = 0;
+  vector<int> oddVertices;
+  
+  for (int i = 1; i <= n; i++) {
+    if (adj[i].size() % 2 == 1) {
+      oddDegreeCount++;
+      oddVertices.push_back(i);
+    }
+  }
+  
+  if (oddDegreeCount == 0) {
+    cout << "Eulerian circuit exists." << endl;
+  } else if (oddDegreeCount == 2) {
+    cout << "Eulerian path exists from vertex " << oddVertices[0] 
+         << " to vertex " << oddVertices[1] << "." << endl;
+  } else {
+    cout << "No Eulerian path or circuit exists." << endl;
+  }
+}
+
+int main() {
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  checkEulerian();
+  
+  return 0;
+}
+```
+
+Sample input for Graph 1 (has Eulerian circuit):
+
+```
+3 3
+1 2
+2 3
+3 1
+```
+
+Output:
+
+```
+Eulerian circuit exists.
+```
+
+Sample input for Graph 2 (has Eulerian path):
+
+```
+4 5
+1 2
+1 3
+2 3
+2 4
+3 4
+```
+
+Output:
+
+```
+Eulerian path exists from vertex 1 to vertex 4.
+```
+
+=== Finding the Eulerian Path/Circuit: Hierholzer's Algorithm
+
+Once we know that an Eulerian path or circuit exists, we need an algorithm to find it. *Hierholzer's algorithm* is an efficient method that runs in $O(E)$ time, where $E$ is the number of edges.
+
+The algorithm works as follows:
+
+1. Start at any vertex (or at a vertex with odd degree if finding an Eulerian path)
+2. Follow edges, removing them as you go, until you return to the starting vertex (or can't continue)
+3. If there are still unused edges, find a vertex in your current path that has unused edges
+4. Start a new path from that vertex and merge it into your original path
+5. Repeat until all edges are used
+
+Here's a detailed implementation using an iterative approach with a stack:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+map<int, multiset<int>> adj;
+int n, m;
+
+vector<int> findEulerianPath() {
+  int oddDegreeCount = 0;
+  int startVertex = 1;
+  
+  // Find starting vertex
+  for (auto& [u, neighbors] : adj) {
+    int degree = neighbors.size();
+    if (degree % 2 == 1) {
+      oddDegreeCount++;
+      startVertex = u; // Start from odd degree vertex
+    }
+  }
+  
+  // Check if Eulerian path/circuit exists
+  if (oddDegreeCount != 0 && oddDegreeCount != 2) {
+    return {}; // No Eulerian path exists
+  }
+  
+  // Hierholzer's algorithm
+  stack<int> currentPath;
+  vector<int> circuit;
+  
+  currentPath.push(startVertex);
+  int curr = startVertex;
+  
+  while (!currentPath.empty()) {
+    if (!adj[curr].empty()) {
+      // Current vertex has unused edges
+      currentPath.push(curr);
+      
+      // Take the next edge
+      int next = *adj[curr].begin();
+      
+      // Remove edge from both directions (undirected graph)
+      adj[curr].erase(adj[curr].find(next));
+      adj[next].erase(adj[next].find(curr));
+      
+      curr = next;
+    } else {
+      // No more edges from current vertex
+      circuit.push_back(curr);
+      curr = currentPath.top();
+      currentPath.pop();
+    }
+  }
+  
+  // The circuit is built in reverse order
+  reverse(circuit.begin(), circuit.end());
+  return circuit;
+}
+
+int main() {
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].insert(v);
+    adj[v].insert(u);
+  }
+  
+  vector<int> path = findEulerianPath();
+  
+  if (path.empty()) {
+    cout << "No Eulerian path exists." << endl;
+  } else {
+    cout << "Eulerian path: ";
+    for (int i = 0; i < path.size(); i++) {
+      cout << path[i];
+      if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input (Graph 1 - Eulerian circuit):
+
+```
+3 3
+1 2
+2 3
+3 1
+```
+
+Output:
+
+```
+Eulerian path: 1 -> 2 -> 3 -> 1
+```
+
+Sample input (Graph 2 - Eulerian path):
+
+```
+4 5
+1 2
+1 3
+2 3
+2 4
+3 4
+```
+
+Output:
+
+```
+Eulerian path: 1 -> 2 -> 3 -> 4 -> 2 -> 1
+```
+
+#pagebreak()
+
+=== Directed Graphs
+
+For directed graphs, the algorithm is similar but we need to check in-degrees and out-degrees:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+map<int, multiset<int>> adj;
+map<int, int> inDegree, outDegree;
+int n, m;
+
+vector<int> findEulerianPathDirected() {
+  int startVertex = -1;
+  int endVertex = -1;
+  
+  set<int> vertices;
+  for (auto& [u, neighbors] : adj) {
+    vertices.insert(u);
+    for (int v : neighbors) {
+      vertices.insert(v);
+    }
+  }
+  
+  // Check degrees
+  for (int v : vertices) {
+    int in = inDegree[v];
+    int out = outDegree[v];
+    
+    if (out - in == 1) {
+      if (startVertex != -1) return {}; // More than one start vertex
+      startVertex = v;
+    } else if (in - out == 1) {
+      if (endVertex != -1) return {}; // More than one end vertex
+      endVertex = v;
+    } else if (in != out) {
+      return {}; // Invalid degrees
+    }
+  }
+  
+  // If no start vertex found, pick any vertex with edges
+  if (startVertex == -1) {
+    startVertex = *vertices.begin();
+  }
+  
+  // Hierholzer's algorithm for directed graphs
+  stack<int> currentPath;
+  vector<int> circuit;
+  
+  currentPath.push(startVertex);
+  int curr = startVertex;
+  
+  while (!currentPath.empty()) {
+    if (!adj[curr].empty()) {
+      currentPath.push(curr);
+      int next = *adj[curr].begin();
+      adj[curr].erase(adj[curr].find(next));
+      curr = next;
+    } else {
+      circuit.push_back(curr);
+      curr = currentPath.top();
+      currentPath.pop();
+    }
+  }
+  
+  reverse(circuit.begin(), circuit.end());
+  return circuit;
+}
+
+int main() {
+  cin >> n >> m;
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].insert(v);
+    outDegree[u]++;
+    inDegree[v]++;
+  }
+  
+  vector<int> path = findEulerianPathDirected();
+  
+  if (path.empty()) {
+    cout << "No Eulerian path exists." << endl;
+  } else {
+    cout << "Eulerian path: ";
+    for (int i = 0; i < path.size(); i++) {
+      cout << path[i];
+      if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input (directed graph with Eulerian circuit):
+
+```
+3 3
+1 2
+2 3
+3 1
+```
+
+Output:
+
+```
+Eulerian path: 1 -> 2 -> 3 -> 1
+```
+
+=== Practical Problem: Flight Itinerary
+
+*Problem:* You are given a list of flight tickets with departure and arrival cities. Each ticket must be used exactly once. Determine if it's possible to use all tickets in a single trip, and if so, output the itinerary.
+
+This is essentially finding an Eulerian path in a directed graph where cities are vertices and tickets are directed edges.
+
+*Solution:*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+map<string, multiset<string>> flights;
+map<string, int> inDegree, outDegree;
+
+vector<string> findItinerary() {
+  string start = "";
+  
+  set<string> cities;
+  for (auto& [from, destinations] : flights) {
+    cities.insert(from);
+    for (const string& to : destinations) {
+      cities.insert(to);
+    }
+  }
+  
+  // Find starting city
+  for (const string& city : cities) {
+    int in = inDegree[city];
+    int out = outDegree[city];
+    
+    if (out - in == 1) {
+      start = city;
+      break;
+    }
+  }
+  
+  // If no start city with out-degree > in-degree, start from any city
+  if (start.empty()) {
+    start = flights.begin()->first;
+  }
+  
+  // Hierholzer's algorithm
+  stack<string> currentPath;
+  vector<string> itinerary;
+  
+  currentPath.push(start);
+  string curr = start;
+  
+  while (!currentPath.empty()) {
+    if (!flights[curr].empty()) {
+      currentPath.push(curr);
+      string next = *flights[curr].begin();
+      flights[curr].erase(flights[curr].find(next));
+      curr = next;
+    } else {
+      itinerary.push_back(curr);
+      curr = currentPath.top();
+      currentPath.pop();
+    }
+  }
+  
+  reverse(itinerary.begin(), itinerary.end());
+  return itinerary;
+}
+
+int main() {
+  int n;
+  cin >> n;
+  
+  for (int i = 0; i < n; i++) {
+    string from, to;
+    cin >> from >> to;
+    flights[from].insert(to);
+    outDegree[from]++;
+    inDegree[to]++;
+  }
+  
+  vector<string> itinerary = findItinerary();
+  
+  if (itinerary.size() != n + 1) {
+    cout << "No valid itinerary exists." << endl;
+  } else {
+    cout << "Flight itinerary:" << endl;
+    for (int i = 0; i < itinerary.size(); i++) {
+      cout << itinerary[i];
+      if (i < itinerary.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5
+NYC LAX
+LAX SFO
+SFO SEA
+SEA LAX
+LAX NYC
+```
+
+Output:
+
+```
+Flight itinerary:
+NYC -> LAX -> SFO -> SEA -> LAX -> NYC
+```
+
+=== Time and Space Complexity
+
+For both checking and finding Eulerian paths/circuits:
+
+- *Time Complexity:* $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges
+  + Checking connectivity: $O(V + E)$
+  + Hierholzer's algorithm: $O(E)$ as each edge is visited exactly once
+
+- *Space Complexity:* $O(V + E)$ for storing the adjacency list and the result path
+
+=== Key Points to Remember
+
+1. An Eulerian circuit visits every *edge* exactly once, not every vertex
+2. For undirected graphs: even degrees = circuit, 2 odd degrees = path
+3. For directed graphs: check in-degree equals out-degree
+4. Hierholzer's algorithm is more efficient than naive DFS approaches
+5. Use `multiset` instead of `set` to handle multiple edges between the same pair of vertices
+6. The graph must be connected (or strongly connected for directed graphs)
+
+For more information on graph algorithms and Hierholzer's algorithm, you can refer to competitive programming resources like CSES Problem Set or Codeforces.
+
+== Hamiltonian Paths and Cycles //chap3
+
+#v(0.5em)
+
+A *Hamiltonian path* is a path in a graph that visits every vertex exactly once. Similarly, a *Hamiltonian cycle* is a cycle that visits every vertex exactly once and returns to the starting vertex. Unlike Eulerian paths (which visit every edge exactly once), Hamiltonian paths focus on visiting every vertex.
+
+Finding whether a Hamiltonian path or cycle exists in a graph is an NP-complete problem, meaning there's no known polynomial-time algorithm that works for all cases. However, for small graphs (typically $n <= 20$), we can use various algorithms to find Hamiltonian paths efficiently enough for competitive programming.
+
+=== Understanding Hamiltonian Paths
+
+Let's look at some examples to understand the concept better:
+
+#align(center)[
+  #box[
+    *Example 1: Graph with Hamiltonian Path*
+    
+    #canvas(length: 1cm, {
+      import draw: *
+      
+      // Draw vertices
+      circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
+      content("1", [1])
+      
+      circle((2, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "2")
+      content("2", [2])
+      
+      circle((4, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "3")
+      content("3", [3])
+      
+      circle((1, 1.5), radius: 0.3, fill: rgb(200, 220, 255), name: "4")
+      content("4", [4])
+      
+      circle((3, 1.5), radius: 0.3, fill: rgb(200, 220, 255), name: "5")
+      content("5", [5])
+      
+      // Draw edges
+      line("1.center", "2.center", stroke: 2pt)
+      line("2.center", "3.center", stroke: 2pt)
+      line("1.center", "4.center", stroke: 2pt)
+      line("2.center", "4.center", stroke: 2pt)
+      line("2.center", "5.center", stroke: 2pt)
+      line("3.center", "5.center", stroke: 2pt)
+      line("4.center", "5.center", stroke: 2pt)
+    })
+    
+    Hamiltonian Path: 1 → 4 → 2 → 5 → 3
+  ]
+]
+
+#v(1em)
+
+#align(center)[
+  #box[
+    *Example 2: Graph with Hamiltonian Cycle*
+    
+    #canvas(length: 1cm, {
+      import draw: *
+      
+      // Draw vertices in a square
+      circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
+      content("1", [1])
+      
+      circle((3, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "2")
+      content("2", [2])
+      
+      circle((3, 3), radius: 0.3, fill: rgb(200, 220, 255), name: "3")
+      content("3", [3])
+      
+      circle((0, 3), radius: 0.3, fill: rgb(200, 220, 255), name: "4")
+      content("4", [4])
+      
+      // Draw edges
+      line("1.center", "2.center", stroke: 2pt)
+      line("2.center", "3.center", stroke: 2pt)
+      line("3.center", "4.center", stroke: 2pt)
+      line("4.center", "1.center", stroke: 2pt)
+      line("1.center", "3.center", stroke: 2pt)
+    })
+    
+    Hamiltonian Cycle: 1 → 2 → 3 → 4 → 1
+  ]
+]
+
+#v(1em)
+
+#align(center)[
+  #box[
+    *Example 3: Graph without Hamiltonian Path*
+    
+    #canvas(length: 1cm, {
+      import draw: *
+      
+      // Draw vertices
+      circle((1.5, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "1")
+      content("1", [1])
+      
+      circle((0, 1.5), radius: 0.3, fill: rgb(200, 220, 255), name: "2")
+      content("2", [2])
+      
+      circle((3, 1.5), radius: 0.3, fill: rgb(200, 220, 255), name: "3")
+      content("3", [3])
+      
+      circle((1.5, 3), radius: 0.3, fill: rgb(200, 220, 255), name: "4")
+      content("4", [4])
+      
+      // Draw edges - only connecting to vertex 1
+      line("1.center", "2.center", stroke: 2pt)
+      line("1.center", "3.center", stroke: 2pt)
+      line("1.center", "4.center", stroke: 2pt)
+    })
+    
+    No Hamiltonian Path exists!
+    (Vertex 1 has degree 3, others have degree 1)
+  ]
+]
+
+In Example 3, no Hamiltonian path exists because after visiting vertices 2, 3, and 4, we cannot connect them all without revisiting vertex 1.
+
+=== Algorithm 1: Backtracking Approach
+
+The most straightforward approach to finding a Hamiltonian path is using backtracking. We start from each vertex and try to build a path by visiting unvisited neighbors. If we get stuck, we backtrack and try a different route.
+
+The algorithm works as follows:
+1. Start from a vertex and mark it as visited
+2. Try visiting each unvisited neighbor
+3. If we've visited all $n$ vertices, we found a Hamiltonian path
+4. If we get stuck, backtrack and try a different neighbor
+5. If we try all possibilities from all starting vertices and fail, no Hamiltonian path exists
+
+Here's the implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<vector<int>> adj;
+vector<int> path;
+vector<bool> visited;
+bool found = false;
+
+void backtrack(int u, int depth) {
+  if (found) return;  // Already found a solution
+  
+  if (depth == n) {  // Visited all vertices
+    found = true;
+    cout << "Hamiltonian path found: ";
+    for (int v : path)
+      cout << v << " ";
+    cout << endl;
+    return;
+  }
+  
+  // Try visiting each unvisited neighbor
+  for (int v : adj[u]) {
+    if (!visited[v]) {
+      visited[v] = true;
+      path.push_back(v);
+      
+      backtrack(v, depth + 1);
+      
+      // Backtrack
+      path.pop_back();
+      visited[v] = false;
+    }
+  }
+}
+
+int main() {
+  cin >> n >> m;
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);  // Undirected graph
+  }
+  
+  // Try starting from each vertex
+  for (int start = 1; start <= n && !found; start++) {
+    path.clear();
+    fill(visited.begin(), visited.end(), false);
+    
+    visited[start] = true;
+    path.push_back(start);
+    backtrack(start, 1);
+  }
+  
+  if (!found)
+    cout << "No Hamiltonian path exists" << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2
+2 3
+3 5
+2 5
+1 4
+2 4
+4 5
+```
+
+This represents the graph from Example 1 above.
+
+Output:
+
+```
+Hamiltonian path found: 1 4 2 5 3
+```
+
+The time complexity of this backtracking approach is $O(n!)$ in the worst case, as we might try every possible permutation of vertices. However, with pruning (not visiting already-visited vertices), it performs much better in practice.
+
+=== Algorithm 2: Dynamic Programming with Bitmasks
+
+For small values of $n$ (typically $n <= 20$), we can use dynamic programming with bitmasks to efficiently find Hamiltonian paths. This approach is much faster than backtracking when we need to find all Hamiltonian paths or check multiple queries.
+
+The idea is to use a bitmask to represent which vertices we've visited. We define $"dp"["mask"][i]$ as whether it's possible to visit all vertices in the set represented by `mask` and end at vertex $i$.
+
+The recurrence relation is:
+$
+  "dp"["mask"][i] = cases(
+    "true" & "if mask has only bit " i " set" (i.e. "only vertex " i " visited"),
+    or.big_("prev vertex " j) "dp"["mask without bit " i][j] & "otherwise, if edge " (j\, i) " exists"
+  )
+$
+
+Here's the implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<vector<int>> adj;
+bool dp[1 << 20][20];  // dp[mask][i] = can we visit vertices in mask and end at i
+
+bool hasEdge(int u, int v) {
+  return find(adj[u].begin(), adj[u].end(), v) != adj[u].end();
+}
+
+int main() {
+  cin >> n >> m;
+  adj.resize(n);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    u--; v--;  // 0-indexed for bitmask operations
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  // Initialize: visiting only vertex i
+  for (int i = 0; i < n; i++)
+    dp[1 << i][i] = true;
+  
+  // Fill DP table
+  for (int mask = 1; mask < (1 << n); mask++) {
+    for (int i = 0; i < n; i++) {
+      if (!(mask & (1 << i))) continue;  // i not in mask
+      if (!dp[mask][i]) continue;  // This state is not reachable
+      
+      // Try extending the path to vertex j
+      for (int j = 0; j < n; j++) {
+        if (mask & (1 << j)) continue;  // j already visited
+        if (!hasEdge(i, j)) continue;  // No edge from i to j
+        
+        dp[mask | (1 << j)][j] = true;
+      }
+    }
+  }
+  
+  // Check if Hamiltonian path exists
+  int fullMask = (1 << n) - 1;
+  bool found = false;
+  
+  for (int i = 0; i < n; i++) {
+    if (dp[fullMask][i]) {
+      found = true;
+      break;
+    }
+  }
+  
+  if (found)
+    cout << "Hamiltonian path exists!" << endl;
+  else
+    cout << "No Hamiltonian path exists" << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2
+2 3
+3 5
+2 5
+1 4
+2 4
+4 5
+```
+
+Output:
+
+```
+Hamiltonian path exists!
+```
+
+The time complexity is $O(2^n times n^2)$ and space complexity is $O(2^n times n)$. This is much better than $O(n!)$ for the backtracking approach when $n$ is small.
+
+=== Finding Hamiltonian Cycles
+
+A Hamiltonian cycle is just a Hamiltonian path where the last vertex has an edge back to the first vertex. We can modify our DP approach to check for this:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m;
+vector<vector<int>> adj;
+bool dp[1 << 20][20];
+
+bool hasEdge(int u, int v) {
+  return find(adj[u].begin(), adj[u].end(), v) != adj[u].end();
+}
+
+int main() {
+  cin >> n >> m;
+  adj.resize(n);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    u--; v--;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  // Initialize
+  for (int i = 0; i < n; i++)
+    dp[1 << i][i] = true;
+  
+  // Fill DP table
+  for (int mask = 1; mask < (1 << n); mask++) {
+    for (int i = 0; i < n; i++) {
+      if (!(mask & (1 << i))) continue;
+      if (!dp[mask][i]) continue;
+      
+      for (int j = 0; j < n; j++) {
+        if (mask & (1 << j)) continue;
+        if (!hasEdge(i, j)) continue;
+        
+        dp[mask | (1 << j)][j] = true;
+      }
+    }
+  }
+  
+  // Check for Hamiltonian cycle
+  int fullMask = (1 << n) - 1;
+  bool found = false;
+  
+  // Try each vertex as the starting point
+  for (int start = 0; start < n; start++) {
+    for (int end = 0; end < n; end++) {
+      if (start == end) continue;
+      
+      // Check if we can visit all vertices starting from 'start' and ending at 'end'
+      // and there's an edge back to 'start'
+      if (dp[fullMask][end] && hasEdge(end, start)) {
+        found = true;
+        break;
+      }
+    }
+    if (found) break;
+  }
+  
+  if (found)
+    cout << "Hamiltonian cycle exists!" << endl;
+  else
+    cout << "No Hamiltonian cycle exists" << endl;
+  
+  return 0;
+}
+```
+
+Sample input for a graph with a Hamiltonian cycle:
+
+```
+4 5
+1 2
+2 3
+3 4
+4 1
+1 3
+```
+
+This represents Example 2 from above.
+
+Output:
+
+```
+Hamiltonian cycle exists!
+```
+
+=== Practical Example: Traveling Salesman Problem (TSP)
+
+One of the most famous applications of Hamiltonian paths is the *Traveling Salesman Problem*. Given a weighted graph, find the shortest Hamiltonian cycle (a cycle that visits every vertex exactly once and returns to the start).
+
+Here's a visual representation:
+
+#import "@preview/cetz:0.2.2": canvas, draw
+
+#align(center)[
+  #canvas(length: 1cm, {
+    import draw: *
+    
+    // Draw vertices
+    circle((0, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "A")
+    content("A", [A])
+    
+    circle((3, 0), radius: 0.3, fill: rgb(200, 220, 255), name: "B")
+    content("B", [B])
+    
+    circle((3, 3), radius: 0.3, fill: rgb(200, 220, 255), name: "C")
+    content("C", [C])
+    
+    circle((0, 3), radius: 0.3, fill: rgb(200, 220, 255), name: "D")
+    content("D", [D])
+    
+    // Draw edges with weights
+    line("A.center", "B.center", stroke: 2pt)
+    content((1.5, -0.5), [10])
+    
+    line("B.center", "C.center", stroke: 2pt)
+    content((3.5, 1.5), [15])
+    
+    line("C.center", "D.center", stroke: 2pt)
+    content((1.5, 3.5), [20])
+    
+    line("D.center", "A.center", stroke: 2pt)
+    content((-0.5, 1.5), [25])
+    
+    // Diagonal edges (dashed)
+    line("A.center", "C.center", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
+    content((2, 2), text(fill: gray)[35])
+    
+    line("B.center", "D.center", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
+    content((1, 2), text(fill: gray)[30])
+  })
+  
+  Shortest cycle: A → B → C → D → A (cost = 70)
+]
+We can solve TSP using DP with bitmasks:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+int dist[20][20];  // dist[i][j] = distance from city i to city j
+int dp[1 << 20][20];  // dp[mask][i] = min cost to visit cities in mask ending at i
+const int INF = 1e9;
+
+int main() {
+  cin >> n;
+  
+  // Read distance matrix
+  for (int i = 0; i < n; i++)
+    for (int j = 0; j < n; j++)
+      cin >> dist[i][j];
+  
+  // Initialize DP table
+  for (int mask = 0; mask < (1 << n); mask++)
+    for (int i = 0; i < n; i++)
+      dp[mask][i] = INF;
+  
+  // Start from city 0
+  dp[1][0] = 0;
+  
+  // Fill DP table
+  for (int mask = 1; mask < (1 << n); mask++) {
+    for (int i = 0; i < n; i++) {
+      if (!(mask & (1 << i))) continue;
+      if (dp[mask][i] == INF) continue;
+      
+      // Try extending to city j
+      for (int j = 0; j < n; j++) {
+        if (mask & (1 << j)) continue;  // Already visited
+        
+        int newMask = mask | (1 << j);
+        dp[newMask][j] = min(dp[newMask][j], dp[mask][i] + dist[i][j]);
+      }
+    }
+  }
+  
+  // Find minimum cost to visit all cities and return to start
+  int fullMask = (1 << n) - 1;
+  int ans = INF;
+  
+  for (int i = 1; i < n; i++)
+    ans = min(ans, dp[fullMask][i] + dist[i][0]);
+  
+  cout << "Minimum cost: " << ans << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+4
+0 10 35 25
+10 0 15 30
+35 15 0 20
+25 30 20 0
+```
+
+This represents a complete graph with 4 cities where `dist[i][j]` is the distance from city $i$ to city $j$.
+
+Output:
+
+```
+Minimum cost: 70
+```
+
+The optimal tour is 0 → 1 → 2 → 3 → 0 with total cost $10 + 15 + 20 + 25 = 70$.
+
+=== Optimizations and Tips
+
+1. *Early Pruning:* In the backtracking approach, if the current path length plus the number of unvisited vertices exceeds $n$, we can't form a Hamiltonian path, so prune early.
+
+2. *Vertex Ordering:* Start from vertices with fewer neighbors in backtracking, as they're more likely to fail early and prune more branches.
+
+3. *Degree Conditions:* If any vertex has degree 0, or if in an undirected graph any vertex has degree 1 and it's not a start/end vertex, no Hamiltonian path exists.
+
+4. *Memory Optimization:* For the DP approach, you can use a rolling array technique if you only need to know if a path exists, not reconstruct it.
+
+5. *Directed vs Undirected:* The algorithms above work for undirected graphs. For directed graphs, simply don't add the reverse edge when reading input.
+
+=== Summary
+
+Hamiltonian paths and cycles are fundamental concepts in graph theory with applications in routing, scheduling, and optimization problems. While finding them is NP-complete, the dynamic programming approach with bitmasks allows us to solve problems with $n <= 20$ efficiently enough for competitive programming.
+
+Key takeaways:
+- Hamiltonian path: visits every vertex exactly once
+- Hamiltonian cycle: Hamiltonian path that returns to start
+- Backtracking: $O(n!)$ but simple to implement
+- DP with bitmasks: $O(2^n times n^2)$, better for small $n$
+- TSP is a weighted version of finding minimum Hamiltonian cycle
 
