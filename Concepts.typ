@@ -9083,6 +9083,630 @@ When solving graph problems with bitmasks, remember:
 
 For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
 
+
+== Difference Array //chap2
+
+#v(0.5em)
+
+So far, we've seen how to handle range sum queries efficiently. But what if we need to do the opposite? Instead of finding the sum of a range, we want to *add a value to every element in a range*. Let's say we have an array and we want to add some value $k$ to all elements from index $a$ to index $b$. 
+
+If we do this naively by looping through each element in the range and adding $k$, each update operation takes $O(n)$ time. For the constraints of $n <= 2 times 10^5, q <= 2 times 10^5$, this becomes too slow — we could be doing up to $4 times 10^10$ operations!
+
+This is where the *difference array* comes to the rescue. A difference array lets us perform range updates in $O(1)$ time, though we'll need $O(n)$ time to reconstruct the final array after all updates are done.
+
+=== The Core Idea
+
+The key insight is this: instead of storing the actual values, we store the *differences* between consecutive elements. Let's say we have an array:
+
+#let arr = (5, 3, 7, 2, 8, 4)
+
+$
+  "arr" = [#arr.map(str).join(", ")]
+$
+
+The difference array `diff` stores:
+- `diff[0] = arr[0]` (the first element)
+- `diff[i] = arr[i] - arr[i-1]` for all $i > 0$
+
+For our example:
+
+$
+  "diff" = [5, -2, 4, -5, 6, -4]
+$
+
+Why is this useful? Because if you want to add $k$ to all elements from index $a$ to $b$, you only need to:
+1. Add $k$ to `diff[a]` 
+2. Subtract $k$ from `diff[b+1]` (if $b + 1 < n$)
+
+That's it! Just two operations, regardless of how large the range is.
+
+=== How Does This Work?
+
+Let's see why this works. When we reconstruct the array from the difference array, we compute:
+
+$
+  "arr"[i] = sum_(j=0)^i "diff"[j]
+$
+
+In other words, each element is the prefix sum of the difference array up to that index.
+
+Now, when we add $k$ to `diff[a]`, it affects all elements from index $a$ onwards (because they all include `diff[a]` in their prefix sum). When we subtract $k$ from `diff[b+1]`, it cancels out the effect for all elements after index $b$.
+
+Let's trace through an example. Say we want to add $3$ to indices $1$ to $3$ in our array:
+
+Original array:
+$
+  "arr" = [5, 3, 7, 2, 8, 4]
+$
+
+Difference array:
+$
+  "diff" = [5, -2, 4, -5, 6, -4]
+$
+
+After adding $3$ to `diff[1]` and subtracting $3$ from `diff[4]`:
+$
+  "diff" = [5, 1, 4, -5, 3, -4]
+$
+
+Reconstructing the array (prefix sums):
+$
+  "arr" = [5, 6, 10, 5, 8, 4]
+$
+
+Notice that indices $1$, $2$, and $3$ have all increased by $3$, exactly as we wanted!
+
+=== Basic Implementation
+
+Here's a simple implementation that handles range updates:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+    
+    // Build difference array
+    vector<int> diff(n);
+    diff[0] = arr[0];
+    for (int i = 1; i < n; i++)
+        diff[i] = arr[i] - arr[i - 1];
+    
+    // Process queries
+    for (int i = 0; i < q; i++) {
+        int a, b, k;
+        cin >> a >> b >> k;  // Add k to range [a, b]
+        
+        diff[a] += k;
+        if (b + 1 < n)
+            diff[b + 1] -= k;
+    }
+    
+    // Reconstruct the array
+    arr[0] = diff[0];
+    for (int i = 1; i < n; i++)
+        arr[i] = arr[i - 1] + diff[i];
+    
+    // Output the final array
+    for (int i = 0; i < n; i++)
+        cout << arr[i] << " ";
+    cout << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+6 3
+5 3 7 2 8 4
+1 3 3
+0 2 -2
+4 5 1
+```
+
+This input means:
+- Array of size 6 with 3 queries
+- Initial array: `[5, 3, 7, 2, 8, 4]`
+- Add 3 to indices 1-3
+- Add -2 to indices 0-2
+- Add 1 to indices 4-5
+
+Output:
+
+```
+3 4 8 5 9 5
+```
+
+=== Starting from Zero
+
+Often, we don't start with an existing array — we just want to perform range updates on an initially zero array. This makes the code even simpler:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> diff(n + 1, 0);  // Extra space to avoid boundary checks
+    
+    for (int i = 0; i < q; i++) {
+        int a, b, k;
+        cin >> a >> b >> k;
+        
+        diff[a] += k;
+        diff[b + 1] -= k;  // No boundary check needed with size n+1
+    }
+    
+    // Reconstruct and output
+    int current = 0;
+    for (int i = 0; i < n; i++) {
+        current += diff[i];
+        cout << current << " ";
+    }
+    cout << endl;
+    
+    return 0;
+}
+```
+
+Notice the trick of making `diff` size $n + 1$ instead of $n$. This way, we never have to check if $b + 1 < n$ because we always have space for that extra decrement.
+
+Sample input:
+
+```
+5 4
+0 2 5
+1 3 -2
+2 4 3
+0 4 1
+```
+
+Output:
+
+```
+6 4 7 2 4
+```
+
+=== 2D Difference Arrays
+
+The difference array technique extends beautifully to 2D grids! Say you want to add a value to all cells in a rectangle from $(r_1, c_1)$ to $(r_2, c_2)$.
+
+For a 2D difference array, we need *four* operations per rectangle update:
+1. Add $k$ to `diff[r1][c1]`
+2. Subtract $k$ from `diff[r1][c2+1]`
+3. Subtract $k$ from `diff[r2+1][c1]`
+4. Add $k$ to `diff[r2+1][c2+1]`
+
+The reconstruction uses 2D prefix sums:
+
+$
+  "arr"[i][j] = sum_(r=0)^i sum_(c=0)^j "diff"[r][c]
+$
+
+Here's the implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m, q;
+    cin >> n >> m >> q;
+    
+    // Create (n+1) x (m+1) diff array for easy boundary handling
+    vector<vector<int>> diff(n + 1, vector<int>(m + 1, 0));
+    
+    for (int i = 0; i < q; i++) {
+        int r1, c1, r2, c2, k;
+        cin >> r1 >> c1 >> r2 >> c2 >> k;
+        
+        diff[r1][c1] += k;
+        diff[r1][c2 + 1] -= k;
+        diff[r2 + 1][c1] -= k;
+        diff[r2 + 1][c2 + 1] += k;
+    }
+    
+    // Reconstruct using 2D prefix sum
+    vector<vector<int>> arr(n, vector<int>(m));
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            arr[i][j] = diff[i][j];
+            if (i > 0) arr[i][j] += arr[i - 1][j];
+            if (j > 0) arr[i][j] += arr[i][j - 1];
+            if (i > 0 && j > 0) arr[i][j] -= arr[i - 1][j - 1];
+        }
+    }
+    
+    // Output the grid
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++)
+            cout << arr[i][j] << " ";
+        cout << endl;
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+3 4 2
+0 0 1 2 5
+1 1 2 3 -3
+```
+
+This means:
+- 3×4 grid with 2 queries
+- Add 5 to rectangle from (0,0) to (1,2)
+- Add -3 to rectangle from (1,1) to (2,3)
+
+Output:
+
+```
+5 5 5 0
+5 2 2 -3
+0 -3 -3 -3
+```
+
+=== Cheeky Use Case #1: Scheduling Intervals
+
+*Problem:* You have a timeline from time 0 to $n$. You receive $q$ events, where each event happens during the interval $[a, b]$. For each point in time, count how many events are active.
+
+This is just difference arrays in disguise! Each event is a range update of $+1$.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> diff(n + 2, 0);
+    
+    for (int i = 0; i < q; i++) {
+        int a, b;
+        cin >> a >> b;
+        diff[a]++;
+        diff[b + 1]--;
+    }
+    
+    int active = 0;
+    for (int i = 0; i <= n; i++) {
+        active += diff[i];
+        cout << "Time " << i << ": " << active << " events active" << endl;
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+10 3
+2 5
+1 4
+6 8
+```
+
+Output:
+
+```
+Time 0: 0 events active
+Time 1: 1 events active
+Time 2: 2 events active
+Time 3: 2 events active
+Time 4: 2 events active
+Time 5: 1 events active
+Time 6: 1 events active
+Time 7: 1 events active
+Time 8: 1 events active
+Time 9: 0 events active
+Time 10: 0 events active
+```
+
+=== Cheeky Use Case #2: Cumulative Bus Passengers
+
+*Problem:* A bus route has $n$ stops. You know that at stop $i$, $p_i$ passengers board and $q_i$ passengers exit. However, some passengers traveling from stop $a$ to stop $b$ have been double-counted. For $m$ such corrections, remove one passenger traveling from $a$ to $b$. Output the number of passengers on the bus between each pair of consecutive stops.
+
+Each passenger contributes $+1$ at their boarding stop and $-1$ at their exit stop. Corrections are just range updates of $-1$.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    
+    vector<int> diff(n + 1, 0);
+    
+    for (int i = 0; i < n; i++) {
+        int board, exit;
+        cin >> board >> exit;
+        diff[i] += board;
+        diff[i] -= exit;
+    }
+    
+    for (int i = 0; i < m; i++) {
+        int a, b;
+        cin >> a >> b;
+        diff[a]--;
+        diff[b]++;
+    }
+    
+    int passengers = 0;
+    for (int i = 0; i < n - 1; i++) {
+        passengers += diff[i];
+        cout << "Between stop " << i << " and " << (i + 1) << ": ";
+        cout << passengers << " passengers" << endl;
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+5 2
+10 2
+5 3
+8 6
+4 2
+0 5
+1 3
+2 4
+```
+
+Output:
+
+```
+Between stop 0 and 1: 8
+Between stop 1 and 2: 9
+Between stop 2 and 3: 8
+Between stop 3 and 4: 10
+```
+
+=== Cheeky Use Case #3: Meeting Room Availability
+
+*Problem:* You have one meeting room available from hour 0 to hour $n$. You receive $q$ meeting requests, each wanting the room from hour $a$ to hour $b$. Accept requests in order, but only if the room isn't already booked during that time. Output which requests are accepted.
+
+We can use a difference array to track bookings, but we need to check availability before confirming each booking!
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> diff(n + 1, 0);
+    vector<int> current(n + 1, 0);  // Current bookings at each hour
+    
+    for (int i = 0; i < q; i++) {
+        int a, b;
+        cin >> a >> b;
+        
+        // Reconstruct current state from diff
+        current[0] = diff[0];
+        for (int j = 1; j <= n; j++)
+            current[j] = current[j - 1] + diff[j];
+        
+        // Check if room is available
+        bool available = true;
+        for (int j = a; j <= b; j++) {
+            if (current[j] > 0) {
+                available = false;
+                break;
+            }
+        }
+        
+        if (available) {
+            cout << "Request " << (i + 1) << ": Accepted" << endl;
+            diff[a]++;
+            diff[b + 1]--;
+        } else {
+            cout << "Request " << (i + 1) << ": Rejected" << endl;
+        }
+    }
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+10 4
+2 5
+3 6
+6 8
+1 3
+```
+
+Output:
+
+```
+Request 1: Accepted
+Request 2: Rejected
+Request 3: Accepted
+Request 4: Rejected
+```
+
+=== Cheeky Use Case #4: Icy Road Sections
+
+*Problem:* A road has $n$ sections (numbered 0 to $n-1$). Initially all sections are dry. It snows during $q$ time periods, where during period $i$, sections from $a_i$ to $b_i$ become icy. A section that's already icy stays icy. After all snow periods, how many sections are icy?
+
+This is about tracking whether *any* update touched a position. We can use difference arrays and then check which positions are non-zero!
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> diff(n + 1, 0);
+    
+    for (int i = 0; i < q; i++) {
+        int a, b;
+        cin >> a >> b;
+        diff[a]++;
+        diff[b + 1]--;
+    }
+    
+    int icy_count = 0;
+    int current = 0;
+    for (int i = 0; i < n; i++) {
+        current += diff[i];
+        if (current > 0)
+            icy_count++;
+    }
+    
+    cout << "Number of icy sections: " << icy_count << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+10 3
+1 4
+3 7
+6 8
+```
+
+Output:
+
+```
+Number of icy sections: 8
+```
+
+=== Combining with Other Techniques
+
+Difference arrays can be combined with other data structures for more complex problems:
+
+*Difference Array + Binary Search:* If you need to find when a position reaches a certain threshold value, you can use binary search on the queries and check using difference arrays.
+
+*Difference Array + Segment Tree:* While rare, you might need to support both range updates (via difference array) and range queries on the difference array itself (via segment tree).
+
+*Difference Array + Prefix Sums:* We've already seen this! Reconstructing the array from a difference array is exactly computing prefix sums.
+
+=== Time Complexity Summary
+
+For a difference array with $n$ elements and $q$ range update queries:
+
+- Building the initial difference array: $O(n)$
+- Each range update: $O(1)$ 
+- Processing all $q$ updates: $O(q)$
+- Reconstructing the final array: $O(n)$
+- *Total: $O(n + q)$*
+
+Compare this to the naive approach:
+- Each range update: $O(n)$ in the worst case
+- Processing all $q$ updates: $O(n times q)$
+- *Total: $O(n times q)$*
+
+For $n = q = 2 times 10^5$, this is the difference between $4 times 10^5$ operations and $4 times 10^10$ operations — that's a speedup of 100,000 times!
+
+=== When NOT to Use Difference Arrays
+
+Difference arrays are perfect when you have:
+- Many range update queries
+- Need to see the final result after all updates
+
+They're NOT suitable when you:
+- Need to query the current value between updates (use a Segment Tree or Fenwick Tree instead)
+- Only have a few updates (naive approach is simpler)
+- Need to support range queries without reconstructing (again, use Segment Tree)
+
+The key limitation is that difference arrays require $O(n)$ time to see the current state of the array. If you need to query values during the update process, you'll need a different data structure.
+
+=== Practice Problem
+
+*Problem:* You're organizing a festival with $n$ hours (0 to $n-1$). You have $q$ performance requests, where each performance occupies hours $[a, b]$. Each hour can host multiple performances. After accepting all requests, a "peak hour" is an hour with strictly more performances than both the previous and next hour (hours 0 and $n-1$ can't be peaks). Count the number of peak hours.
+
+*Solution:*
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    
+    vector<int> diff(n + 1, 0);
+    
+    for (int i = 0; i < q; i++) {
+        int a, b;
+        cin >> a >> b;
+        diff[a]++;
+        diff[b + 1]--;
+    }
+    
+    // Reconstruct the array
+    vector<int> performances(n);
+    performances[0] = diff[0];
+    for (int i = 1; i < n; i++)
+        performances[i] = performances[i - 1] + diff[i];
+    
+    // Count peaks
+    int peaks = 0;
+    for (int i = 1; i < n - 1; i++) {
+        if (performances[i] > performances[i - 1] && 
+            performances[i] > performances[i + 1])
+            peaks++;
+    }
+    
+    cout << "Number of peak hours: " << peaks << endl;
+    
+    return 0;
+}
+```
+
+Sample input:
+
+```
+10 5
+1 3
+2 5
+4 7
+6 8
+2 4
+```
+
+Output:
+
+```
+Number of peak hours: 1
+```
+
+=== Final Thoughts
+
+Difference arrays are one of those elegant techniques that seem almost too simple to be powerful. Yet they solve an entire class of problems that would otherwise require complex data structures. The key insight — that the difference between consecutive elements is enough to reconstruct the whole array — is a beautiful example of how thinking differently about data representation can lead to massive performance gains.
+
+Remember: when you see "add value to range" repeated many times, think difference arrays!
+
+
 == Segment Tree //chap2
 
 #v(0.5em)

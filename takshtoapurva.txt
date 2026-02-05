@@ -19,6 +19,8 @@ binary lifting step 2
 lazy propogation step 2
 dynamic segment tree step 2
 offline queries step 2
+deque step 2
+difference array step 2
 
 
 
