@@ -2930,7 +2930,7 @@ Finally, make sure you fill in values in the right order, so that when you compu
 With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
 
 
-== Intro to Graphs //chap2
+== What is a Graph? //chap2
 
 #v(0.5em)
 
@@ -2980,7 +2980,7 @@ In this graph, node 1 is connected to nodes 2 and 3, node 2 is connected to node
 
 === Storing Graphs
 
-There are three main ways to store graphs in C++: adjacency lists, adjacency matrices, and edge lists. Each method has its own advantages and disadvantages.
+There are three main ways to store graphs in `C++`: adjacency lists, adjacency matrices, and edge lists. Each method has its own advantages and disadvantages.
 
 ==== Adjacency List
 
@@ -3021,6 +3021,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 6 7
 1 2
@@ -3031,9 +3032,11 @@ Sample input:
 4 6
 5 6
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 1: 2 3 
 2: 1 4 
@@ -3042,6 +3045,7 @@ Output:
 5: 3 6 
 6: 4 5 
 ```
+]
 
 For a directed graph, you only add the edge in one direction. For example, if there's a directed edge from `u` to `v`, you only do `adj[u].push_back(v)`.
 
@@ -3078,6 +3082,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 4 4
 1 2 5
@@ -3085,17 +3090,20 @@ Sample input:
 2 4 7
 3 4 3
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 1: (2, 5) (3, 2) 
 2: (1, 5) (4, 7) 
 3: (1, 2) (4, 3) 
 4: (2, 7) (3, 3) 
 ```
+]
 
-The *space complexity* of an adjacency list is $O(n + m)$ where $n$ is the number of nodes and $m$ is the number of edges. The *time complexity* to check if there's an edge between two nodes is $O(degree)$ where degree is the number of edges connected to a node. In the worst case, this is $O(n)$.
+The *space complexity* of an adjacency list is $O(V + E)$ where $V$ is the number of vertices (nodes) and $E$ is the number of edges. The *time complexity* to check if there's an edge between two nodes is $O(d)$ where $d$, the degree, is the number of edges connected to a node. In the worst case, this is $O(E)$.
 
 ==== Adjacency Matrix
 
@@ -3139,6 +3147,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 4 4
 1 2
@@ -3146,9 +3155,11 @@ Sample input:
 2 4
 3 4
 ```
+]
 
 Output:
 
+#no-codly[
 ```
   1 2 3 4 
 1 0 1 1 0 
@@ -3156,6 +3167,7 @@ Output:
 3 1 0 0 1 
 4 0 1 1 0 
 ```
+]
 
 For weighted graphs, you can modify the code to store weights:
 
@@ -3205,6 +3217,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 4 4
 1 2 5
@@ -3212,16 +3225,19 @@ Sample input:
 2 4 7
 3 4 3
 ```
+]
 
 Output:
 
+#no-codly[
 ```
     1   2   3   4   
-1 0   5   2   INF 
-2 5   0   INF 7   
-3 2   INF 0   3   
-4 INF 7   3   0   
+1   0   5   2   INF 
+2   5   0   INF 7   
+3   2   INF 0   3   
+4   INF 7   3   0   
 ```
+]
 
 The advantage of an adjacency matrix is that you can check if there's an edge between two nodes in $O(1)$ time by simply looking at `matrix[u][v]`. However, the *space complexity* is $O(n^2)$, which is inefficient for sparse graphs (graphs with few edges). Adjacency matrices are useful when the graph is dense (has many edges) or when you need to quickly check if an edge exists.
 
@@ -3258,6 +3274,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 4 5
 1 2
@@ -3266,9 +3283,11 @@ Sample input:
 3 4
 4 1
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 Edges:
 1 -> 2
@@ -3277,6 +3296,7 @@ Edges:
 3 -> 4
 4 -> 1
 ```
+]
 
 For weighted graphs, you can use a struct:
 
@@ -3317,6 +3337,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 4 4
 1 2 5
@@ -3324,9 +3345,13 @@ Sample input:
 2 4 7
 3 4 3
 ```
+]
+
+#pagebreak()
 
 Output:
 
+#no-codly[
 ```
 Edges:
 1 -> 2 (weight: 5)
@@ -3334,6 +3359,7 @@ Edges:
 2 -> 4 (weight: 7)
 3 -> 4 (weight: 3)
 ```
+]
 
 Edge lists are useful for algorithms like Kruskal's algorithm for finding minimum spanning trees, where you need to process edges in sorted order. The *space complexity* is $O(m)$. However, checking if there's an edge between two specific nodes requires $O(m)$ time since you need to iterate through all edges.
 
