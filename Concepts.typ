@@ -2661,8 +2661,7 @@ The deque is particularly useful in optimization problems where you need to main
 
 For the `std::deque` documentation, click #link("https://en.cppreference.com/w/cpp/container/deque")[here].
 
-
-
+#pagebreak()
 
 == Dynamic Programming <dp> //chap3
 
@@ -2683,6 +2682,7 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 Dynamic Programming, often shortened to DP, is one of the most important techniques in competitive programming. The core idea is simple: if a problem can be broken into smaller subproblems, and those subproblems *overlap*, meaning the same smaller problem needs to be solved more than once, then we can save a huge amount of time by *storing* the answer to each subproblem the first time we solve it and *reusing* it whenever it comes up again.
 
 You might notice this sounds related to the greedy approach from earlier. Both techniques break a problem into smaller parts. The difference is that in greedy problems you make a locally optimal choice and move on, never revisiting a decision. In DP, you solve every relevant subproblem and combine their answers to build the final result. The best way to understand this is to start with a concrete example and see exactly why the naive approach is slow, and how DP fixes it.
+
 
 === Why Naive Recursion Fails
 
@@ -2915,14 +2915,15 @@ We initialize `dp` to `INT_MAX`, which is the largest value an integer can hold 
 The time complexity here is $O(n times "amount")$, where $n$ is the number of coin denominations.
 
 === How to Think About DP Problems
+DP is unlike other topics, you can't simply learn the idea, practice a bit and know it pretty well. You need to practice immensely because DP is a way of problem solving and not really a specific algorithm. There are going to be many different variations so be don't discouraged if your not able to solve certain questions in DP despite learning it.
 
-After working through these examples, you may start to notice a pattern. Almost every DP problem follows the same structure, and learning to recognize it is the most valuable skill you can develop.
+There general way of going about DP questions is as follows:
 
-The first step is always to define what `dp[i]` represents—this is the *subproblem*. In Fibonacci, `dp[i]` was the $i$-th number in the sequence. In climbing stairs, it was the number of ways to reach step $i$. In coin change, it was the minimum coins to make amount $i$. Getting this definition right is the foundation of your entire solution.
+The first step is always to define what `dp[i]` represents this is the *subproblem*. In Fibonacci, `dp[i]` was the $i$#super[th] number in the sequence. In climbing stairs, it was the number of ways to reach step $i$. In coin change, it was the minimum coins to make amount $i$. Getting this definition right is the foundation of your entire solution.
 
-Next, you need to find the *recurrence relation*—the formula that computes `dp[i]` from smaller, already-solved subproblems. This is usually the hardest part. A useful way to think about it is to ask: "What was the *last* decision I made before arriving at state $i$?" In climbing stairs, the last decision was whether to climb $1$ or $2$ steps. In coin change, it was which coin to use last.
+Next, you need to find the *recurrence relation*, the formula that computes `dp[i]` from smaller, already-solved subproblems. This is usually the hardest part. A useful way to think about it is to ask: "What was the *last* decision I made before arriving at state $i$?" In climbing stairs, the last decision was whether to climb $1$ or $2$ steps. In coin change, it was which coin to use last.
 
-After that, identify the *base cases*—the smallest subproblems whose answers you already know without any computation. These are the starting points for filling the table.
+After that, identify the *base cases*, the smallest subproblems whose answers you already know without any computation. These are the starting points for filling the table.
 
 Finally, make sure you fill in values in the right order, so that when you compute `dp[i]`, all the values it depends on are already known. For bottom-up DP, this usually means iterating from smaller values to larger ones.
 
