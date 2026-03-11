@@ -3371,9 +3371,7 @@ Here's a summary of when to use each representation:
 
 *Adjacency Matrix:* Use when you need to quickly check if an edge exists between two nodes, or when the graph is dense (has many edges). Also useful for algorithms like Floyd-Warshall.
 
-*Edge List:* Use when you need to process all edges (not neighbors of specific nodes), or when edges need to be sorted. Common in algorithms like Kruskal's MST or when reading input where edges are given in random order.
-
-For most competitive programming problems, adjacency lists are the way to go.
+*Edge List:* Use when you need to process all edges (not neighbors of specific nodes), or when edges need to be sorted. Common in algorithms like Kruskal's Minimum Spanning Tree or when reading input where edges are given in random order.
 
 === Graph Traversal Example
 
@@ -3429,6 +3427,7 @@ int main(){
 
 Sample input:
 
+#no-codly[
 ```
 6 7
 1 2
@@ -3440,372 +3439,17 @@ Sample input:
 5 6
 3
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 Nodes reachable from 3: 3 1 4 5 2 6 
 ```
-
-This code performs a *breadth-first search (BFS)* starting from node 3, visiting all reachable nodes. You'll learn more about BFS and other graph algorithms in later sections.
-
-
-== Depth-First Search (DFS) //chap3
-
-#v(0.5em)
-
-*Depth-First Search (DFS)* is a graph traversal algorithm that explores a graph by going as deep as possible along each branch before backtracking. Imagine exploring a maze by always choosing to go forward until you hit a dead end, then backtracking to the last intersection and trying a different path.
-
-DFS can be implemented in two ways: recursively or iteratively using a stack. The recursive approach is more intuitive and commonly used, while the iterative approach is useful when you need more control over the traversal or when dealing with very deep graphs that might cause stack overflow.
-
-=== Recursive DFS
-
-The recursive implementation of DFS is the most natural way to think about the algorithm. When you visit a node, you immediately explore all of its unvisited neighbors before moving on.
-
-Here's the basic implementation:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> adj; // adjacency list
-vector<bool> visited;
-
-void dfs(int node) {
-  visited[node] = true;
-  cout << node << " "; // Process the current node
-  
-  for (int neighbor : adj[node]) {
-    if (!visited[neighbor]) {
-      dfs(neighbor); // Recursively visit unvisited neighbors
-    }
-  }
-}
-
-int main() {
-  int n, m; // n = number of nodes, m = number of edges
-  cin >> n >> m;
-  
-  adj.resize(n + 1);
-  visited.resize(n + 1, false);
-  
-  for (int i = 0; i < m; i++) {
-    int u, v;
-    cin >> u >> v;
-    adj[u].push_back(v);
-    adj[v].push_back(u); // For undirected graph
-  }
-  
-  cout << "DFS traversal: ";
-  dfs(1); // Start DFS from node 1
-  cout << endl;
-  
-  return 0;
-}
-```
-
-Sample input:
-
-#block[
-```
-7 6
-1 2
-1 3
-2 4
-2 5
-3 6
-3 7
-```
 ]
 
-Output:
-
-#block[
-```
-DFS traversal: 1 2 4 5 3 6 7
-```
-]
-
-The graph in this example looks like:
-
-```
-    1
-   / \
-  2   3
- / \ / \
-4  5 6  7
-```
-
-Starting from node 1, DFS visits node 2 first, then goes deep to nodes 4 and 5. After exploring all neighbors of 2, it backtracks to 1 and explores 3, then 6 and 7.
-
-=== Iterative DFS
-
-The iterative version uses an explicit stack to simulate the recursive call stack. This is useful when you need to avoid potential stack overflow issues with very deep recursion.
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> adj;
-vector<bool> visited;
-
-void dfs_iterative(int start) {
-  stack<int> s;
-  s.push(start);
-  
-  while (!s.empty()) {
-    int node = s.top();
-    s.pop();
-    
-    if (visited[node]) continue;
-    
-    visited[node] = true;
-    cout << node << " ";
-    
-    // Push neighbors in reverse order to maintain left-to-right traversal
-    for (int i = adj[node].size() - 1; i >= 0; i--) {
-      int neighbor = adj[node][i];
-      if (!visited[neighbor]) {
-        s.push(neighbor);
-      }
-    }
-  }
-}
-
-int main() {
-  int n, m;
-  cin >> n >> m;
-  
-  adj.resize(n + 1);
-  visited.resize(n + 1, false);
-  
-  for (int i = 0; i < m; i++) {
-    int u, v;
-    cin >> u >> v;
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
-  
-  cout << "Iterative DFS: ";
-  dfs_iterative(1);
-  cout << endl;
-  
-  return 0;
-}
-```
-
-=== DFS with Connected Components
-
-A common application of DFS is finding connected components in a graph. A connected component is a set of nodes where every node is reachable from every other node in that set.
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> adj;
-vector<bool> visited;
-vector<int> component;
-
-void dfs(int node) {
-  visited[node] = true;
-  component.push_back(node);
-  
-  for (int neighbor : adj[node]) {
-    if (!visited[neighbor]) {
-      dfs(neighbor);
-    }
-  }
-}
-
-int main() {
-  int n, m;
-  cin >> n >> m;
-  
-  adj.resize(n + 1);
-  visited.resize(n + 1, false);
-  
-  for (int i = 0; i < m; i++) {
-    int u, v;
-    cin >> u >> v;
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
-  
-  vector<vector<int>> components;
-  
-  for (int i = 1; i <= n; i++) {
-    if (!visited[i]) {
-      component.clear();
-      dfs(i);
-      components.push_back(component);
-    }
-  }
-  
-  cout << "Number of connected components: " << components.size() << endl;
-  for (int i = 0; i < components.size(); i++) {
-    cout << "Component " << i + 1 << ": ";
-    for (int node : components[i]) {
-      cout << node << " ";
-    }
-    cout << endl;
-  }
-  
-  return 0;
-}
-```
-
-Sample input:
-
-#block[
-```
-8 5
-1 2
-2 3
-4 5
-6 7
-7 8
-```
-]
-
-Output:
-
-#block[
-```
-Number of connected components: 3
-Component 1: 1 2 3
-Component 2: 4 5
-Component 3: 6 7 8
-```
-]
-
-This graph has three separate components that are not connected to each other.
-
-=== DFS with Path Tracking
-
-Sometimes you need to track the path from the starting node to each node. This is useful for finding paths in a graph or solving maze problems.
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-vector<vector<int>> adj;
-vector<bool> visited;
-vector<int> parent;
-
-bool dfs(int node, int target) {
-  visited[node] = true;
-  
-  if (node == target) {
-    return true; // Found the target
-  }
-  
-  for (int neighbor : adj[node]) {
-    if (!visited[neighbor]) {
-      parent[neighbor] = node;
-      if (dfs(neighbor, target)) {
-        return true;
-      }
-    }
-  }
-  
-  return false; // Target not found in this path
-}
-
-void print_path(int start, int end) {
-  vector<int> path;
-  int current = end;
-  
-  while (current != start) {
-    path.push_back(current);
-    current = parent[current];
-  }
-  path.push_back(start);
-  
-  reverse(path.begin(), path.end());
-  
-  cout << "Path from " << start << " to " << end << ": ";
-  for (int i = 0; i < path.size(); i++) {
-    cout << path[i];
-    if (i < path.size() - 1) cout << " -> ";
-  }
-  cout << endl;
-}
-
-int main() {
-  int n, m;
-  cin >> n >> m;
-  
-  adj.resize(n + 1);
-  visited.resize(n + 1, false);
-  parent.resize(n + 1, -1);
-  
-  for (int i = 0; i < m; i++) {
-    int u, v;
-    cin >> u >> v;
-    adj[u].push_back(v);
-    adj[v].push_back(u);
-  }
-  
-  int start, target;
-  cin >> start >> target;
-  
-  parent[start] = start;
-  
-  if (dfs(start, target)) {
-    print_path(start, target);
-  } else {
-    cout << "No path exists from " << start << " to " << target << endl;
-  }
-  
-  return 0;
-}
-```
-
-Sample input:
-
-#block[
-```
-6 7
-1 2
-1 3
-2 4
-3 4
-4 5
-3 6
-5 6
-1 5
-```
-]
-
-Output:
-
-#block[
-```
-Path from 1 to 5: 1 -> 2 -> 4 -> 5
-```
-]
-
-=== Time and Space Complexity
-
-The time complexity of DFS is $O(n + m)$ where $n$ is the number of nodes and $m$ is the number of edges. This is because we visit each node exactly once and examine each edge exactly once (or twice for undirected graphs).
-
-The space complexity is $O(n)$ for the visited array and the recursion stack (in the worst case, the recursion can go $n$ levels deep in a linear graph). For the iterative version, the explicit stack also takes $O(n)$ space in the worst case.
-
-=== Common DFS Applications
-
-DFS is used in many graph algorithms and problems:
-
-+ Finding connected components in an undirected graph
-+ Detecting cycles in a graph
-+ Topological sorting of directed acyclic graphs (DAGs)
-+ Finding strongly connected components (using algorithms like Tarjan's or Kosaraju's)
-+ Solving maze and pathfinding problems
-+ Checking if a graph is bipartite
-+ Finding bridges and articulation points in a graph
-
-The key advantage of DFS over other traversal methods like BFS is that it uses less memory when the graph is very wide, and it naturally finds paths by exploring deeply before backtracking.
-
-For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
+This uses a technique called *breadth-first search(BFS)*, which is explained in depth in the next section.
 
 == Breadth-First Search (BFS) //chap2
 
@@ -3853,13 +3497,13 @@ Let's visualize this with an example graph:
     content((4, -1.5), [5])
 
     // Draw edges
-    line("v0.east", "v1.west")
-    line("v0.east", "v2.west")
-    line("v1.east", "v3.west")
-    line("v1.south", "v4.north")
-    line("v2.east", "v4.south")
-    line("v2.east", "v5.west")
-    line("v4.south", "v5.north")
+    line("v0", "v1")
+    line("v0", "v2")
+    line("v1", "v3")
+    line("v1", "v4")
+    line("v2", "v4")
+    line("v2", "v5")
+    line("v4", "v5")
   })
 ]
 
@@ -3896,8 +3540,8 @@ Here's the standard BFS implementation in C++:
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> adj[100005]; // adjacency list
-bool visited[100005];    // track visited vertices
+vector<vector<int>> adj; // adjacency list
+vector<bool> visited;    // track visited vertices
 
 void bfs(int start) {
   queue<int> q;
@@ -3926,6 +3570,8 @@ int main() {
   int n, m; // n vertices, m edges
   cin >> n >> m;
   
+  adj.resize(n + 1);// in most questions, the nodes are usually 1 indexed
+  vis.reisze(n + 1);
   // Read edges
   for (int i = 0; i < m; i++) {
     int u, v;
@@ -3934,8 +3580,8 @@ int main() {
     adj[v].push_back(u); // remove this line for directed graphs
   }
   
-  // Run BFS from vertex 0
-  bfs(0);
+  // Run BFS from vertex 1
+  bfs(1);
   
   return 0;
 }
@@ -3943,22 +3589,26 @@ int main() {
 
 Sample input:
 
+#no-codly[
 ```
 6 7
-0 1
-0 2
+1 2
 1 3
-1 4
 2 4
 2 5
-4 5
+3 5
+3 6
+5 6
 ```
+]
 
 Output:
 
+#no-codly[
 ```
-0 1 2 3 4 5
+1 2 3 4 5 6
 ```
+]
 
 The time complexity of BFS is $O(V + E)$ where $V$ is the number of vertices and $E$ is the number of edges. This is because we visit each vertex once and examine each edge once.
 
@@ -4376,6 +4026,364 @@ You might wonder when to use BFS versus depth-first search (DFS). Here's a quick
 - You need to detect cycles
 
 Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
+
+== Depth-First Search (DFS) //chap3
+
+#v(0.5em)
+
+*Depth-First Search (DFS)* is a graph traversal algorithm that explores a graph by going as deep as possible along each branch before backtracking. Imagine exploring a maze by always choosing to go forward until you hit a dead end, then backtracking to the last intersection and trying a different path.
+
+DFS can be implemented in two ways: recursively or iteratively using a stack. The recursive approach is more intuitive and commonly used, while the iterative approach is useful when you need more control over the traversal or when dealing with very deep graphs that might cause stack overflow.
+
+=== Recursive DFS
+
+The recursive implementation of DFS is the most natural way to think about the algorithm. When you visit a node, you immediately explore all of its unvisited neighbors before moving on.
+
+Here's the basic implementation:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj; // adjacency list
+vector<bool> visited;
+
+void dfs(int node) {
+  visited[node] = true;
+  cout << node << " "; // Process the current node
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      dfs(neighbor); // Recursively visit unvisited neighbors
+    }
+  }
+}
+
+int main() {
+  int n, m; // n = number of nodes, m = number of edges
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u); // For undirected graph
+  }
+  
+  cout << "DFS traversal: ";
+  dfs(1); // Start DFS from node 1
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+7 6
+1 2
+1 3
+2 4
+2 5
+3 6
+3 7
+```
+]
+
+Output:
+
+#block[
+```
+DFS traversal: 1 2 4 5 3 6 7
+```
+]
+
+The graph in this example looks like:
+
+```
+    1
+   / \
+  2   3
+ / \ / \
+4  5 6  7
+```
+
+Starting from node 1, DFS visits node 2 first, then goes deep to nodes 4 and 5. After exploring all neighbors of 2, it backtracks to 1 and explores 3, then 6 and 7.
+
+=== Iterative DFS
+
+The iterative version uses an explicit stack to simulate the recursive call stack. This is useful when you need to avoid potential stack overflow issues with very deep recursion.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+
+void dfs_iterative(int start) {
+  stack<int> s;
+  s.push(start);
+  
+  while (!s.empty()) {
+    int node = s.top();
+    s.pop();
+    
+    if (visited[node]) continue;
+    
+    visited[node] = true;
+    cout << node << " ";
+    
+    // Push neighbors in reverse order to maintain left-to-right traversal
+    for (int i = adj[node].size() - 1; i >= 0; i--) {
+      int neighbor = adj[node][i];
+      if (!visited[neighbor]) {
+        s.push(neighbor);
+      }
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  cout << "Iterative DFS: ";
+  dfs_iterative(1);
+  cout << endl;
+  
+  return 0;
+}
+```
+
+=== DFS with Connected Components
+
+A common application of DFS is finding connected components in a graph. A connected component is a set of nodes where every node is reachable from every other node in that set.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+vector<int> component;
+
+void dfs(int node) {
+  visited[node] = true;
+  component.push_back(node);
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      dfs(neighbor);
+    }
+  }
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  vector<vector<int>> components;
+  
+  for (int i = 1; i <= n; i++) {
+    if (!visited[i]) {
+      component.clear();
+      dfs(i);
+      components.push_back(component);
+    }
+  }
+  
+  cout << "Number of connected components: " << components.size() << endl;
+  for (int i = 0; i < components.size(); i++) {
+    cout << "Component " << i + 1 << ": ";
+    for (int node : components[i]) {
+      cout << node << " ";
+    }
+    cout << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+8 5
+1 2
+2 3
+4 5
+6 7
+7 8
+```
+]
+
+Output:
+
+#block[
+```
+Number of connected components: 3
+Component 1: 1 2 3
+Component 2: 4 5
+Component 3: 6 7 8
+```
+]
+
+This graph has three separate components that are not connected to each other.
+
+=== DFS with Path Tracking
+
+Sometimes you need to track the path from the starting node to each node. This is useful for finding paths in a graph or solving maze problems.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<vector<int>> adj;
+vector<bool> visited;
+vector<int> parent;
+
+bool dfs(int node, int target) {
+  visited[node] = true;
+  
+  if (node == target) {
+    return true; // Found the target
+  }
+  
+  for (int neighbor : adj[node]) {
+    if (!visited[neighbor]) {
+      parent[neighbor] = node;
+      if (dfs(neighbor, target)) {
+        return true;
+      }
+    }
+  }
+  
+  return false; // Target not found in this path
+}
+
+void print_path(int start, int end) {
+  vector<int> path;
+  int current = end;
+  
+  while (current != start) {
+    path.push_back(current);
+    current = parent[current];
+  }
+  path.push_back(start);
+  
+  reverse(path.begin(), path.end());
+  
+  cout << "Path from " << start << " to " << end << ": ";
+  for (int i = 0; i < path.size(); i++) {
+    cout << path[i];
+    if (i < path.size() - 1) cout << " -> ";
+  }
+  cout << endl;
+}
+
+int main() {
+  int n, m;
+  cin >> n >> m;
+  
+  adj.resize(n + 1);
+  visited.resize(n + 1, false);
+  parent.resize(n + 1, -1);
+  
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  
+  int start, target;
+  cin >> start >> target;
+  
+  parent[start] = start;
+  
+  if (dfs(start, target)) {
+    print_path(start, target);
+  } else {
+    cout << "No path exists from " << start << " to " << target << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+#block[
+```
+6 7
+1 2
+1 3
+2 4
+3 4
+4 5
+3 6
+5 6
+1 5
+```
+]
+
+Output:
+
+#block[
+```
+Path from 1 to 5: 1 -> 2 -> 4 -> 5
+```
+]
+
+=== Time and Space Complexity
+
+The time complexity of DFS is $O(n + m)$ where $n$ is the number of nodes and $m$ is the number of edges. This is because we visit each node exactly once and examine each edge exactly once (or twice for undirected graphs).
+
+The space complexity is $O(n)$ for the visited array and the recursion stack (in the worst case, the recursion can go $n$ levels deep in a linear graph). For the iterative version, the explicit stack also takes $O(n)$ space in the worst case.
+
+=== Common DFS Applications
+
+DFS is used in many graph algorithms and problems:
+
++ Finding connected components in an undirected graph
++ Detecting cycles in a graph
++ Topological sorting of directed acyclic graphs (DAGs)
++ Finding strongly connected components (using algorithms like Tarjan's or Kosaraju's)
++ Solving maze and pathfinding problems
++ Checking if a graph is bipartite
++ Finding bridges and articulation points in a graph
+
+The key advantage of DFS over other traversal methods like BFS is that it uses less memory when the graph is very wide, and it naturally finds paths by exploring deeply before backtracking.
+
+For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
+
 
 == Bellman-Ford Algorithm //chap3
 
