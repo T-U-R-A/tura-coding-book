@@ -3620,14 +3620,11 @@ One of BFS's most powerful applications is finding the shortest distance from a 
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> adj[100005];
-int dist[100005];
+vector<vector<int>> adj;
+vector<int> dist;
 
 void bfs(int start) {
   queue<int> q;
-  
-  // Initialize distances to -1 (infinity)
-  memset(dist, -1, sizeof(dist));
   
   q.push(start);
   dist[start] = 0;
@@ -3649,6 +3646,9 @@ int main() {
   int n, m;
   cin >> n >> m;
   
+  adj.resize(n + 1);
+  dist.resize(n + 1, -1); //initialize distances to "infinity".
+  
   for (int i = 0; i < m; i++) {
     int u, v;
     cin >> u >> v;
@@ -3656,10 +3656,10 @@ int main() {
     adj[v].push_back(u);
   }
   
-  bfs(0);
+  bfs(1);
   
-  // Print distances from vertex 0
-  for (int i = 0; i < n; i++) {
+  // Print distances from vertex 1
+  for (int i = 1; i <= n; i++) {
     cout << "Distance to vertex " << i << ": ";
     if (dist[i] == -1)
       cout << "unreachable" << endl;
@@ -3673,27 +3673,30 @@ int main() {
 
 Using the same input as before:
 
+#no-codly[
 ```
 6 7
-0 1
-0 2
+1 2
 1 3
-1 4
 2 4
 2 5
-4 5
+3 5
+3 6
+5 6
 ```
+]
 
 Output:
-
+#no-codly[
 ```
-Distance to vertex 0: 0
-Distance to vertex 1: 1
+Distance to vertex 1: 0
 Distance to vertex 2: 1
-Distance to vertex 3: 2
+Distance to vertex 3: 1
 Distance to vertex 4: 2
 Distance to vertex 5: 2
+Distance to vertex 6: 2
 ```
+]
 
 === Reconstructing the Shortest Path
 
@@ -3703,15 +3706,12 @@ If we also want to know what the actual shortest path is (not just the distance)
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<int> adj[100005];
-int dist[100005];
-int parent[100005];
+vector<vector<int>> adj;
+vector<int> dist;
+vector<int> parent;
 
 void bfs(int start) {
   queue<int> q;
-  
-  memset(dist, -1, sizeof(dist));
-  memset(parent, -1, sizeof(parent));
   
   q.push(start);
   dist[start] = 0;
@@ -3754,6 +3754,10 @@ int main() {
   int n, m;
   cin >> n >> m;
   
+  adj.resize(n + 1);
+  dist.resize(n + 1, -1);
+  parent.resize(n + 1, -1);
+  
   for (int i = 0; i < m; i++) {
     int u, v;
     cin >> u >> v;
@@ -3761,15 +3765,15 @@ int main() {
     adj[v].push_back(u);
   }
   
-  bfs(0);
+  bfs(1);
   
-  // Find path from vertex 0 to vertex 5
-  vector<int> path = getPath(0, 5);
+  // Find path from vertex 1 to vertex 6
+  vector<int> path = getPath(1, 6);
   
   if (path.empty()) {
     cout << "No path exists" << endl;
   } else {
-    cout << "Shortest path from 0 to 5: ";
+    cout << "Shortest path from 1 to 6: ";
     for (int i = 0; i < path.size(); i++) {
       cout << path[i];
       if (i < path.size() - 1)
@@ -3786,19 +3790,19 @@ Sample input:
 
 ```
 6 7
-0 1
-0 2
+1 2
 1 3
-1 4
 2 4
 2 5
-4 5
+3 5
+3 6
+5 6
 ```
 
 Output:
 
 ```
-Shortest path from 0 to 5: 0 -> 2 -> 5
+Shortest path from 1 to 6: 1 -> 3 -> 6
 ```
 
 === Multi-Source BFS
@@ -3806,9 +3810,12 @@ Shortest path from 0 to 5: 0 -> 2 -> 5
 Sometimes you want to find the shortest distance from *any* of several source vertices. For example, if you have multiple fire stations in a city and want to find the nearest fire station to each building. Instead of running BFS separately from each source, you can run a single BFS by adding all sources to the queue initially:
 
 ```cpp
+vector<vector<int>> adj;
+vector<int> dist;
+
 void multiSourceBFS(vector<int>& sources) {
   queue<int> q;
-  memset(dist, -1, sizeof(dist));
+  fill(dist.begin(), dist.end(), -1);
   
   // Add all sources to queue with distance 0
   for (int src : sources) {
@@ -3841,8 +3848,8 @@ A common application of BFS is navigating a 2D grid. Instead of maintaining an e
 using namespace std;
 
 int n, m; // grid dimensions
-char grid[1005][1005];
-int dist[1005][1005];
+vector<string> grid;
+vector<vector<int>> dist;
 
 // Direction vectors: up, down, left, right
 int dr[] = {-1, 1, 0, 0};
@@ -3855,7 +3862,6 @@ bool isValid(int r, int c) {
 void bfs(int startR, int startC) {
   queue<pair<int, int>> q;
   
-  memset(dist, -1, sizeof(dist));
   
   q.push({startR, startC});
   dist[startR][startC] = 0;
@@ -3880,10 +3886,13 @@ void bfs(int startR, int startC) {
 int main() {
   cin >> n >> m;
   
+  grid.resize(n);
+  dist.resize(n, vector<int>(m, -1));
+  
   int startR, startC;
   for (int i = 0; i < n; i++) {
+    cin >> grid[i];
     for (int j = 0; j < m; j++) {
-      cin >> grid[i][j];
       if (grid[i][j] == 'S') {
         startR = i;
         startC = j;
@@ -3941,13 +3950,11 @@ There's a variant of BFS called *0-1 BFS* that handles graphs where edges have w
 #include <bits/stdc++.h>
 using namespace std;
 
-vector<pair<int, int>> adj[100005]; // {neighbor, weight}
-int dist[100005];
+vector<vector<pair<int, int>>> adj; // {neighbor, weight}
+vector<int> dist;
 
 void bfs01(int start) {
   deque<int> dq;
-  
-  memset(dist, -1, sizeof(dist));
   
   dq.push_back(start);
   dist[start] = 0;
@@ -3975,6 +3982,9 @@ int main() {
   int n, m;
   cin >> n >> m;
   
+  adj.resize(n + 1);
+  dist.resize(n + 1, -1);
+  
   for (int i = 0; i < m; i++) {
     int u, v, w;
     cin >> u >> v >> w; // w is either 0 or 1
@@ -3982,9 +3992,9 @@ int main() {
     adj[v].push_back({u, w});
   }
   
-  bfs01(0);
+  bfs01(1);
   
-  for (int i = 0; i < n; i++) {
+  for (int i = 1; i <= n; i++) {
     cout << "Distance to vertex " << i << ": ";
     if (dist[i] == -1)
       cout << "unreachable" << endl;
@@ -4009,23 +4019,6 @@ Here are some typical problems where BFS is the right tool:
 5. *Finding all vertices within k distance* from a source
 6. *Maze solving* and grid pathfinding
 7. *Network flow problems* (using BFS to find augmenting paths)
-
-=== BFS vs DFS
-
-You might wonder when to use BFS versus depth-first search (DFS). Here's a quick comparison:
-
-*Use BFS when:*
-- You need the shortest path in an unweighted graph
-- You want to explore level by level
-- The solution is likely to be close to the starting point
-
-*Use DFS when:*
-- You need to explore all possible paths
-- You're looking for any path (not necessarily shortest)
-- The graph might be very wide but not deep
-- You need to detect cycles
-
-Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
 
 == Depth-First Search (DFS) //chap3
 
