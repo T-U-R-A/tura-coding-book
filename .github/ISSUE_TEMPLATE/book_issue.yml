@@ -1,0 +1,41 @@
+name: Book Issue
+description: Report an error in the coding book
+title: "[Book Issue]: "
+labels: ["book-feedback"]
+
+body:
+
+  - type: input
+    id: page
+    attributes:
+      label: Page Number
+      placeholder: e.g. 87
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      options:
+        - Typo
+        - Code error
+        - Explanation unclear
+        - Formatting problem
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      placeholder: e.g. "teh" instead of "the"
+    validations:
+      required: true
+
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested Fix
+      placeholder: e.g. Replace word with "the"
