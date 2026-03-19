@@ -8,7 +8,17 @@
 
 
 #set text(
-  font: "New Computer Modern Math"
+  font: "New Computer Modern"
+)
+
+#set enum(numbering: (..nums) => {
+  let n = nums.pos().first()
+  set text(font: "New Computer Modern", style: "italic")
+  [#n.]
+})
+
+#set math.cancel(
+  stroke: red
 )
 
 #set page(
@@ -17,6 +27,12 @@
 
 #set heading(
   numbering: "1."
+)
+
+#set table(align: center)
+
+#set rect(
+  inset: 1em
 )
 
 #show link: underline
