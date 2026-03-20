@@ -3788,6 +3788,7 @@ int main() {
 
 Sample input:
 
+#no-codly[
 ```
 6 7
 1 2
@@ -3798,12 +3799,15 @@ Sample input:
 3 6
 5 6
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 Shortest path from 1 to 6: 1 -> 3 -> 6
 ```
+]
 
 === Multi-Source BFS
 
@@ -3861,7 +3865,6 @@ bool isValid(int r, int c) {
 
 void bfs(int startR, int startC) {
   queue<pair<int, int>> q;
-  
   
   q.push({startR, startC});
   dist[startR][startC] = 0;
@@ -3921,6 +3924,7 @@ int main() {
 
 Sample input:
 
+#no-codly[
 ```
 5 6
 S.....
@@ -3929,9 +3933,11 @@ S.....
 .#.##.
 ......
 ```
+]
 
 Output:
 
+#no-codly[
 ```
 0 1 2 3 4 5 
 1 # # # 5 6 
@@ -3939,9 +3945,11 @@ Output:
 3 # 7 # # 8 
 4 5 6 7 8 9 
 ```
+]
 
 The grid shows the minimum number of steps needed to reach each cell from the starting position 'S', where `#` represents walls that cannot be traversed.
 
+/* This needs to be moved appropriately when dijstra is introduce. Deques also need to be explained
 === 0-1 BFS
 
 There's a variant of BFS called *0-1 BFS* that handles graphs where edges have weights of either 0 or 1. The key insight is to use a deque instead of a queue: when traversing an edge with weight 0, add the vertex to the front of the deque; when traversing an edge with weight 1, add it to the back.
@@ -4007,6 +4015,7 @@ int main() {
 ```
 
 This runs in $O(V + E)$ time, which is faster than using Dijkstra's algorithm (which would be $O((V + E) log V)$) for this specific case.
+*/
 
 === Common BFS Applications
 
