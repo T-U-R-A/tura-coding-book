@@ -9,7 +9,17 @@
 #codly(display-icon: false)
 
 #set text(
-  font: "New Computer Modern Math",
+  font: "New Computer Modern"
+)
+
+#set enum(numbering: (..nums) => {
+  let n = nums.pos().first()
+  set text(font: "New Computer Modern", style: "italic")
+  [#n.]
+})
+
+#set math.cancel(
+  stroke: red
 )
 
 #set page(
@@ -4255,7 +4265,7 @@ You might wonder why you'd use a stack when you could just use a vector and alwa
 
 #v(0.5em)
 
-The answer is that stacks provide a cleaner interface when you only need LIFO behavior. They prevent accidental access to middle elements and make your code's intent clearer. However, if you need to access elements other than the top, you should use a vector or deque instead.
+The answer is that stacks provide a cleaner interface when you only need LIFO behavior. They prevent accidental access to middle elements and make your code's intent clearer. However, if you need to access elements other than the top, you should use a vector instead.
 
 #v(1em)
 
