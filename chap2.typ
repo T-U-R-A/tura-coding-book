@@ -2826,7 +2826,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Factory Machines
+=== Factory Machines <chap2-bsearch>
 
 \
 #link("https://cses.fi/problemset/task/1620")[Question - Factory Machines]

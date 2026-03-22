@@ -261,7 +261,7 @@ We're going to go into vectors in a little more depth. As stated before, vectors
 
 The way vectors make this efficient time-wise without wasting a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$.
 
-This means that the time complexity of inserting elements into a vector is close, but not quite, $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation, and because vector resizes occur infrequently.
+This means that the time complexity of inserting elements into a vector is close, but not quite, $O(1)$. This is called *amortized* $O(1)$#footnote[Amortized analysis looks at the average cost over a sequence of operations. While a single resize costs $O(n)$, it happens rarely enough that spreading the cost over all insertions gives $O(1)$ per insertion on average.] because it looks at the average instead of each single operation, and because vector resizes occur infrequently.
 
 Note that vectors' constant factors are bigger than arrays, which means for questions where every little efficiency matters to solve the question, if you don't need a vector, don't use one. However, in every other case, it's much safer and more convenient to use vectors instead of arrays. The main reasons being that:
 
@@ -276,7 +276,7 @@ More technical details about vectors can be found #link("https://en.cppreference
 
 == Recursion <recur> //chap1
 
-Recursion is the concept of calling some function inside of itself. Say we want to compute the factorial of a number $n$. We can do:
+Recursion is the concept of calling some function inside of itself. It forms the foundation for many algorithms, including backtracking (see @backtracking) and dynamic programming with memoization (see @dp). Say we want to compute the factorial of a number $n$. We can do:
 
 ```cpp
 #include <bits/stdc++.h>
@@ -404,6 +404,8 @@ int main(){
 //TODO: Write about merge sort.
 
 === Binary Search <binary-search> //chap1
+
+Binary search is used extensively in problems like Factory Machines and Array Division in Chapter 2.
 
 ==== When to Use Binary Search
 
@@ -590,6 +592,8 @@ Sometimes your vector may not be sorted in ascending order. Sometimes it might b
 By default, the `comp()` function is `operator<()`. However, this can be changed to `greater<int>()`, which returns true if the first number is greater than the second number, which is needed for it to work properly on a descending list. Note, however, that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use them on a descending list. Apply a correction factor as needed.
 
 == Sets <set> //chap2
+
+Sets are used in problems like Concert Tickets, Playlist, and Traffic Lights. See also @map for the related `map` data structure.
 
 === When to Use Sets
 
@@ -841,7 +845,109 @@ int main(){
   return 0;
 }
 ```
+
+== Two Pointers <two-pointers> //chap2
+
+The two-pointer technique is a powerful approach for solving problems on sorted arrays or sequences. Instead of using nested loops (which give $O(n^2)$), we maintain two pointers that move through the array based on certain conditions, achieving $O(n)$ time complexity.
+
+=== When to Use Two Pointers
+
+Use the two-pointer technique when:
+- *Finding pairs with a target sum*: One pointer at start, one at end
+- *Merging two sorted arrays*: One pointer in each array
+- *Removing duplicates*: One pointer for reading, one for writing
+- *Sliding window problems*: Left and right boundaries of a window
+
+=== Example: Sum of Two Values
+
+Given a sorted array, find two numbers that sum to a target value.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw the sorted array
+    let arr = (1, 3, 5, 7, 9, 11, 15)
+    let target = 16
+
+    // Draw boxes for array elements
+    for i in range(arr.len()) {
+      rect((i * 0.8, 0), ((i + 1) * 0.8, -0.6), fill: if i == 0 or i == arr.len() - 1 { rgb(200, 225, 255) } else { white })
+      content((i * 0.8 + 0.4, -0.3), text(size: 10pt)[#arr.at(i)])
+    }
+
+    // Left pointer arrow
+    line((0.4, 0.2), (0.4, 0.6), mark: (end: ">"), stroke: blue)
+    content((0.4, 0.85), text(fill: blue, size: 8pt)[L])
+
+    // Right pointer arrow
+    line((arr.len() * 0.8 - 0.4, 0.2), (arr.len() * 0.8 - 0.4, 0.6), mark: (end: ">"), stroke: red)
+    content((arr.len() * 0.8 - 0.4, 0.85), text(fill: red, size: 8pt)[R])
+
+    // Explanation
+    content((2.8, -1.2), text(size: 9pt)[Sum = 1 + 15 = 16 ✓ Found!])
+  })
+]
+
+The algorithm works as follows:
+1. Start with `left = 0` and `right = n-1`
+2. If `arr[left] + arr[right] == target`, we found the pair
+3. If the sum is too small, move `left` right (to get a larger value)
+4. If the sum is too large, move `right` left (to get a smaller value)
+
+```cpp
+int left = 0, right = n - 1;
+while (left < right) {
+    int sum = arr[left] + arr[right];
+    if (sum == target) {
+        cout << left << " " << right << endl;
+        return;
+    } else if (sum < target) {
+        left++;  // Need a larger sum
+    } else {
+        right--; // Need a smaller sum
+    }
+}
+```
+
+This technique is used in Sum of Two Values, Sum of Three Values, and Sum of Four Values problems. See also @sliding-window for the related sliding window technique.
+
+== Sliding Window <sliding-window> //chap2
+
+The sliding window technique maintains a "window" of elements as you iterate through an array. It's particularly useful for finding subarrays that satisfy certain conditions.
+
+=== Types of Sliding Windows
+
+1. *Fixed-size window*: Window size is constant (e.g., Sliding Median)
+2. *Variable-size window*: Window expands/shrinks based on conditions (e.g., Playlist)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw array
+    let arr = (2, 1, 5, 1, 3, 2)
+
+    for i in range(arr.len()) {
+      let fillColor = if i >= 1 and i <= 3 { rgb(200, 255, 200) } else { white }
+      rect((i * 0.8, 0), ((i + 1) * 0.8, -0.6), fill: fillColor)
+      content((i * 0.8 + 0.4, -0.3), text(size: 10pt)[#arr.at(i)])
+    }
+
+    // Window bracket
+    line((0.8, 0.15), (0.8, 0.35), stroke: 1.5pt)
+    line((0.8, 0.35), (3.2, 0.35), stroke: 1.5pt)
+    line((3.2, 0.15), (3.2, 0.35), stroke: 1.5pt)
+
+    content((2, 0.6), text(size: 9pt)[Window: sum = 7])
+  })
+]
+
+The sliding window technique is used in problems like Playlist, Subarray Sums I, and Distinct Values Subarrays. See @deque for how deques can optimize sliding window problems.
+
 == Greedy Algorithms <greedy> //chap2
+
+Greedy algorithms make locally optimal choices at each step. Many problems in Chapter 2 use greedy approaches, including Movie Festival, Tasks and Deadlines, and Room Allocation.
 
 #let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
 
@@ -1077,7 +1183,7 @@ This problem can be solved by using backtracking. We can start by placing the fi
   })
 ]
 
-As you can see, we start with an empty board, then we place a queen in all positions on the first row. Then we place the next queen on the next row in a valid position and go from there. We only go further if the exsisting position is valid and prune off any invalid position saving a lot of time as invalid positions dont brnch off to take more nvalid positon. This is the essence of backtracking.
+As you can see, we start with an empty board, then we place a queen in all positions on the first row. Then we place the next queen on the next row in a valid position and go from there. We only go further if the existing position is valid and prune off any invalid position, saving a lot of time as invalid positions don't branch off to take more invalid positions. This is the essence of backtracking.
 
 To write the code for this, we need four arrays: one for the row, one for the columns, and one for each of the two diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place another queen there. The indexes of the two diagonals will be as follows:
 
@@ -1140,7 +1246,7 @@ The complexity of this code is $O(n!)$, which grows very quickly. Solving the pr
 
 == Negative Numbers <negative-numbers> //chap2
 
-In a computer, all numbers are stored in binary. For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
+In a computer, all numbers are stored in binary.#footnote[This representation is called *two's complement* and is used by virtually all modern computers. Understanding it is essential for bit manipulation (see @bit-ops).] For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
 
 $
   00000000000000000000000000000101
@@ -1319,6 +1425,8 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 
 == Prefix Sum <prefix-sum> //chap2
 
+Prefix sums are fundamental for range sum queries. They are used extensively in Subarray Sums I & II, and form the foundation for understanding Fenwick Trees (see @fenwick).
+
 #let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
 #let arr3 = ((4, 7), (2, 5), (1, 3))
 
@@ -1381,7 +1489,7 @@ $
   }
 $
 
-Note that indices are 0-indexed.
+Note that indices are 0-indexed.#footnote[In competitive programming, arrays can be 0-indexed or 1-indexed depending on the problem. Prefix sums are often easier to implement with 1-indexing since `pref[0] = 0` naturally handles edge cases.]
 
 You could solve this question by simply iterating through all elements in each range and then adding them up. However, each of these operations is amortized $O(n)$. If there are $q$ queries, your complexity would be $O(n q)$. If $n$ and $q$'s limits are $2 times 10^5$, $O(n q)$ would be too slow.
 
@@ -2203,6 +2311,8 @@ For the `std::queue` documentation, click #link("https://en.cppreference.com/w/c
 
 == Maps <map> //chap2
 
+A map is a key-value data structure similar to a set (see @set), but storing pairs instead of single values. Maps are used in Subarray Sums II and many counting problems.
+
 A map is a data structure in C++ which has the following properties:
 
 + A new key-value pair can be added to a map in $O(log n)$ time.
@@ -2844,7 +2954,7 @@ int main() {
 
 Here, `dp[i]` stores the value of $F(i)$. We fill the array left to right, and by the time we reach `dp[i]`, both `dp[i-1]` and `dp[i-2]` are already known.
 
-Both memoization and tabulation give $O(n)$ time. Top-down can be easier to write because it mirrors the recursive structure of the problem. Bottom-up is often slightly faster in practice since it avoids the overhead of recursive function calls. Now that we have the basics down, let's use DP to solve some actual problems.
+Both memoization and tabulation give $O(n)$ time. Top-down can be easier to write because it mirrors the recursive structure of the problem. Bottom-up is often slightly faster in practice since it avoids the overhead of recursive function calls.#footnote[In competitive programming, bottom-up is generally preferred for its predictable memory access patterns and lack of recursion overhead. However, top-down is sometimes easier when not all states need to be computed.] Now that we have the basics down, let's use DP to solve some actual problems.
 
 === Climbing Stairs
 
