@@ -4577,6 +4577,22 @@ The key advantage of DFS over other traversal methods like BFS is that it uses l
 
 For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
 
+=== BFS vs DFS
+
+You might wonder when to use BFS versus depth-first search (DFS). Here's a quick comparison:
+
+*Use BFS when:*
+- You need the shortest path in an unweighted graph
+- You want to explore level by level
+- The solution is likely to be close to the starting point
+
+*Use DFS when:*
+- You need to explore all possible paths
+- You're looking for any path (not necessarily shortest)
+- The graph might be very wide but not deep
+- You need to detect cycles
+
+Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
 
 == Bellman-Ford Algorithm <bellman-ford> //chap3
 
