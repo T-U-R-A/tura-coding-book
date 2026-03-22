@@ -14124,3 +14124,881 @@ Here's when to use each technique:
 - Use for: conditional range queries
 
 The key to offline queries is recognizing that you don't need to answer queries in the order they're given. Reordering them can dramatically reduce complexity!
+
+#pagebreak()
+
+== Tree Algorithms Concepts <tree-concepts>
+
+Trees are one of the most important data structures in competitive programming. Unlike general graphs, trees have special properties that enable efficient algorithms. This section covers the fundamental concepts you'll need to solve tree problems.
+
+=== What is a Tree?
+
+A *tree* is a connected graph with no cycles. If a tree has $n$ nodes, it always has exactly $n - 1$ edges. This is a fundamental property: adding any edge creates a cycle, and removing any edge disconnects the tree.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Valid tree (left side)
+    content((2, 4.5), text(weight: "bold", fill: green.darken(20%))[Valid Tree])
+
+    circle((2, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t1")
+    content((2, 3.5), [1])
+
+    circle((1, 2.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t2")
+    content((1, 2.3), [2])
+
+    circle((3, 2.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t3")
+    content((3, 2.3), [3])
+
+    circle((0.3, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t4")
+    content((0.3, 1.1), [4])
+
+    circle((1.7, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t5")
+    content((1.7, 1.1), [5])
+
+    circle((3, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t6")
+    content((3, 1.1), [6])
+
+    line((2, 3.2), (1, 2.6), stroke: 1pt)
+    line((2, 3.2), (3, 2.6), stroke: 1pt)
+    line((1, 2.0), (0.3, 1.4), stroke: 1pt)
+    line((1, 2.0), (1.7, 1.4), stroke: 1pt)
+    line((3, 2.0), (3, 1.4), stroke: 1pt)
+
+    content((2, 0.3), text(size: 9pt)[6 nodes, 5 edges])
+    content((2, -0.1), text(size: 9pt, fill: green.darken(20%))[Connected, no cycles])
+
+    // Not a tree - has cycle (right side)
+    content((7, 4.5), text(weight: "bold", fill: red.darken(20%))[Not a Tree])
+
+    circle((7, 3.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n1")
+    content((7, 3.5), [1])
+
+    circle((6, 2.3), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n2")
+    content((6, 2.3), [2])
+
+    circle((8, 2.3), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n3")
+    content((8, 2.3), [3])
+
+    circle((7, 1.1), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n4")
+    content((7, 1.1), [4])
+
+    line((7, 3.2), (6, 2.6), stroke: 1pt)
+    line((7, 3.2), (8, 2.6), stroke: 1pt)
+    line((6, 2.0), (7, 1.4), stroke: 1pt)
+    line((8, 2.0), (7, 1.4), stroke: 1pt)
+    line((6, 2.3), (8, 2.3), stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+
+    content((7, 0.3), text(size: 9pt)[4 nodes, 5 edges])
+    content((7, -0.1), text(size: 9pt, fill: red.darken(20%))[Cycle: 2-3-4-2])
+  })
+]
+
+The key properties of trees are:
+- *Exactly one path* between any two nodes
+- *$n$ nodes means $n-1$ edges* (always)
+- *No cycles* - removing this constraint gives a general graph
+- *Connected* - all nodes are reachable from any other node
+
+=== Rooted Trees and Terminology
+
+When we designate one node as the *root*, the tree becomes a *rooted tree* with a hierarchical structure. This gives meaning to concepts like "parent", "child", and "subtree".
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Rooted Tree Terminology])
+
+    // Root node
+    circle((4, 4.5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt, name: "root")
+    content((4, 4.5), text(weight: "bold")[1])
+    content((5.5, 4.5), text(size: 8pt)[Root (depth 0)])
+
+    // Level 1
+    circle((2.5, 3.2), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "n2")
+    content((2.5, 3.2), [2])
+
+    circle((5.5, 3.2), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "n3")
+    content((5.5, 3.2), [3])
+
+    content((0.8, 3.2), text(size: 8pt, fill: blue)[depth 1])
+
+    // Level 2
+    circle((1.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n4")
+    content((1.5, 1.9), [4])
+
+    circle((3.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n5")
+    content((3.5, 1.9), [5])
+
+    circle((5.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n6")
+    content((5.5, 1.9), [6])
+
+    content((0.8, 1.9), text(size: 8pt, fill: blue)[depth 2])
+
+    // Level 3 (leaves)
+    circle((1, 0.6), radius: 0.3, fill: rgb(220, 220, 220), stroke: 1pt, name: "n7")
+    content((1, 0.6), [7])
+
+    circle((2, 0.6), radius: 0.3, fill: rgb(220, 220, 220), stroke: 1pt, name: "n8")
+    content((2, 0.6), [8])
+
+    content((0.8, 0.6), text(size: 8pt, fill: blue)[depth 3])
+
+    // Edges
+    line((4, 4.15), (2.5, 3.55), stroke: 1pt)
+    line((4, 4.15), (5.5, 3.55), stroke: 1pt)
+    line((2.5, 2.9), (1.5, 2.25), stroke: 1pt)
+    line((2.5, 2.9), (3.5, 2.25), stroke: 1pt)
+    line((5.5, 2.9), (5.5, 2.25), stroke: 1pt)
+    line((1.5, 1.6), (1, 0.95), stroke: 1pt)
+    line((1.5, 1.6), (2, 0.95), stroke: 1pt)
+
+    // Subtree highlight
+    rect((0.4, 0.2), (2.6, 2.4), stroke: (paint: green.darken(20%), thickness: 1.5pt, dash: "dashed"))
+    content((1.5, -0.2), text(size: 8pt, fill: green.darken(20%))[Subtree of node 4])
+
+    // Annotations on right
+    content((7.5, 4.2), text(size: 8pt)[Parent of 2, 3 is 1])
+    content((7.5, 3.7), text(size: 8pt)[Children of 2 are 4, 5])
+    content((7.5, 3.2), text(size: 8pt)[Leaves: 5, 6, 7, 8])
+    content((7.5, 2.7), text(size: 8pt)[Height of tree: 3])
+  })
+]
+
+*Key terminology:*
+- *Root*: The top node (often node 1 in problems)
+- *Parent*: The node directly above. Node 2's parent is 1.
+- *Children*: Nodes directly below. Node 2's children are 4 and 5.
+- *Leaf*: A node with no children (nodes 5, 6, 7, 8 above)
+- *Subtree*: A node and all its descendants
+- *Depth*: Distance from root. Root has depth 0.
+- *Height*: Maximum depth in the tree
+- *Ancestor*: Any node on the path to root
+- *Descendant*: Any node in a node's subtree
+
+=== Tree Representation in Code
+
+The most common way to represent a tree is with an *adjacency list*. For each node, we store a list of its neighbors.
+
+```cpp
+int n;  // number of nodes
+vector<vector<int>> adj(n + 1);  // adj[u] = list of neighbors of u
+
+// Reading n-1 edges
+for (int i = 0; i < n - 1; i++) {
+    int a, b;
+    cin >> a >> b;
+    adj[a].push_back(b);
+    adj[b].push_back(a);  // undirected edge
+}
+```
+
+For rooted trees, we often also store the parent of each node:
+
+```cpp
+vector<int> parent(n + 1);
+
+void root_tree(int u, int par) {
+    parent[u] = par;
+    for (int v : adj[u]) {
+        if (v != par) {
+            root_tree(v, u);
+        }
+    }
+}
+
+// Call with: root_tree(1, 0);  // root at node 1, no parent (0)
+```
+
+=== Tree Traversal: DFS and BFS
+
+*Depth-First Search (DFS)* explores as deep as possible before backtracking. It's the most common way to traverse trees.
+
+```cpp
+void dfs(int u, int parent) {
+    // Process node u here (pre-order)
+
+    for (int v : adj[u]) {
+        if (v != parent) {
+            dfs(v, u);
+        }
+    }
+
+    // Or process here (post-order)
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5), text(weight: "bold")[DFS Traversal Order])
+
+    circle((4, 4), radius: 0.35, fill: rgb(255, 215, 0), stroke: 1pt)
+    content((4, 4), [1])
+    content((4.6, 4), text(size: 8pt, fill: red)[1st])
+
+    circle((2.5, 2.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.8), [2])
+    content((3.1, 2.8), text(size: 8pt, fill: red)[2nd])
+
+    circle((5.5, 2.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 2.8), [3])
+    content((6.1, 2.8), text(size: 8pt, fill: red)[5th])
+
+    circle((1.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 1.6), [4])
+    content((2.1, 1.6), text(size: 8pt, fill: red)[3rd])
+
+    circle((3.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 1.6), [5])
+    content((4.1, 1.6), text(size: 8pt, fill: red)[4th])
+
+    circle((5.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((5.5, 1.6), [6])
+    content((6.1, 1.6), text(size: 8pt, fill: red)[6th])
+
+    line((4, 3.65), (2.5, 3.15), stroke: 1pt)
+    line((4, 3.65), (5.5, 3.15), stroke: 1pt)
+    line((2.5, 2.5), (1.5, 1.95), stroke: 1pt)
+    line((2.5, 2.5), (3.5, 1.95), stroke: 1pt)
+    line((5.5, 2.5), (5.5, 1.95), stroke: 1pt)
+
+    content((4, 0.5), text(size: 9pt)[DFS visits: 1 -> 2 -> 4 -> 5 -> 3 -> 6])
+  })
+]
+
+*Breadth-First Search (BFS)* explores level by level. It's useful for finding shortest paths in unweighted trees.
+
+```cpp
+void bfs(int start) {
+    queue<int> q;
+    vector<int> dist(n + 1, -1);
+
+    q.push(start);
+    dist[start] = 0;
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : adj[u]) {
+            if (dist[v] == -1) {  // not visited
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+}
+```
+
+=== Subtree Size and Basic Tree DP
+
+One of the most fundamental tree computations is finding the size of each subtree. This is done with a simple DFS:
+
+```cpp
+vector<int> subtree_size(n + 1);
+
+int compute_size(int u, int parent) {
+    subtree_size[u] = 1;  // count self
+    for (int v : adj[u]) {
+        if (v != parent) {
+            subtree_size[u] += compute_size(v, u);
+        }
+    }
+    return subtree_size[u];
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5), text(weight: "bold")[Subtree Sizes])
+
+    circle((4, 4), radius: 0.4, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 4), text(weight: "bold")[1])
+    content((5, 4), text(size: 8pt)[size = 6])
+
+    circle((2.5, 2.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.8), [2])
+    content((1.3, 2.8), text(size: 8pt)[size = 3])
+
+    circle((5.5, 2.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 2.8), [3])
+    content((6.7, 2.8), text(size: 8pt)[size = 2])
+
+    circle((1.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 1.6), [4])
+    content((0.5, 1.6), text(size: 8pt)[size = 1])
+
+    circle((3.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 1.6), [5])
+    content((4.3, 1.6), text(size: 8pt)[size = 1])
+
+    circle((5.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((5.5, 1.6), [6])
+    content((6.5, 1.6), text(size: 8pt)[size = 1])
+
+    line((4, 3.6), (2.5, 3.15), stroke: 1pt)
+    line((4, 3.6), (5.5, 3.15), stroke: 1pt)
+    line((2.5, 2.45), (1.5, 1.95), stroke: 1pt)
+    line((2.5, 2.45), (3.5, 1.95), stroke: 1pt)
+    line((5.5, 2.45), (5.5, 1.95), stroke: 1pt)
+
+    content((4, 0.5), text(size: 9pt)[size\[u\] = 1 + sum of children's sizes])
+  })
+]
+
+This pattern of computing values bottom-up (from leaves to root) is the foundation of *Tree DP*.
+
+=== Tree Diameter
+
+The *diameter* of a tree is the longest path between any two nodes. There are two classic approaches:
+
+*Approach 1: Two BFS/DFS*
+1. Start from any node, find the farthest node $u$
+2. From $u$, find the farthest node $v$
+3. The distance from $u$ to $v$ is the diameter
+
+This works because the farthest node from any node must be an endpoint of some diameter.
+
+*Approach 2: Tree DP (Single DFS)*
+For each node, track the two longest paths going down. The diameter passing through that node is their sum.
+
+```cpp
+int diameter = 0;
+
+int dfs(int u, int parent) {
+    int max1 = 0, max2 = 0;  // two longest paths down
+
+    for (int v : adj[u]) {
+        if (v == parent) continue;
+        int d = dfs(v, u) + 1;
+
+        if (d > max1) { max2 = max1; max1 = d; }
+        else if (d > max2) { max2 = d; }
+    }
+
+    diameter = max(diameter, max1 + max2);
+    return max1;
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Tree Diameter Example])
+
+    circle((4, 4.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((4, 4.5), [1])
+
+    circle((2, 3.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 3.5), [2])
+
+    circle((6, 3.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 3.5), [3])
+
+    circle((1, 2.5), radius: 0.35, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1, 2.5), [4])
+
+    circle((3, 2.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((3, 2.5), [5])
+
+    circle((6, 2.5), radius: 0.35, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((6, 2.5), [6])
+
+    circle((1, 1.5), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((1, 1.5), [7])
+
+    // Regular edges
+    line((4, 4.15), (2, 3.85), stroke: 1pt)
+    line((4, 4.15), (6, 3.85), stroke: 1pt)
+    line((2, 3.15), (1, 2.85), stroke: 1pt)
+    line((2, 3.15), (3, 2.85), stroke: 1pt)
+    line((6, 3.15), (6, 2.85), stroke: 1pt)
+    line((1, 2.15), (1, 1.85), stroke: 1pt)
+
+    // Diameter path highlighted
+    line((1, 1.85), (1, 2.15), stroke: (paint: red, thickness: 3pt))
+    line((1, 2.85), (2, 3.15), stroke: (paint: red, thickness: 3pt))
+    line((2, 3.85), (4, 4.15), stroke: (paint: red, thickness: 3pt))
+    line((4, 4.15), (6, 3.85), stroke: (paint: red, thickness: 3pt))
+    line((6, 3.15), (6, 2.85), stroke: (paint: red, thickness: 3pt))
+
+    content((4, 0.7), text(fill: red, weight: "bold")[Diameter = 5 edges])
+    content((4, 0.2), text(size: 9pt)[Path: 7 - 4 - 2 - 1 - 3 - 6])
+  })
+]
+
+#pagebreak()
+
+=== Euler Tour (Tree Flattening)
+
+The *Euler Tour* technique converts a tree into an array by recording when we enter and exit each node during DFS. This is incredibly powerful because it transforms *subtree queries* into *range queries*.
+
+```cpp
+int timer = 0;
+vector<int> tin(n + 1), tout(n + 1);
+
+void euler_tour(int u, int parent) {
+    tin[u] = ++timer;  // entry time
+
+    for (int v : adj[u]) {
+        if (v != parent) {
+            euler_tour(v, u);
+        }
+    }
+
+    tout[u] = timer;  // exit time
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Euler Tour: Flattening the Tree])
+
+    // Tree
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5), [1])
+    content((4.7, 5), text(size: 7pt)[tin=1])
+
+    circle((2.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.8), [2])
+    content((1.7, 3.8), text(size: 7pt)[tin=2])
+
+    circle((5.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+    content((6.3, 3.8), text(size: 7pt)[tin=5])
+
+    circle((1.5, 2.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 2.6), [4])
+    content((0.7, 2.6), text(size: 7pt)[tin=3])
+
+    circle((3.5, 2.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 2.6), [5])
+    content((4.3, 2.6), text(size: 7pt)[tin=4])
+
+    line((4, 4.65), (2.5, 4.15), stroke: 1pt)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((2.5, 3.5), (1.5, 2.95), stroke: 1pt)
+    line((2.5, 3.5), (3.5, 2.95), stroke: 1pt)
+
+    // Flattened array
+    content((4, 1.6), text(weight: "bold", size: 9pt)[Flattened Array (DFS order):])
+
+    for (i, val) in ((0, "1"), (1, "2"), (2, "4"), (3, "5"), (4, "3")) {
+      rect((1.0 + i * 1.2, 0.6), (2.0 + i * 1.2, 1.2), stroke: 1pt, fill: rgb(230, 245, 255))
+      content((1.5 + i * 1.2, 0.9), text(size: 10pt)[#val])
+      content((1.5 + i * 1.2, 0.3), text(size: 7pt, fill: gray)[#(i + 1)])
+    }
+
+    // Subtree range highlight
+    rect((2.2, 0.5), (5.6, 1.3), stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    content((3.9, -0.1), text(size: 8pt, fill: red)[Subtree of 2: indices 2-4])
+  })
+]
+
+*Key property*: The subtree of node $u$ corresponds to the range $["tin"[u], "tout"[u]]$ in the flattened array.
+
+This means:
+- *Subtree sum query* → Range sum query on the array
+- *Update node value* → Point update on the array
+- We can use Segment Trees or Fenwick Trees!
+
+=== Binary Lifting
+
+*Binary Lifting* is a technique to answer *k-th ancestor* queries efficiently. The naive approach climbs one step at a time (O(k)), but binary lifting precomputes ancestors at powers of 2, allowing O(log k) queries.
+
+The key insight: any number $k$ can be expressed as a sum of powers of 2. So we can "jump" to the k-th ancestor by making at most $log(k)$ jumps.
+
+```cpp
+const int MAXLOG = 20;  // log2(n) rounded up
+vector<vector<int>> up(n + 1, vector<int>(MAXLOG, 0));
+// up[v][j] = the 2^j-th ancestor of v
+
+void precompute(int u, int parent) {
+    up[u][0] = parent;  // 2^0 = 1st ancestor = parent
+    for (int j = 1; j < MAXLOG; j++) {
+        if (up[u][j-1] != 0) {
+            up[u][j] = up[up[u][j-1]][j-1];  // 2^j = 2^(j-1) + 2^(j-1)
+        }
+    }
+    for (int v : adj[u]) {
+        if (v != parent) precompute(v, u);
+    }
+}
+
+int kth_ancestor(int v, int k) {
+    for (int j = 0; j < MAXLOG && v != 0; j++) {
+        if (k & (1 << j)) {  // if j-th bit of k is set
+            v = up[v][j];    // jump 2^j steps
+        }
+    }
+    return v;  // 0 if k > depth of v
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6.5), text(weight: "bold")[Binary Lifting: Jumping in Powers of 2])
+
+    // Tree structure
+    circle((4, 5.5), radius: 0.3, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5.5), [1])
+
+    circle((3, 4.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((3, 4.5), [2])
+
+    circle((2.5, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.5), [3])
+
+    circle((2, 2.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 2.5), [4])
+
+    circle((1.5, 1.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((1.5, 1.5), [5])
+
+    line((4, 5.2), (3, 4.8), stroke: 1pt)
+    line((3, 4.2), (2.5, 3.8), stroke: 1pt)
+    line((2.5, 3.2), (2, 2.8), stroke: 1pt)
+    line((2, 2.2), (1.5, 1.8), stroke: 1pt)
+
+    // Jump arrows
+    line((1.8, 1.5), (2.3, 2.2), stroke: (paint: blue, thickness: 2pt), mark: (end: ">"))
+    content((2.5, 1.7), text(size: 7pt, fill: blue)[$2^0$])
+
+    line((1.7, 1.7), (2.3, 3.2), stroke: (paint: green.darken(20%), thickness: 2pt), mark: (end: ">"))
+    content((2.8, 2.4), text(size: 7pt, fill: green.darken(20%))[$2^1$])
+
+    line((1.6, 1.8), (2.8, 4.2), stroke: (paint: red, thickness: 2pt), mark: (end: ">"))
+    content((3.2, 3.0), text(size: 7pt, fill: red)[$2^2$])
+
+    // Table
+    content((6.5, 5), text(size: 8pt, weight: "bold")[Binary Lifting Table:])
+    content((6.5, 4.5), text(size: 8pt)[up\[5\]\[0\] = 4  (1st)])
+    content((6.5, 4.0), text(size: 8pt)[up\[5\]\[1\] = 3  (2nd)])
+    content((6.5, 3.5), text(size: 8pt)[up\[5\]\[2\] = 2  (4th)])
+    content((6.5, 3.0), text(size: 8pt)[up\[5\]\[3\] = 1  (8th)])
+
+    content((4, 0.5), text(size: 9pt)[Query: 3rd ancestor of 5?])
+    content((4, 0.0), text(size: 9pt)[3 = 2 + 1 = $2^1$ + $2^0$, so jump to 3, then to 2])
+  })
+]
+
+=== Lowest Common Ancestor (LCA)
+
+The *Lowest Common Ancestor* of two nodes $a$ and $b$ is the deepest node that is an ancestor of both. LCA is fundamental for many tree problems.
+
+Using binary lifting, we can find LCA in O(log n):
+
+1. Bring both nodes to the same depth (lift the deeper one)
+2. If they're the same, we found the LCA
+3. Otherwise, binary search: lift both until just below LCA
+
+```cpp
+vector<int> depth(n + 1);
+
+int lca(int a, int b) {
+    // Step 1: Make a the shallower node
+    if (depth[a] > depth[b]) swap(a, b);
+
+    // Step 2: Lift b to same depth as a
+    int diff = depth[b] - depth[a];
+    for (int j = 0; j < MAXLOG; j++) {
+        if (diff & (1 << j)) {
+            b = up[b][j];
+        }
+    }
+
+    // Step 3: If same, found LCA
+    if (a == b) return a;
+
+    // Step 4: Binary search for LCA
+    for (int j = MAXLOG - 1; j >= 0; j--) {
+        if (up[a][j] != up[b][j]) {
+            a = up[a][j];
+            b = up[b][j];
+        }
+    }
+    return up[a][0];  // parent of where they met
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Finding LCA(5, 6)])
+
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 1pt)
+    content((4, 5), [1])
+
+    circle((2.5, 3.8), radius: 0.4, fill: rgb(180, 255, 180), stroke: 3pt)
+    content((2.5, 3.8), text(weight: "bold")[2])
+    content((1.3, 3.8), text(size: 8pt, fill: green.darken(20%), weight: "bold")[LCA])
+
+    circle((5.5, 3.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+
+    circle((1.5, 2.6), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((1.5, 2.6), [4])
+
+    circle((3.5, 2.6), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((3.5, 2.6), [5])
+
+    circle((5.5, 2.6), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((5.5, 2.6), [6])
+
+    line((4, 4.65), (2.5, 4.15), stroke: 1pt)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((2.5, 3.45), (1.5, 2.95), stroke: 1pt)
+    line((2.5, 3.45), (3.5, 2.95), stroke: 1pt)
+    line((5.5, 3.45), (5.5, 2.95), stroke: 1pt)
+
+    // Depth labels
+    content((6.8, 5), text(size: 8pt)[depth 0])
+    content((6.8, 3.8), text(size: 8pt)[depth 1])
+    content((6.8, 2.6), text(size: 8pt)[depth 2])
+
+    content((4, 1.5), text(size: 9pt)[Step 1: Both at depth 2, no lifting needed])
+    content((4, 1.0), text(size: 9pt)[Step 2: 5 != 6, lift both -> both go to 2])
+    content((4, 0.5), text(size: 9pt, weight: "bold")[LCA(5, 6) = 2])
+  })
+]
+
+*Key application - Distance formula*:
+$
+"dist"(a, b) = "depth"[a] + "depth"[b] - 2 dot "depth"["LCA"(a, b)]
+$
+
+#pagebreak()
+
+=== Rerooting Technique
+
+The *rerooting technique* (also called *tree DP with rerooting*) is used when we need to compute a value for each node *as if it were the root*. The naive approach would run a full DFS from each node (O(n²)), but rerooting does it in O(n) with two passes.
+
+*Idea*: First compute values with node 1 as root. Then propagate: when moving from parent to child, update values using what we know.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Rerooting: Two-Pass Technique])
+
+    // Pass 1
+    content((1.5, 4.5), text(size: 9pt, fill: blue, weight: "bold")[Pass 1: Down])
+
+    circle((1.5, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((1.5, 3.5), [1])
+
+    circle((0.8, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((0.8, 2.5), [2])
+
+    circle((2.2, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.2, 2.5), [3])
+
+    line((1.5, 3.2), (0.8, 2.75), stroke: 1pt)
+    line((1.5, 3.2), (2.2, 2.75), stroke: 1pt)
+
+    line((0.8, 2.75), (1.3, 3.2), stroke: (paint: blue, thickness: 1.5pt), mark: (end: ">"))
+    line((2.2, 2.75), (1.7, 3.2), stroke: (paint: blue, thickness: 1.5pt), mark: (end: ">"))
+
+    content((1.5, 1.8), text(size: 8pt)[Compute dp\[u\]])
+    content((1.5, 1.4), text(size: 8pt)[from children])
+
+    // Pass 2
+    content((6.5, 4.5), text(size: 9pt, fill: red, weight: "bold")[Pass 2: Up])
+
+    circle((6.5, 3.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt)
+    content((6.5, 3.5), [1])
+
+    circle((5.8, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.8, 2.5), [2])
+
+    circle((7.2, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((7.2, 2.5), [3])
+
+    line((6.5, 3.2), (5.8, 2.75), stroke: 1pt)
+    line((6.5, 3.2), (7.2, 2.75), stroke: 1pt)
+
+    line((6.3, 3.2), (5.9, 2.75), stroke: (paint: red, thickness: 1.5pt), mark: (end: ">"))
+    line((6.7, 3.2), (7.1, 2.75), stroke: (paint: red, thickness: 1.5pt), mark: (end: ">"))
+
+    content((6.5, 1.8), text(size: 8pt)[Propagate info])
+    content((6.5, 1.4), text(size: 8pt)[from parent])
+
+    content((4, 0.5), text(size: 9pt)[Total: O(n) instead of O(n²)])
+  })
+]
+
+*Common applications*:
+- Tree Distances I: Maximum distance from each node
+- Tree Distances II: Sum of distances from each node
+- Many "compute X for each node as root" problems
+
+=== Heavy-Light Decomposition (HLD)
+
+*Heavy-Light Decomposition* breaks a tree into chains so that any path crosses at most O(log n) chains. Combined with a segment tree, this allows O(log² n) path queries with updates.
+
+*Definitions*:
+- *Heavy child*: The child with the largest subtree
+- *Heavy edge*: Edge to the heavy child
+- *Light edge*: All other edges
+- *Heavy path*: Maximal path of heavy edges
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Heavy-Light Decomposition])
+
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5), [1])
+
+    circle((2.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.8), [2])
+
+    circle((5.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+
+    circle((2.5, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.6), [4])
+
+    circle((5, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5, 2.6), [5])
+
+    circle((6, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 2.6), [6])
+
+    circle((2.5, 1.4), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 1.4), [7])
+
+    // Heavy edges (thick red)
+    line((4, 4.65), (2.5, 4.15), stroke: (paint: red, thickness: 3pt))
+    line((2.5, 3.5), (2.5, 2.95), stroke: (paint: red, thickness: 3pt))
+    line((2.5, 2.3), (2.5, 1.75), stroke: (paint: red, thickness: 3pt))
+
+    // Light edges (thin black)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((5.5, 3.5), (5, 2.95), stroke: 1pt)
+    line((5.5, 3.5), (6, 2.95), stroke: 1pt)
+
+    // Legend
+    content((7.5, 4), text(size: 8pt, fill: red, weight: "bold")[Heavy edge])
+    content((7.5, 3.5), text(size: 8pt)[Light edge])
+
+    content((4, 0.5), text(size: 9pt)[Heavy chain: 1-2-4-7])
+    content((4, 0.0), text(size: 9pt)[Any path crosses O(log n) light edges])
+  })
+]
+
+*Key insight*: Any root-to-leaf path has at most O(log n) light edges. So any path between two nodes crosses at most O(log n) chains.
+
+=== Centroid and Centroid Decomposition
+
+A *centroid* of a tree is a node whose removal leaves no subtree with more than n/2 nodes. Every tree has at least one centroid.
+
+```cpp
+int find_centroid(int u, int parent, int tree_size) {
+    for (int v : adj[u]) {
+        if (v != parent && !removed[v]) {
+            if (subtree[v] > tree_size / 2) {
+                return find_centroid(v, u, tree_size);
+            }
+        }
+    }
+    return u;
+}
+```
+
+*Centroid Decomposition*: Recursively find centroids, building a "centroid tree" of height O(log n). This is powerful for path-related queries.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Centroid Property])
+
+    circle((4, 4.5), radius: 0.45, fill: rgb(255, 215, 0), stroke: 3pt)
+    content((4, 4.5), text(weight: "bold")[C])
+
+    circle((2, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 3.3), [2])
+
+    circle((4, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((4, 3.3), [3])
+
+    circle((6, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 3.3), [4])
+
+    circle((1.5, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+    circle((2.5, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+    circle((4, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+
+    line((4, 4.05), (2, 3.65), stroke: 1pt)
+    line((4, 4.05), (4, 3.65), stroke: 1pt)
+    line((4, 4.05), (6, 3.65), stroke: 1pt)
+    line((2, 3.0), (1.5, 2.35), stroke: 1pt)
+    line((2, 3.0), (2.5, 2.35), stroke: 1pt)
+    line((4, 3.0), (4, 2.35), stroke: 1pt)
+
+    content((4, 1.3), text(size: 9pt)[Removing C: no subtree has > n/2 nodes])
+    content((4, 0.8), text(size: 9pt)[Centroid tree has height O(log n)])
+  })
+]
+
+=== Small-to-Large Merging
+
+When merging data structures from children to parent, *always merge the smaller into the larger*. This ensures each element is moved at most O(log n) times total.
+
+```cpp
+void dfs(int u, int parent) {
+    for (int v : adj[u]) {
+        if (v == parent) continue;
+        dfs(v, u);
+
+        // Merge smaller into larger
+        if (data[v].size() > data[u].size()) {
+            swap(data[u], data[v]);
+        }
+        for (auto& x : data[v]) {
+            data[u].insert(x);
+        }
+        data[v].clear();
+    }
+
+    data[u].insert(value[u]);
+    answer[u] = data[u].size();  // e.g., distinct count
+}
+```
+
+*Why O(n log n) total?* Each time an element is moved, the set size at least doubles. So each element moves at most O(log n) times.
+
+=== Summary of Tree Techniques
+
+#align(center)[
+#table(
+  columns: (auto, auto, auto),
+  stroke: 0.5pt,
+  fill: (col, row) => if row == 0 { rgb(200, 225, 255) } else { none },
+  [*Technique*], [*Complexity*], [*Use Case*],
+  [DFS/BFS Traversal], [$O(n)$], [Basic tree exploration],
+  [Subtree Size], [$O(n)$], [Foundation for tree DP],
+  [Tree Diameter], [$O(n)$], [Longest path in tree],
+  [Euler Tour], [$O(n)$ build, $O(log n)$ query], [Subtree queries as range queries],
+  [Binary Lifting], [$O(n log n)$ build, $O(log n)$ query], [k-th ancestor queries],
+  [LCA], [$O(n log n)$ build, $O(log n)$ query], [Lowest common ancestor, distances],
+  [Rerooting], [$O(n)$], [Compute answer for each node as root],
+  [Heavy-Light Decomposition], [$O(n log n)$ build, $O(log^2 n)$ query], [Path queries with updates],
+  [Centroid Decomposition], [$O(n log n)$], [Path counting, distance queries],
+  [Small-to-Large], [$O(n log n)$], [Merging subtree data (distinct colors)],
+)
+]
