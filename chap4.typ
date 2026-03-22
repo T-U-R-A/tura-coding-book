@@ -24,6 +24,8 @@
 
 = Graph Algorithms
 
+_This chapter covers graph algorithm problems. For foundational concepts, see the Concepts section: *What is a Graph?* for graph representations, *DFS* for Depth-First Search, *BFS* for Breadth-First Search, *Dijkstra's Algorithm* for weighted shortest paths, and *DSU* for Disjoint Set Union._
+
 \
 
 == Counting Rooms
@@ -36,8 +38,10 @@
 \
 *Explanation* :
 
-A room is just a group of floor squares that are connected. You can move between them up, down, left, or right. Our goal is to count how many separate rooms exist. 
-Here’s the algorithm:
+_Concepts used: *DFS* (Depth-First Search) - see Concepts_
+
+A room is just a group of floor squares that are connected. You can move between them up, down, left, or right. Our goal is to count how many separate rooms exist.
+Here's the algorithm:
 
 + Scan each cell in the grid.
 
@@ -115,6 +119,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *BFS* (Breadth-First Search) - see Concepts_
 
 Given a grid map where `.` represents floor and `#` represents walls, we need to find the shortest path from cell `A` (start) to cell `B` (end). If a path exists, we must also output the actual path using directions: L (left), R (right), U (up), D (down).
 
@@ -287,6 +293,8 @@ int main() {
 \
 *Explanation* :
 
+_Concepts used: *DFS* (for finding connected components) - see Concepts_
+
 We have `n` cities and `m` existing roads. Some cities may not be connected to others. Our task is to find the minimum number of new roads needed to connect all cities, and output which cities should be connected.
 
 Key Insight:
@@ -424,6 +432,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *BFS* (shortest path in unweighted graphs) - see Concepts_
 
 Syrjälä's network has `n` computers and `m` connections. We need to find the minimum number of computers a message must pass through to get from computer 1 to computer n, and output the actual route.
 
@@ -586,6 +596,8 @@ int main() {
 \
 *Explanation* :
 
+_Concepts used: *BFS* (Graph coloring / bipartite checking) - see Concepts_
+
 We have `n` pupils and `m` friendships. We need to divide all pupils into two teams such that no two friends are on the same team. This is the classic *bipartite graph checking* problem.
 
 Key Insight:
@@ -738,6 +750,8 @@ int main() {
 \
 *Explanation* :
 
+_Concepts used: *DFS* (Cycle detection) - see Concepts_
+
 We need to find a route that starts and ends at the same city, visiting at least 3 cities. In graph terms, we need to find a *cycle* of length at least 3 in an undirected graph.
 
 Key Insight:
@@ -772,7 +786,7 @@ Important: In an undirected graph, going back to the parent doesn't count as a c
     // Edges
     line((1.85, 4.65), (2.65, 5.05), stroke: 1pt)
     line((3.35, 5.05), (4.15, 4.65), stroke: 1pt)
-    line((4.5, 4.15), (4.5, 3.8), stroke: 0pt)  // placeholder
+    line((4.2, 4.35), (3.3, 3.95), stroke: 1pt)  // Edge from node 3 to node 4
     line((3.3, 3.95), (4.2, 4.35), stroke: 1pt)
     line((1.85, 4.35), (2.65, 3.95), stroke: 1pt)
     line((4.85, 4.5), (5.65, 4.5), stroke: 1pt)
@@ -893,6 +907,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *BFS* (Multi-source BFS) - see Concepts_
 
 You're trapped in a labyrinth with monsters. Each turn, you and all monsters move simultaneously. You escape if you reach a boundary cell before any monster catches you (reaches the same cell at the same time or earlier).
 
@@ -1080,6 +1096,8 @@ int main() {
 \
 *Explanation* :
 
+_Concepts used: *Dijkstra's Algorithm* - see Concepts_
+
 Find the shortest path from node 1 to all other nodes in a weighted directed graph. This is the classic *Dijkstra's algorithm* problem.
 
 Why Not BFS?
@@ -1243,6 +1261,8 @@ int main() {
 \
 *Explanation* :
 
+_Concepts used: *Floyd-Warshall Algorithm* (all-pairs shortest path) - see Concepts_
+
 Given a weighted graph, answer multiple queries: "What is the shortest path from node a to node b?" This is the *all-pairs shortest path* problem, solved efficiently with *Floyd-Warshall*.
 
 Why Not Run Dijkstra for Each Query?
@@ -1398,6 +1418,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Bellman-Ford Algorithm* (with negative cycle detection) - see Concepts_
 
 Find the maximum score when traveling from node 1 to node n. Each edge gives you points (can be negative). The twist: if you can get *infinite* score through a positive cycle reachable from 1 that can reach n, output -1.
 
@@ -1738,6 +1760,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Bellman-Ford Algorithm*, *Negative Cycle Detection* - see Concepts_
 
 Find a negative cycle in a directed weighted graph, or report that none exists. A negative cycle is a cycle where the sum of edge weights is negative.
 
@@ -3018,6 +3042,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Minimum Spanning Tree*, *DSU* (Disjoint Set Union for Kruskal's) - see Concepts_
 
 Find the minimum cost to connect all cities. This is the *Minimum Spanning Tree (MST)* problem.
 

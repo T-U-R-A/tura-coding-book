@@ -28,6 +28,8 @@
 
 = Range Queries
 
+_This chapter covers range query problems. For foundational concepts, see the Concepts section: *Prefix Sum*, *Segment Tree*, *Binary Indexed Tree* (Fenwick), and *Lazy Propagation*._
+
 \
 == Static Range Sum Queries
 
@@ -38,6 +40,8 @@
 
 \
 *Explanation* :
+
+_Concepts used: *Prefix Sum* - see Concepts_
 
 Given an array of `n` integers and `q` queries, each query asks for the sum of elements in a range `[a, b]`. A naive approach would iterate through each range, giving O(n) per query and O(n·q) total — too slow for large inputs.
 
@@ -327,6 +331,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Segment Tree* (with point updates) - see Concepts_
 
 Now we have *updates*: change the value at position `k` to `u`, then answer sum queries on ranges. Prefix sums won't work anymore — updating one element would require rebuilding the entire prefix array in O(n). We need a *Segment Tree*.
 
@@ -858,6 +864,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Difference Array*, *Binary Indexed Tree* (Fenwick) - see Concepts_
 
 This problem flips our previous pattern: now we have *range updates* and *point queries*. We need to add a value `u` to all elements in range `[a, b]`, then query individual element values.
 
@@ -3318,6 +3326,8 @@ int main() {
 
 \
 *Explanation* :
+
+_Concepts used: *Segment Tree with Lazy Propagation* - see Concepts_
 
 Support three operations:
 1. Add value `x` to all elements in range `[a, b]`

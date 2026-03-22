@@ -33,7 +33,7 @@
 
 == Concepts
 
-=== Basic C++ Syntax //chap1
+=== Basic C++ Syntax <cpp-syntax> //chap1
 
 This section will go over the basic `c++` syntax with a simple question and the implementation to solve the question. The code will cover the main elements required to write basic `c++` programs.
 
@@ -155,7 +155,7 @@ A function is something that accepts parameters and returns a value. This includ
 
 These basic concepts are meant to serve as a revision or as an introduction to C++ syntax for those of you recently switching to C++. This is just the tip of the iceberg, and there is much more to learn about C++ as you go along.#footnote[More about C++ syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
 
-== Input Output Optimization //chap1
+== Input Output Optimization <io-opt> //chap1
 
 === `ios_base::sync_with_stdio(false)`
 #v(0.5em)
@@ -190,7 +190,7 @@ cout << "Result: " << x << "\n";
 
 #v(0.5em)
 
-== Space & Time Complexity //chap1
+== Space & Time Complexity <complexity> //chap1
 
 Space complexity is simply a measure of how much memory a program requires and time complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent it by using something called Big-O Notation. For instance, say we have a program that has a time complexity of $O(n)$; this means that the function is linear, i.e., if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
 
@@ -255,7 +255,7 @@ To summarize the new syntax of pointers:
 
 + `&x` gives the memory location of the variable `x`.
 
-== Vectors in Depth //chap1
+== Vectors in Depth <vectors> //chap1
 
 We're going to go into vectors in a little more depth. As stated before, vectors are almost the same as arrays except they are dynamic, meaning elements can be added and removed, but only at the end. This is done by the `push_back()` and `pop_back()` functions.
 
@@ -305,7 +305,7 @@ Every recursive algorithm has 2 main things:
 
 Fun fact: It's proven that any recursive function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop, you should. However, some programs are too hard to convert to loops, so you should stick to recursion.
 
-== Lambda Expressions //chap2
+== Lambda Expressions <lambda> //chap2
 
 Lambda expressions are a way to write functions inline without having to write them separately. For example:
 
@@ -332,7 +332,7 @@ As you can see, we've defined a function within the main function. The first par
 
 Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
 
-== Sorting //chap1
+== Sorting <sorting> //chap1
 
 To sort a data structure like an array or vector, C++ has its own sort function for this:
 
@@ -357,7 +357,7 @@ As you can see, the sort function accepts 2 pointers, the start position of the 
 
 The time complexity of `std::sort` is $O(n log n)$.
 
-== Custom Sorting Order //chap2
+== Custom Sorting Order <custom-sort> //chap2
 
 Say you wish to sort a vector in descending order, or you have something more complicated in mind. The `sort()` function has an extra parameter to supply your own sorting order.
 
@@ -403,7 +403,20 @@ int main(){
 
 //TODO: Write about merge sort.
 
-=== Binary Search //chap1
+=== Binary Search <binary-search> //chap1
+
+==== When to Use Binary Search
+
+Use binary search when:
+- *Searching in sorted data*: Finding elements in $O(log n)$ instead of $O(n)$
+- *Finding boundaries*: First/last occurrence, or smallest/largest value satisfying a condition
+- *Binary search on answer*: When the answer space is monotonic (if X works, all values > X work, or vice versa)
+
+Common problem patterns:
+- "Find the minimum/maximum value that satisfies condition C" → Binary search on answer
+- "Count elements less than X" → Use `lower_bound`
+- "Find position to insert X to keep array sorted" → Use `lower_bound`
+- Optimization problems with a yes/no feasibility check
 
 Let's say you want to find a certain number in a list of numbers to see if it exists. Normally, the way you would do this is by iterating over each element in the array and checking if it matches the element you're looking for. The time complexity of this is $O(n)$. However, if we were to first sort the array, we can find a number in $O(log n)$!
 
@@ -577,6 +590,20 @@ Sometimes your vector may not be sorted in ascending order. Sometimes it might b
 By default, the `comp()` function is `operator<()`. However, this can be changed to `greater<int>()`, which returns true if the first number is greater than the second number, which is needed for it to work properly on a descending list. Note, however, that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use them on a descending list. Apply a correction factor as needed.
 
 == Sets <set> //chap2
+
+=== When to Use Sets
+
+Use a `set` when you need:
+- *Fast membership checking*: $O(log n)$ to check if an element exists
+- *Automatic sorting*: Elements are always in sorted order
+- *No duplicates*: Each element appears exactly once
+- *Efficient predecessor/successor queries*: Find the next smallest/largest element
+
+Common problem patterns that suggest using sets:
+- "Find if X exists" with many queries
+- "Find the smallest element greater than X" (use `lower_bound`)
+- "Maintain a sorted collection with insertions and deletions"
+- "Count distinct elements"
 
 A set is a data structure in C++ which has the following properties:
 
@@ -814,7 +841,7 @@ int main(){
   return 0;
 }
 ```
-== Greedy Algorithms //chap2
+== Greedy Algorithms <greedy> //chap2
 
 #let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
 
@@ -1111,7 +1138,7 @@ Also observe that we didn't use a `row` vector because the backtracking algorith
 
 The complexity of this code is $O(n!)$, which grows very quickly. Solving the problem for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$, and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
-== Negative Numbers //chap2
+== Negative Numbers <negative-numbers> //chap2
 
 In a computer, all numbers are stored in binary. For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
 
@@ -1164,7 +1191,7 @@ $
   -9 = 11111111111111111111111111110111
 $
 
-== Bit Operations //chap2
+== Bit Operations <bit-ops> //chap2
 
 In C++, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
@@ -1290,7 +1317,7 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 5 4 7 }
 ```
 
-== Prefix Sum //chap2
+== Prefix Sum <prefix-sum> //chap2
 
 #let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
 #let arr3 = ((4, 7), (2, 5), (1, 3))
@@ -1454,7 +1481,7 @@ Output:
 The space complexity is $O(n)$ and the prefix sum construction runs in $O(n)$ time. Each query operation runs in $O(1)$ time.
 
 
-== Binary Indexed Tree //chap2
+== Binary Indexed Tree <fenwick> //chap2
 
 #v(0.5em)
 
@@ -1975,7 +2002,7 @@ int main(){
 }
 ```
 
-== Linked List //chap2
+== Linked List <linked-list> //chap2
 
 A linked list is a data structure where every element in the list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one point to the element after the erased one. The same is true for inserting an element at a given position.
 
@@ -2438,7 +2465,7 @@ This function checks if parentheses, braces, and brackets are properly balanced 
 - Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
 - Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
 
-== Deque //chap1
+== Deque <deque> //chap1
 
 A *deque* (pronounced "deck") stands for *double-ended queue*. Unlike a regular queue where you can only add elements at the back and remove from the front, a deque allows you to efficiently add and remove elements from both ends.
 
@@ -2665,11 +2692,30 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 
 == Dynamic Programming <dp> //chap3
 
+=== When to Use Dynamic Programming
+
+Use DP when a problem has these two properties:
+1. *Optimal Substructure*: The optimal solution can be built from optimal solutions to subproblems
+2. *Overlapping Subproblems*: The same subproblems are solved multiple times
+
+Common DP problem patterns:
+- *Counting*: "How many ways to reach state X?" → Add up ways from all predecessor states
+- *Optimization*: "What's the minimum cost to reach state X?" → Take min/max over predecessor states
+- *Decision problems*: "Is it possible to reach state X?" → OR over predecessor states
+- *Subsequences*: LCS, LIS, edit distance
+- *Knapsack variants*: Subset sum, coin change, bounded/unbounded selection
+
+Key questions to ask yourself:
+- What are my *states*? (What information do I need to track?)
+- What are my *transitions*? (How do I go from one state to another?)
+- What is my *base case*? (What are the trivial cases I know immediately?)
+- What is my *answer*? (Which state(s) contain the final answer?)
+
 #let fibNode(n, repeated: false) = {
-  let fillColor = if repeated { 
-      rgb(255, 200, 200) 
-    } else { 
-      rgb(200, 225, 255) 
+  let fillColor = if repeated {
+      rgb(255, 200, 200)
+    } else {
+      rgb(200, 225, 255)
     }
   box(
     inset: 5pt,
@@ -2930,7 +2976,7 @@ Finally, make sure you fill in values in the right order, so that when you compu
 With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
 
 
-== What is a Graph? //chap2
+== What is a Graph? <graph-basics> //chap2
 
 #v(0.5em)
 
@@ -3451,7 +3497,26 @@ Nodes reachable from 3: 3 1 4 5 2 6
 
 This uses a technique called *breadth-first search(BFS)*, which is explained in depth in the next section.
 
-== Breadth-First Search (BFS) //chap2
+== Breadth-First Search (BFS) <bfs> //chap2
+
+=== When to Use BFS
+
+Use BFS when you need:
+- *Shortest path in unweighted graphs*: BFS guarantees the first path found is shortest
+- *Level-order traversal*: Process nodes by their distance from source
+- *Multi-source shortest path*: Start BFS from multiple sources simultaneously
+- *Bipartite checking*: 2-color a graph using BFS levels
+
+Common BFS problem patterns:
+- "Find shortest path from A to B" (unweighted)
+- "Find minimum number of moves/steps"
+- "Find all nodes within distance K"
+- "Can we divide nodes into two groups?"
+- Grid problems: "Shortest path in a maze"
+
+BFS vs DFS:
+- Use BFS for *shortest paths* in unweighted graphs
+- Use DFS for *connectivity*, *cycle detection*, or when you need to explore all paths
 
 #v(0.5em)
 
@@ -4027,7 +4092,27 @@ You might wonder when to use BFS versus depth-first search (DFS). Here's a quick
 
 Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
 
-== Depth-First Search (DFS) //chap3
+== Depth-First Search (DFS) <dfs> //chap3
+
+=== When to Use DFS
+
+Use DFS when you need:
+- *Cycle detection*: Find back edges during traversal
+- *Connected components*: Count or label groups of connected nodes
+- *Topological sorting*: Order nodes in a DAG
+- *Path finding*: Find any path between two nodes (not necessarily shortest)
+- *Tree traversals*: Pre-order, in-order, post-order
+
+Common DFS problem patterns:
+- "Count the number of connected components"
+- "Find a cycle in the graph"
+- "Check if path exists from A to B"
+- "Explore all possible states" (backtracking)
+- "Process nodes in dependency order" (topological sort)
+
+DFS vs BFS:
+- Use DFS for *exploring/backtracking*, *cycle detection*, *topological sort*
+- Use BFS for *shortest paths* in unweighted graphs
 
 #v(0.5em)
 
@@ -4385,7 +4470,7 @@ The key advantage of DFS over other traversal methods like BFS is that it uses l
 For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
 
 
-== Bellman-Ford Algorithm //chap3
+== Bellman-Ford Algorithm <bellman-ford> //chap3
 
 #v(0.5em)
 
@@ -4801,7 +4886,32 @@ SPFA can also detect negative cycles by counting how many times each node is add
 
 The average case complexity of SPFA is often $O(m)$, making it much faster than standard Bellman-Ford for most graphs, though it can still degrade to $O(n m)$ in worst cases (particularly on specially constructed adversarial graphs).
 
-== Dijkstra's Algorithm //chap3
+== Dijkstra's Algorithm <dijkstra> //chap3
+
+=== When to Use Dijkstra vs Other Algorithms
+
+*Use Dijkstra when:*
+- All edge weights are *non-negative*
+- You need shortest path from one source to all nodes
+- Graph is sparse or medium-sized
+
+*Use Bellman-Ford when:*
+- There are *negative edge weights*
+- You need to *detect negative cycles*
+- Graph is small enough for $O(V dot E)$
+
+*Use Floyd-Warshall when:*
+- You need shortest paths between *all pairs* of nodes
+- Graph is small (up to ~500 nodes for $O(n^3)$)
+
+*Use BFS when:*
+- Graph is *unweighted* (all edges cost 1)
+
+Algorithm Comparison:
+- *Dijkstra*: $O((V + E) log V)$ - single source, no negative edges
+- *Bellman-Ford*: $O(V dot E)$ - single source, handles negative edges
+- *Floyd-Warshall*: $O(V^3)$ - all pairs
+- *BFS*: $O(V + E)$ - unweighted graphs only
 
 #v(0.5em)
 
@@ -5055,7 +5165,7 @@ The `parent` array stores which node we came from to reach each node along the s
 
 For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
 
-== Floyd-Warshall Algorithm //chap3
+== Floyd-Warshall Algorithm <floyd-warshall> //chap3
 
 #v(0.5em)
 
@@ -5364,7 +5474,27 @@ Don't use Floyd-Warshall when:
 - The graph is very large ($n > 1000$) as $O(n^3)$ will be too slow
 - You're working with an unweighted graph (use BFS instead)
 
-== Disjoint Set Union (DSU) //chap2
+== Disjoint Set Union (DSU) <dsu> //chap2
+
+=== When to Use DSU
+
+Use DSU when you need:
+- *Connected components*: Track which elements belong to the same group
+- *Merge operations*: Combine two groups efficiently
+- *Cycle detection*: Check if adding an edge creates a cycle (for MST algorithms)
+- *Dynamic connectivity*: Handle "connect" queries followed by "are connected?" queries
+
+Common DSU problem patterns:
+- *Kruskal's MST*: Use DSU to check if adding an edge creates a cycle
+- "Union two sets, query if same set" - classic DSU
+- "Count number of connected components"
+- "Find size of component containing element X"
+- Social network friend groups
+- Image processing (connected pixels)
+
+DSU Operations:
+- `find(x)`: Find representative of x's set - $O(alpha(n))$ with path compression
+- `unite(x, y)`: Merge sets containing x and y - $O(alpha(n))$ with union by rank
 
 #v(0.5em)
 
@@ -5706,7 +5836,7 @@ DSU is particularly useful when you need to dynamically add edges and query conn
 - Detecting cycles in undirected graphs
 - Problems involving equivalence relations
 
-== Minimum Spanning Tree //chap3
+== Minimum Spanning Tree <mst> //chap3
 
 #v(0.5em)
 
@@ -6235,7 +6365,7 @@ When implementing Kruskal's algorithm, watch out for:
 
 4. *Integer overflow:* Use `long long` for `total_weight` if edge weights can be large.
 
-== Directed Acyclic Graph (DAG) //chap3
+== Directed Acyclic Graph (DAG) <dag> //chap3
 
 #v(0.5em)
 
@@ -6308,7 +6438,7 @@ Here are some key properties:
 2. A graph has a topological sort *if and only if* it is a DAG.
 3. If the graph has $n$ vertices, the topological sort will contain all $n$ vertices exactly once.
 
-== Kahn's Algorithm //chap3
+== Kahn's Algorithm <kahns> //chap3
 
 #v(0.5em)
 
@@ -6606,7 +6736,7 @@ Both have $O(V + E)$ time complexity, so the choice often comes down to personal
 
 For the `std::queue` documentation used in this algorithm, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
 
-== Strongly Connected Components //chap2
+== Strongly Connected Components <scc> //chap2
 
 #v(0.5em)
 
@@ -7031,7 +7161,7 @@ For the `std::queue` documentation used in graph traversals, click #link("https:
 For more on graph algorithms, see the DFS documentation at #link("https://cp-algorithms.com/graph/depth-first-search.html")[CP-Algorithms].
 
 
-== Eulerian Paths and Circuits //chap2
+== Eulerian Paths and Circuits <eulerian> //chap2
 
 #v(0.5em)
 
@@ -7643,7 +7773,7 @@ For both checking and finding Eulerian paths/circuits:
 
 For more information on graph algorithms and Hierholzer's algorithm, you can refer to competitive programming resources like CSES Problem Set or Codeforces.
 
-== Hamiltonian Paths and Cycles //chap3
+== Hamiltonian Paths and Cycles <hamiltonian> //chap3
 
 #v(0.5em)
 
@@ -8205,7 +8335,7 @@ Key takeaways:
 - DP with bitmasks: $O(2^n times n^2)$, better for small $n$
 - TSP is a weighted version of finding minimum Hamiltonian cycle
 
-== Dynamic Programming on Graphs //chap3
+== Dynamic Programming on Graphs <dp-graphs> //chap3
 
 #v(0.5em)
 
@@ -8593,7 +8723,7 @@ Tree diameter: 4
 
 The diameter is 4, corresponding to the path from node 6 to node 5 (or 6 to 4): $6 arrow 3 arrow 1 arrow 0 arrow 2 arrow 5$.
 
-== Bitmasking in Graphs //chap3
+== Bitmasking in Graphs <bitmask-graphs> //chap3
 
 #v(0.5em)
 
@@ -9117,7 +9247,7 @@ When solving graph problems with bitmasks, remember:
 
 For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
 
-== Maximum Flow and Edmonds-Karp Algorithm //chap3
+== Maximum Flow and Edmonds-Karp Algorithm <max-flow> //chap3
 
 #v(0.5em)
 
@@ -9929,7 +10059,7 @@ The beauty of max flow is that once you recognize a problem can be modeled as a 
 
 
 
-== Difference Array //chap2
+== Difference Array <diff-array> //chap2
 
 #v(0.5em)
 
@@ -10552,7 +10682,25 @@ Difference arrays are one of those elegant techniques that seem almost too simpl
 Remember: when you see "add value to range" repeated many times, think difference arrays!
 
 
-== Segment Tree //chap2
+== Segment Tree <segment-tree> //chap2
+
+=== When to Use Segment Trees
+
+Use a segment tree when you need:
+- *Range queries with updates*: Query any range while also modifying elements
+- *Complex operations*: Min, max, GCD, sum, product, etc.
+- *Range updates*: Update entire ranges efficiently (with lazy propagation)
+
+Segment Tree vs Other Structures:
+- *Prefix sum*: Use when there are no updates (faster, simpler)
+- *Fenwick Tree (BIT)*: Use for sum queries only (less code, same complexity)
+- *Segment Tree*: Use for any associative operation, or when you need range updates
+- *Sparse Table*: Use for idempotent operations (min/max) with no updates ($O(1)$ query)
+
+Common problem patterns:
+- "Query range [l,r] for min/max/sum/gcd, then update elements"
+- "Add/set values in range [l,r], then query ranges"
+- "Count elements satisfying condition in range"
 
 #v(0.5em)
 
@@ -11561,7 +11709,7 @@ Choose segment trees when:
 
 The recursive implementation is more intuitive, while the iterative version is often faster in practice. Both have their place in competitive programming!
 
-== Binary Lifting //chap2
+== Binary Lifting <binary-lifting> //chap2
 
 #v(0.5em)
 
@@ -12549,7 +12697,7 @@ This technique can be extended to track minimum values, sums, XOR values, or any
 Binary lifting is one of the most important tree algorithms in competitive programming, appearing in problems about tree paths, tree queries, and dynamic programming on trees. The ability to jump up the tree in logarithmic time opens up solutions to many complex problems.
 
 
-== Segment Tree with Lazy Propagation //chap2
+== Segment Tree with Lazy Propagation <lazy-propagation> //chap2
 
 #v(0.5em)
 
@@ -12911,7 +13059,7 @@ Common applications:
 
 For the full segment tree documentation and variations, you can explore competitive programming resources or check USACO Guide's segment tree section.
 
-== Dynamic Segment Tree //chap2
+== Dynamic Segment Tree <dynamic-segtree> //chap2
 
 #v(0.5em)
 
@@ -13384,7 +13532,7 @@ Use dynamic segment trees when:
 
 The key insight is that dynamic allocation lets us work with theoretical ranges far larger than we could ever store in memory, as long as we only access a small portion of that range.
 
-== Offline Queries //chap2
+== Offline Queries <offline-queries> //chap2
 
 #v(0.5em)
 
