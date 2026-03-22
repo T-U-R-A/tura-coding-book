@@ -33,7 +33,7 @@
 
 == Concepts
 
-=== Basic C++ Syntax //chap1
+=== Basic C++ Syntax <cpp-syntax> //chap1
 
 This section will go over the basic `c++` syntax with a simple question and the implementation to solve the question. The code will cover the main elements required to write basic `c++` programs.
 
@@ -155,7 +155,7 @@ A function is something that accepts parameters and returns a value. This includ
 
 These basic concepts are meant to serve as a revision or as an introduction to C++ syntax for those of you recently switching to C++. This is just the tip of the iceberg, and there is much more to learn about C++ as you go along.#footnote[More about C++ syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
 
-== Input Output Optimization //chap1
+== Input Output Optimization <io-opt> //chap1
 
 === `ios_base::sync_with_stdio(false)`
 #v(0.5em)
@@ -190,7 +190,7 @@ cout << "Result: " << x << "\n";
 
 #v(0.5em)
 
-== Space & Time Complexity //chap1
+== Space & Time Complexity <complexity> //chap1
 
 Space complexity is simply a measure of how much memory a program requires and time complexity is simply a measure of how much longer it takes a program to run as the input size grows larger. We represent it by using something called Big-O Notation. For instance, say we have a program that has a time complexity of $O(n)$; this means that the function is linear, i.e., if you double the input size, the program will take twice as long. A program with time complexity $O(n^2)$ will take 4 times as long for twice the input size.
 
@@ -255,13 +255,13 @@ To summarize the new syntax of pointers:
 
 + `&x` gives the memory location of the variable `x`.
 
-== Vectors in Depth //chap1
+== Vectors in Depth <vectors> //chap1
 
 We're going to go into vectors in a little more depth. As stated before, vectors are almost the same as arrays except they are dynamic, meaning elements can be added and removed, but only at the end. This is done by the `push_back()` and `pop_back()` functions.
 
 The way vectors make this efficient time-wise without wasting a lot of memory is by allocating some memory $x$ in a row. When you `push_back()` an element such that it now exceeds $x$, it moves the entire allocated memory to a new location and allocates memory worth $2x$.
 
-This means that the time complexity of inserting elements into a vector is close, but not quite, $O(1)$. This is called amortized $O(1)$ because it looks at the average instead of each single operation, and because vector resizes occur infrequently.
+This means that the time complexity of inserting elements into a vector is close, but not quite, $O(1)$. This is called *amortized* $O(1)$#footnote[Amortized analysis looks at the average cost over a sequence of operations. While a single resize costs $O(n)$, it happens rarely enough that spreading the cost over all insertions gives $O(1)$ per insertion on average.] because it looks at the average instead of each single operation, and because vector resizes occur infrequently.
 
 Note that vectors' constant factors are bigger than arrays, which means for questions where every little efficiency matters to solve the question, if you don't need a vector, don't use one. However, in every other case, it's much safer and more convenient to use vectors instead of arrays. The main reasons being that:
 
@@ -276,7 +276,7 @@ More technical details about vectors can be found #link("https://en.cppreference
 
 == Recursion <recur> //chap1
 
-Recursion is the concept of calling some function inside of itself. Say we want to compute the factorial of a number $n$. We can do:
+Recursion is the concept of calling some function inside of itself. It forms the foundation for many algorithms, including backtracking (see @backtracking) and dynamic programming with memoization (see @dp). Say we want to compute the factorial of a number $n$. We can do:
 
 ```cpp
 #include <bits/stdc++.h>
@@ -305,7 +305,7 @@ Every recursive algorithm has 2 main things:
 
 Fun fact: It's proven that any recursive function can be written with a loop! Loops are more efficient than recursion, so if it is easier to write a loop, you should. However, some programs are too hard to convert to loops, so you should stick to recursion.
 
-== Lambda Expressions //chap2
+== Lambda Expressions <lambda> //chap2
 
 Lambda expressions are a way to write functions inline without having to write them separately. For example:
 
@@ -332,7 +332,7 @@ As you can see, we've defined a function within the main function. The first par
 
 Lambda expressions are also useful to just make temporary functions without having to make it into a variable. You'll see this used properly in the next section.
 
-== Sorting //chap1
+== Sorting <sorting> //chap1
 
 To sort a data structure like an array or vector, C++ has its own sort function for this:
 
@@ -357,7 +357,7 @@ As you can see, the sort function accepts 2 pointers, the start position of the 
 
 The time complexity of `std::sort` is $O(n log n)$.
 
-== Custom Sorting Order //chap2
+== Custom Sorting Order <custom-sort> //chap2
 
 Say you wish to sort a vector in descending order, or you have something more complicated in mind. The `sort()` function has an extra parameter to supply your own sorting order.
 
@@ -403,7 +403,22 @@ int main(){
 
 //TODO: Write about merge sort.
 
-=== Binary Search //chap1
+=== Binary Search <binary-search> //chap1
+
+Binary search is used extensively in problems like Factory Machines and Array Division in Chapter 2.
+
+==== When to Use Binary Search
+
+Use binary search when:
+- *Searching in sorted data*: Finding elements in $O(log n)$ instead of $O(n)$
+- *Finding boundaries*: First/last occurrence, or smallest/largest value satisfying a condition
+- *Binary search on answer*: When the answer space is monotonic (if X works, all values > X work, or vice versa)
+
+Common problem patterns:
+- "Find the minimum/maximum value that satisfies condition C" → Binary search on answer
+- "Count elements less than X" → Use `lower_bound`
+- "Find position to insert X to keep array sorted" → Use `lower_bound`
+- Optimization problems with a yes/no feasibility check
 
 Let's say you want to find a certain number in a list of numbers to see if it exists. Normally, the way you would do this is by iterating over each element in the array and checking if it matches the element you're looking for. The time complexity of this is $O(n)$. However, if we were to first sort the array, we can find a number in $O(log n)$!
 
@@ -577,6 +592,22 @@ Sometimes your vector may not be sorted in ascending order. Sometimes it might b
 By default, the `comp()` function is `operator<()`. However, this can be changed to `greater<int>()`, which returns true if the first number is greater than the second number, which is needed for it to work properly on a descending list. Note, however, that `upper_bound()` and `lower_bound()` may not actually give the mathematical definition of lower bound and upper bound if you use them on a descending list. Apply a correction factor as needed.
 
 == Sets <set> //chap2
+
+Sets are used in problems like Concert Tickets, Playlist, and Traffic Lights. See also @map for the related `map` data structure.
+
+=== When to Use Sets
+
+Use a `set` when you need:
+- *Fast membership checking*: $O(log n)$ to check if an element exists
+- *Automatic sorting*: Elements are always in sorted order
+- *No duplicates*: Each element appears exactly once
+- *Efficient predecessor/successor queries*: Find the next smallest/largest element
+
+Common problem patterns that suggest using sets:
+- "Find if X exists" with many queries
+- "Find the smallest element greater than X" (use `lower_bound`)
+- "Maintain a sorted collection with insertions and deletions"
+- "Count distinct elements"
 
 A set is a data structure in C++ which has the following properties:
 
@@ -814,7 +845,109 @@ int main(){
   return 0;
 }
 ```
-== Greedy Algorithms //chap2
+
+== Two Pointers <two-pointers> //chap2
+
+The two-pointer technique is a powerful approach for solving problems on sorted arrays or sequences. Instead of using nested loops (which give $O(n^2)$), we maintain two pointers that move through the array based on certain conditions, achieving $O(n)$ time complexity.
+
+=== When to Use Two Pointers
+
+Use the two-pointer technique when:
+- *Finding pairs with a target sum*: One pointer at start, one at end
+- *Merging two sorted arrays*: One pointer in each array
+- *Removing duplicates*: One pointer for reading, one for writing
+- *Sliding window problems*: Left and right boundaries of a window
+
+=== Example: Sum of Two Values
+
+Given a sorted array, find two numbers that sum to a target value.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw the sorted array
+    let arr = (1, 3, 5, 7, 9, 11, 15)
+    let target = 16
+
+    // Draw boxes for array elements
+    for i in range(arr.len()) {
+      rect((i * 0.8, 0), ((i + 1) * 0.8, -0.6), fill: if i == 0 or i == arr.len() - 1 { rgb(200, 225, 255) } else { white })
+      content((i * 0.8 + 0.4, -0.3), text(size: 10pt)[#arr.at(i)])
+    }
+
+    // Left pointer arrow
+    line((0.4, 0.2), (0.4, 0.6), mark: (end: ">"), stroke: blue)
+    content((0.4, 0.85), text(fill: blue, size: 8pt)[L])
+
+    // Right pointer arrow
+    line((arr.len() * 0.8 - 0.4, 0.2), (arr.len() * 0.8 - 0.4, 0.6), mark: (end: ">"), stroke: red)
+    content((arr.len() * 0.8 - 0.4, 0.85), text(fill: red, size: 8pt)[R])
+
+    // Explanation
+    content((2.8, -1.2), text(size: 9pt)[Sum = 1 + 15 = 16 ✓ Found!])
+  })
+]
+
+The algorithm works as follows:
+1. Start with `left = 0` and `right = n-1`
+2. If `arr[left] + arr[right] == target`, we found the pair
+3. If the sum is too small, move `left` right (to get a larger value)
+4. If the sum is too large, move `right` left (to get a smaller value)
+
+```cpp
+int left = 0, right = n - 1;
+while (left < right) {
+    int sum = arr[left] + arr[right];
+    if (sum == target) {
+        cout << left << " " << right << endl;
+        return;
+    } else if (sum < target) {
+        left++;  // Need a larger sum
+    } else {
+        right--; // Need a smaller sum
+    }
+}
+```
+
+This technique is used in Sum of Two Values, Sum of Three Values, and Sum of Four Values problems. See also @sliding-window for the related sliding window technique.
+
+== Sliding Window <sliding-window> //chap2
+
+The sliding window technique maintains a "window" of elements as you iterate through an array. It's particularly useful for finding subarrays that satisfy certain conditions.
+
+=== Types of Sliding Windows
+
+1. *Fixed-size window*: Window size is constant (e.g., Sliding Median)
+2. *Variable-size window*: Window expands/shrinks based on conditions (e.g., Playlist)
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Draw array
+    let arr = (2, 1, 5, 1, 3, 2)
+
+    for i in range(arr.len()) {
+      let fillColor = if i >= 1 and i <= 3 { rgb(200, 255, 200) } else { white }
+      rect((i * 0.8, 0), ((i + 1) * 0.8, -0.6), fill: fillColor)
+      content((i * 0.8 + 0.4, -0.3), text(size: 10pt)[#arr.at(i)])
+    }
+
+    // Window bracket
+    line((0.8, 0.15), (0.8, 0.35), stroke: 1.5pt)
+    line((0.8, 0.35), (3.2, 0.35), stroke: 1.5pt)
+    line((3.2, 0.15), (3.2, 0.35), stroke: 1.5pt)
+
+    content((2, 0.6), text(size: 9pt)[Window: sum = 7])
+  })
+]
+
+The sliding window technique is used in problems like Playlist, Subarray Sums I, and Distinct Values Subarrays. See @deque for how deques can optimize sliding window problems.
+
+== Greedy Algorithms <greedy> //chap2
+
+Greedy algorithms make locally optimal choices at each step. Many problems in Chapter 2 use greedy approaches, including Movie Festival, Tasks and Deadlines, and Room Allocation.
 
 #let arr1 = (("1", "3"), ("2", "5"), ("4", "6"), ("3", "8"), ("7", "10"))
 
@@ -1050,7 +1183,7 @@ This problem can be solved by using backtracking. We can start by placing the fi
   })
 ]
 
-As you can see, we start with an empty board, then we place a queen in all positions on the first row. Then we place the next queen on the next row in a valid position and go from there. We only go further if the exsisting position is valid and prune off any invalid position saving a lot of time as invalid positions dont brnch off to take more nvalid positon. This is the essence of backtracking.
+As you can see, we start with an empty board, then we place a queen in all positions on the first row. Then we place the next queen on the next row in a valid position and go from there. We only go further if the existing position is valid and prune off any invalid position, saving a lot of time as invalid positions don't branch off to take more invalid positions. This is the essence of backtracking.
 
 To write the code for this, we need four arrays: one for the row, one for the columns, and one for each of the two diagonals. If `row[i]` is true, that means there's a queen in that row and we can't place another queen there. The indexes of the two diagonals will be as follows:
 
@@ -1111,9 +1244,9 @@ Also observe that we didn't use a `row` vector because the backtracking algorith
 
 The complexity of this code is $O(n!)$, which grows very quickly. Solving the problem for high values of $n$ takes a very long time. The highest anybody has computed is $q(27) = 234907967154122528$, and this took over a year of computing! (#link("https://github.com/preusser/q27")[See here]).
 
-== Negative Numbers //chap2
+== Negative Numbers <negative-numbers> //chap2
 
-In a computer, all numbers are stored in binary. For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
+In a computer, all numbers are stored in binary.#footnote[This representation is called *two's complement* and is used by virtually all modern computers. Understanding it is essential for bit manipulation (see @bit-ops).] For an `int`, the computer allocates 32 bits. The number 5 stored in an `int` actually looks like:
 
 $
   00000000000000000000000000000101
@@ -1164,7 +1297,7 @@ $
   -9 = 11111111111111111111111111110111
 $
 
-== Bit Operations //chap2
+== Bit Operations <bit-ops> //chap2
 
 In C++, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
@@ -1290,7 +1423,9 @@ In the code, the variable `mask` goes through all subsets, where each subset is 
 { 5 4 7 }
 ```
 
-== Prefix Sum //chap2
+== Prefix Sum <prefix-sum> //chap2
+
+Prefix sums are fundamental for range sum queries. They are used extensively in Subarray Sums I & II, and form the foundation for understanding Fenwick Trees (see @fenwick).
 
 #let arr2 = (5, -6, 4, 3, 12, 6, -7, -3)
 #let arr3 = ((4, 7), (2, 5), (1, 3))
@@ -1354,7 +1489,7 @@ $
   }
 $
 
-Note that indices are 0-indexed.
+Note that indices are 0-indexed.#footnote[In competitive programming, arrays can be 0-indexed or 1-indexed depending on the problem. Prefix sums are often easier to implement with 1-indexing since `pref[0] = 0` naturally handles edge cases.]
 
 You could solve this question by simply iterating through all elements in each range and then adding them up. However, each of these operations is amortized $O(n)$. If there are $q$ queries, your complexity would be $O(n q)$. If $n$ and $q$'s limits are $2 times 10^5$, $O(n q)$ would be too slow.
 
@@ -1454,7 +1589,7 @@ Output:
 The space complexity is $O(n)$ and the prefix sum construction runs in $O(n)$ time. Each query operation runs in $O(1)$ time.
 
 
-== Binary Indexed Tree //chap2
+== Binary Indexed Tree <fenwick> //chap2
 
 #v(0.5em)
 
@@ -1975,7 +2110,7 @@ int main(){
 }
 ```
 
-== Linked List //chap2
+== Linked List <linked-list> //chap2
 
 A linked list is a data structure where every element in the list has a value and a pointer to the next element. This makes removing elements at a given position $O(1)$ because you only have to make the element before the erased one point to the element after the erased one. The same is true for inserting an element at a given position.
 
@@ -2175,6 +2310,8 @@ While this example could have been achieved with a `vector`, you'll find that th
 For the `std::queue` documentation, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
 
 == Maps <map> //chap2
+
+A map is a key-value data structure similar to a set (see @set), but storing pairs instead of single values. Maps are used in Subarray Sums II and many counting problems.
 
 A map is a data structure in C++ which has the following properties:
 
@@ -2438,7 +2575,7 @@ This function checks if parentheses, braces, and brackets are properly balanced 
 - Unlike vectors, stacks do not support iteration. You cannot use a loop to go through all elements without removing them.
 - Always check if a stack is empty before calling `top()` or `pop()` to avoid runtime errors.
 
-== Deque //chap1
+== Deque <deque> //chap1
 
 A *deque* (pronounced "deck") stands for *double-ended queue*. Unlike a regular queue where you can only add elements at the back and remove from the front, a deque allows you to efficiently add and remove elements from both ends.
 
@@ -2665,11 +2802,30 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 
 == Dynamic Programming <dp> //chap3
 
+=== When to Use Dynamic Programming
+
+Use DP when a problem has these two properties:
+1. *Optimal Substructure*: The optimal solution can be built from optimal solutions to subproblems
+2. *Overlapping Subproblems*: The same subproblems are solved multiple times
+
+Common DP problem patterns:
+- *Counting*: "How many ways to reach state X?" → Add up ways from all predecessor states
+- *Optimization*: "What's the minimum cost to reach state X?" → Take min/max over predecessor states
+- *Decision problems*: "Is it possible to reach state X?" → OR over predecessor states
+- *Subsequences*: LCS, LIS, edit distance
+- *Knapsack variants*: Subset sum, coin change, bounded/unbounded selection
+
+Key questions to ask yourself:
+- What are my *states*? (What information do I need to track?)
+- What are my *transitions*? (How do I go from one state to another?)
+- What is my *base case*? (What are the trivial cases I know immediately?)
+- What is my *answer*? (Which state(s) contain the final answer?)
+
 #let fibNode(n, repeated: false) = {
-  let fillColor = if repeated { 
-      rgb(255, 200, 200) 
-    } else { 
-      rgb(200, 225, 255) 
+  let fillColor = if repeated {
+      rgb(255, 200, 200)
+    } else {
+      rgb(200, 225, 255)
     }
   box(
     inset: 5pt,
@@ -2798,7 +2954,7 @@ int main() {
 
 Here, `dp[i]` stores the value of $F(i)$. We fill the array left to right, and by the time we reach `dp[i]`, both `dp[i-1]` and `dp[i-2]` are already known.
 
-Both memoization and tabulation give $O(n)$ time. Top-down can be easier to write because it mirrors the recursive structure of the problem. Bottom-up is often slightly faster in practice since it avoids the overhead of recursive function calls. Now that we have the basics down, let's use DP to solve some actual problems.
+Both memoization and tabulation give $O(n)$ time. Top-down can be easier to write because it mirrors the recursive structure of the problem. Bottom-up is often slightly faster in practice since it avoids the overhead of recursive function calls.#footnote[In competitive programming, bottom-up is generally preferred for its predictable memory access patterns and lack of recursion overhead. However, top-down is sometimes easier when not all states need to be computed.] Now that we have the basics down, let's use DP to solve some actual problems.
 
 === Climbing Stairs
 
@@ -2930,7 +3086,7 @@ Finally, make sure you fill in values in the right order, so that when you compu
 With practice, spotting DP problems and finding the right recurrence becomes much more natural. The problems ahead will give you plenty of chances to work on this.
 
 
-== What is a Graph? //chap2
+== What is a Graph? <graph-basics> //chap2
 
 #v(0.5em)
 
@@ -3451,7 +3607,26 @@ Nodes reachable from 3: 3 1 4 5 2 6
 
 This uses a technique called *breadth-first search(BFS)*, which is explained in depth in the next section.
 
-== Breadth-First Search (BFS) //chap2
+== Breadth-First Search (BFS) <bfs> //chap2
+
+=== When to Use BFS
+
+Use BFS when you need:
+- *Shortest path in unweighted graphs*: BFS guarantees the first path found is shortest
+- *Level-order traversal*: Process nodes by their distance from source
+- *Multi-source shortest path*: Start BFS from multiple sources simultaneously
+- *Bipartite checking*: 2-color a graph using BFS levels
+
+Common BFS problem patterns:
+- "Find shortest path from A to B" (unweighted)
+- "Find minimum number of moves/steps"
+- "Find all nodes within distance K"
+- "Can we divide nodes into two groups?"
+- Grid problems: "Shortest path in a maze"
+
+BFS vs DFS:
+- Use BFS for *shortest paths* in unweighted graphs
+- Use DFS for *connectivity*, *cycle detection*, or when you need to explore all paths
 
 #v(0.5em)
 
@@ -4029,7 +4204,23 @@ Here are some typical problems where BFS is the right tool:
 6. *Maze solving* and grid pathfinding
 7. *Network flow problems* (using BFS to find augmenting paths)
 
-== Depth-First Search (DFS) //chap3
+== Depth-First Search (DFS) <dfs> //chap3
+
+=== When to Use DFS
+
+Use DFS when you need:
+- *Cycle detection*: Find back edges during traversal
+- *Connected components*: Count or label groups of connected nodes
+- *Topological sorting*: Order nodes in a DAG
+- *Path finding*: Find any path between two nodes (not necessarily shortest)
+- *Tree traversals*: Pre-order, in-order, post-order
+
+Common DFS problem patterns:
+- "Count the number of connected components"
+- "Find a cycle in the graph"
+- "Check if path exists from A to B"
+- "Explore all possible states" (backtracking)
+- "Process nodes in dependency order" (topological sort)
 
 #v(0.5em)
 
@@ -4387,7 +4578,7 @@ The key advantage of DFS over other traversal methods like BFS is that it uses l
 For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
 
 
-== Bellman-Ford Algorithm //chap3
+== Bellman-Ford Algorithm <bellman-ford> //chap3
 
 #v(0.5em)
 
@@ -4803,7 +4994,32 @@ SPFA can also detect negative cycles by counting how many times each node is add
 
 The average case complexity of SPFA is often $O(m)$, making it much faster than standard Bellman-Ford for most graphs, though it can still degrade to $O(n m)$ in worst cases (particularly on specially constructed adversarial graphs).
 
-== Dijkstra's Algorithm //chap3
+== Dijkstra's Algorithm <dijkstra> //chap3
+
+=== When to Use Dijkstra vs Other Algorithms
+
+*Use Dijkstra when:*
+- All edge weights are *non-negative*
+- You need shortest path from one source to all nodes
+- Graph is sparse or medium-sized
+
+*Use Bellman-Ford when:*
+- There are *negative edge weights*
+- You need to *detect negative cycles*
+- Graph is small enough for $O(V dot E)$
+
+*Use Floyd-Warshall when:*
+- You need shortest paths between *all pairs* of nodes
+- Graph is small (up to ~500 nodes for $O(n^3)$)
+
+*Use BFS when:*
+- Graph is *unweighted* (all edges cost 1)
+
+Algorithm Comparison:
+- *Dijkstra*: $O((V + E) log V)$ - single source, no negative edges
+- *Bellman-Ford*: $O(V dot E)$ - single source, handles negative edges
+- *Floyd-Warshall*: $O(V^3)$ - all pairs
+- *BFS*: $O(V + E)$ - unweighted graphs only
 
 #v(0.5em)
 
@@ -5057,7 +5273,7 @@ The `parent` array stores which node we came from to reach each node along the s
 
 For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
 
-== Floyd-Warshall Algorithm //chap3
+== Floyd-Warshall Algorithm <floyd-warshall> //chap3
 
 #v(0.5em)
 
@@ -5366,7 +5582,27 @@ Don't use Floyd-Warshall when:
 - The graph is very large ($n > 1000$) as $O(n^3)$ will be too slow
 - You're working with an unweighted graph (use BFS instead)
 
-== Disjoint Set Union (DSU) //chap2
+== Disjoint Set Union (DSU) <dsu> //chap2
+
+=== When to Use DSU
+
+Use DSU when you need:
+- *Connected components*: Track which elements belong to the same group
+- *Merge operations*: Combine two groups efficiently
+- *Cycle detection*: Check if adding an edge creates a cycle (for MST algorithms)
+- *Dynamic connectivity*: Handle "connect" queries followed by "are connected?" queries
+
+Common DSU problem patterns:
+- *Kruskal's MST*: Use DSU to check if adding an edge creates a cycle
+- "Union two sets, query if same set" - classic DSU
+- "Count number of connected components"
+- "Find size of component containing element X"
+- Social network friend groups
+- Image processing (connected pixels)
+
+DSU Operations:
+- `find(x)`: Find representative of x's set - $O(alpha(n))$ with path compression
+- `unite(x, y)`: Merge sets containing x and y - $O(alpha(n))$ with union by rank
 
 #v(0.5em)
 
@@ -5708,7 +5944,7 @@ DSU is particularly useful when you need to dynamically add edges and query conn
 - Detecting cycles in undirected graphs
 - Problems involving equivalence relations
 
-== Minimum Spanning Tree //chap3
+== Minimum Spanning Tree <mst> //chap3
 
 #v(0.5em)
 
@@ -6237,7 +6473,7 @@ When implementing Kruskal's algorithm, watch out for:
 
 4. *Integer overflow:* Use `long long` for `total_weight` if edge weights can be large.
 
-== Directed Acyclic Graph (DAG) //chap3
+== Directed Acyclic Graph (DAG) <dag> //chap3
 
 #v(0.5em)
 
@@ -6310,7 +6546,7 @@ Here are some key properties:
 2. A graph has a topological sort *if and only if* it is a DAG.
 3. If the graph has $n$ vertices, the topological sort will contain all $n$ vertices exactly once.
 
-== Kahn's Algorithm //chap3
+== Kahn's Algorithm <kahns> //chap3
 
 #v(0.5em)
 
@@ -6608,7 +6844,7 @@ Both have $O(V + E)$ time complexity, so the choice often comes down to personal
 
 For the `std::queue` documentation used in this algorithm, click #link("https://en.cppreference.com/w/cpp/container/queue")[here].
 
-== Strongly Connected Components //chap2
+== Strongly Connected Components <scc> //chap2
 
 #v(0.5em)
 
@@ -7033,7 +7269,7 @@ For the `std::queue` documentation used in graph traversals, click #link("https:
 For more on graph algorithms, see the DFS documentation at #link("https://cp-algorithms.com/graph/depth-first-search.html")[CP-Algorithms].
 
 
-== Eulerian Paths and Circuits //chap2
+== Eulerian Paths and Circuits <eulerian> //chap2
 
 #v(0.5em)
 
@@ -7645,7 +7881,7 @@ For both checking and finding Eulerian paths/circuits:
 
 For more information on graph algorithms and Hierholzer's algorithm, you can refer to competitive programming resources like CSES Problem Set or Codeforces.
 
-== Hamiltonian Paths and Cycles //chap3
+== Hamiltonian Paths and Cycles <hamiltonian> //chap3
 
 #v(0.5em)
 
@@ -8207,7 +8443,7 @@ Key takeaways:
 - DP with bitmasks: $O(2^n times n^2)$, better for small $n$
 - TSP is a weighted version of finding minimum Hamiltonian cycle
 
-== Dynamic Programming on Graphs //chap3
+== Dynamic Programming on Graphs <dp-graphs> //chap3
 
 #v(0.5em)
 
@@ -8595,7 +8831,7 @@ Tree diameter: 4
 
 The diameter is 4, corresponding to the path from node 6 to node 5 (or 6 to 4): $6 arrow 3 arrow 1 arrow 0 arrow 2 arrow 5$.
 
-== Bitmasking in Graphs //chap3
+== Bitmasking in Graphs <bitmask-graphs> //chap3
 
 #v(0.5em)
 
@@ -9119,7 +9355,7 @@ When solving graph problems with bitmasks, remember:
 
 For more advanced bitmask techniques and optimizations, you can explore subset enumeration tricks like iterating through submasks or using bitmask convolution. These are powerful tools for competitive programming.
 
-== Maximum Flow and Edmonds-Karp Algorithm //chap3
+== Maximum Flow and Edmonds-Karp Algorithm <max-flow> //chap3
 
 #v(0.5em)
 
@@ -9931,7 +10167,7 @@ The beauty of max flow is that once you recognize a problem can be modeled as a 
 
 
 
-== Difference Array //chap2
+== Difference Array <diff-array> //chap2
 
 #v(0.5em)
 
@@ -10554,7 +10790,25 @@ Difference arrays are one of those elegant techniques that seem almost too simpl
 Remember: when you see "add value to range" repeated many times, think difference arrays!
 
 
-== Segment Tree //chap2
+== Segment Tree <segment-tree> //chap2
+
+=== When to Use Segment Trees
+
+Use a segment tree when you need:
+- *Range queries with updates*: Query any range while also modifying elements
+- *Complex operations*: Min, max, GCD, sum, product, etc.
+- *Range updates*: Update entire ranges efficiently (with lazy propagation)
+
+Segment Tree vs Other Structures:
+- *Prefix sum*: Use when there are no updates (faster, simpler)
+- *Fenwick Tree (BIT)*: Use for sum queries only (less code, same complexity)
+- *Segment Tree*: Use for any associative operation, or when you need range updates
+- *Sparse Table*: Use for idempotent operations (min/max) with no updates ($O(1)$ query)
+
+Common problem patterns:
+- "Query range [l,r] for min/max/sum/gcd, then update elements"
+- "Add/set values in range [l,r], then query ranges"
+- "Count elements satisfying condition in range"
 
 #v(0.5em)
 
@@ -11563,7 +11817,7 @@ Choose segment trees when:
 
 The recursive implementation is more intuitive, while the iterative version is often faster in practice. Both have their place in competitive programming!
 
-== Binary Lifting //chap2
+== Binary Lifting <binary-lifting> //chap2
 
 #v(0.5em)
 
@@ -12551,7 +12805,7 @@ This technique can be extended to track minimum values, sums, XOR values, or any
 Binary lifting is one of the most important tree algorithms in competitive programming, appearing in problems about tree paths, tree queries, and dynamic programming on trees. The ability to jump up the tree in logarithmic time opens up solutions to many complex problems.
 
 
-== Segment Tree with Lazy Propagation //chap2
+== Segment Tree with Lazy Propagation <lazy-propagation> //chap2
 
 #v(0.5em)
 
@@ -12913,7 +13167,7 @@ Common applications:
 
 For the full segment tree documentation and variations, you can explore competitive programming resources or check USACO Guide's segment tree section.
 
-== Dynamic Segment Tree //chap2
+== Dynamic Segment Tree <dynamic-segtree> //chap2
 
 #v(0.5em)
 
@@ -13386,7 +13640,7 @@ Use dynamic segment trees when:
 
 The key insight is that dynamic allocation lets us work with theoretical ranges far larger than we could ever store in memory, as long as we only access a small portion of that range.
 
-== Offline Queries //chap2
+== Offline Queries <offline-queries> //chap2
 
 #v(0.5em)
 
@@ -13978,3 +14232,881 @@ Here's when to use each technique:
 - Use for: conditional range queries
 
 The key to offline queries is recognizing that you don't need to answer queries in the order they're given. Reordering them can dramatically reduce complexity!
+
+#pagebreak()
+
+== Tree Algorithms Concepts <tree-concepts>
+
+Trees are one of the most important data structures in competitive programming. Unlike general graphs, trees have special properties that enable efficient algorithms. This section covers the fundamental concepts you'll need to solve tree problems.
+
+=== What is a Tree?
+
+A *tree* is a connected graph with no cycles. If a tree has $n$ nodes, it always has exactly $n - 1$ edges. This is a fundamental property: adding any edge creates a cycle, and removing any edge disconnects the tree.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    // Valid tree (left side)
+    content((2, 4.5), text(weight: "bold", fill: green.darken(20%))[Valid Tree])
+
+    circle((2, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t1")
+    content((2, 3.5), [1])
+
+    circle((1, 2.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t2")
+    content((1, 2.3), [2])
+
+    circle((3, 2.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t3")
+    content((3, 2.3), [3])
+
+    circle((0.3, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t4")
+    content((0.3, 1.1), [4])
+
+    circle((1.7, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t5")
+    content((1.7, 1.1), [5])
+
+    circle((3, 1.1), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "t6")
+    content((3, 1.1), [6])
+
+    line((2, 3.2), (1, 2.6), stroke: 1pt)
+    line((2, 3.2), (3, 2.6), stroke: 1pt)
+    line((1, 2.0), (0.3, 1.4), stroke: 1pt)
+    line((1, 2.0), (1.7, 1.4), stroke: 1pt)
+    line((3, 2.0), (3, 1.4), stroke: 1pt)
+
+    content((2, 0.3), text(size: 9pt)[6 nodes, 5 edges])
+    content((2, -0.1), text(size: 9pt, fill: green.darken(20%))[Connected, no cycles])
+
+    // Not a tree - has cycle (right side)
+    content((7, 4.5), text(weight: "bold", fill: red.darken(20%))[Not a Tree])
+
+    circle((7, 3.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n1")
+    content((7, 3.5), [1])
+
+    circle((6, 2.3), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n2")
+    content((6, 2.3), [2])
+
+    circle((8, 2.3), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n3")
+    content((8, 2.3), [3])
+
+    circle((7, 1.1), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt, name: "n4")
+    content((7, 1.1), [4])
+
+    line((7, 3.2), (6, 2.6), stroke: 1pt)
+    line((7, 3.2), (8, 2.6), stroke: 1pt)
+    line((6, 2.0), (7, 1.4), stroke: 1pt)
+    line((8, 2.0), (7, 1.4), stroke: 1pt)
+    line((6, 2.3), (8, 2.3), stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+
+    content((7, 0.3), text(size: 9pt)[4 nodes, 5 edges])
+    content((7, -0.1), text(size: 9pt, fill: red.darken(20%))[Cycle: 2-3-4-2])
+  })
+]
+
+The key properties of trees are:
+- *Exactly one path* between any two nodes
+- *$n$ nodes means $n-1$ edges* (always)
+- *No cycles* - removing this constraint gives a general graph
+- *Connected* - all nodes are reachable from any other node
+
+=== Rooted Trees and Terminology
+
+When we designate one node as the *root*, the tree becomes a *rooted tree* with a hierarchical structure. This gives meaning to concepts like "parent", "child", and "subtree".
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Rooted Tree Terminology])
+
+    // Root node
+    circle((4, 4.5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt, name: "root")
+    content((4, 4.5), text(weight: "bold")[1])
+    content((5.5, 4.5), text(size: 8pt)[Root (depth 0)])
+
+    // Level 1
+    circle((2.5, 3.2), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "n2")
+    content((2.5, 3.2), [2])
+
+    circle((5.5, 3.2), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt, name: "n3")
+    content((5.5, 3.2), [3])
+
+    content((0.8, 3.2), text(size: 8pt, fill: blue)[depth 1])
+
+    // Level 2
+    circle((1.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n4")
+    content((1.5, 1.9), [4])
+
+    circle((3.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n5")
+    content((3.5, 1.9), [5])
+
+    circle((5.5, 1.9), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt, name: "n6")
+    content((5.5, 1.9), [6])
+
+    content((0.8, 1.9), text(size: 8pt, fill: blue)[depth 2])
+
+    // Level 3 (leaves)
+    circle((1, 0.6), radius: 0.3, fill: rgb(220, 220, 220), stroke: 1pt, name: "n7")
+    content((1, 0.6), [7])
+
+    circle((2, 0.6), radius: 0.3, fill: rgb(220, 220, 220), stroke: 1pt, name: "n8")
+    content((2, 0.6), [8])
+
+    content((0.8, 0.6), text(size: 8pt, fill: blue)[depth 3])
+
+    // Edges
+    line((4, 4.15), (2.5, 3.55), stroke: 1pt)
+    line((4, 4.15), (5.5, 3.55), stroke: 1pt)
+    line((2.5, 2.9), (1.5, 2.25), stroke: 1pt)
+    line((2.5, 2.9), (3.5, 2.25), stroke: 1pt)
+    line((5.5, 2.9), (5.5, 2.25), stroke: 1pt)
+    line((1.5, 1.6), (1, 0.95), stroke: 1pt)
+    line((1.5, 1.6), (2, 0.95), stroke: 1pt)
+
+    // Subtree highlight
+    rect((0.4, 0.2), (2.6, 2.4), stroke: (paint: green.darken(20%), thickness: 1.5pt, dash: "dashed"))
+    content((1.5, -0.2), text(size: 8pt, fill: green.darken(20%))[Subtree of node 4])
+
+    // Annotations on right
+    content((7.5, 4.2), text(size: 8pt)[Parent of 2, 3 is 1])
+    content((7.5, 3.7), text(size: 8pt)[Children of 2 are 4, 5])
+    content((7.5, 3.2), text(size: 8pt)[Leaves: 5, 6, 7, 8])
+    content((7.5, 2.7), text(size: 8pt)[Height of tree: 3])
+  })
+]
+
+*Key terminology:*
+- *Root*: The top node (often node 1 in problems)
+- *Parent*: The node directly above. Node 2's parent is 1.
+- *Children*: Nodes directly below. Node 2's children are 4 and 5.
+- *Leaf*: A node with no children (nodes 5, 6, 7, 8 above)
+- *Subtree*: A node and all its descendants
+- *Depth*: Distance from root. Root has depth 0.
+- *Height*: Maximum depth in the tree
+- *Ancestor*: Any node on the path to root
+- *Descendant*: Any node in a node's subtree
+
+=== Tree Representation in Code
+
+The most common way to represent a tree is with an *adjacency list*. For each node, we store a list of its neighbors.
+
+```cpp
+int n;  // number of nodes
+vector<vector<int>> adj(n + 1);  // adj[u] = list of neighbors of u
+
+// Reading n-1 edges
+for (int i = 0; i < n - 1; i++) {
+    int a, b;
+    cin >> a >> b;
+    adj[a].push_back(b);
+    adj[b].push_back(a);  // undirected edge
+}
+```
+
+For rooted trees, we often also store the parent of each node:
+
+```cpp
+vector<int> parent(n + 1);
+
+void root_tree(int u, int par) {
+    parent[u] = par;
+    for (int v : adj[u]) {
+        if (v != par) {
+            root_tree(v, u);
+        }
+    }
+}
+
+// Call with: root_tree(1, 0);  // root at node 1, no parent (0)
+```
+
+=== Tree Traversal: DFS and BFS
+
+*Depth-First Search (DFS)* explores as deep as possible before backtracking. It's the most common way to traverse trees.
+
+```cpp
+void dfs(int u, int parent) {
+    // Process node u here (pre-order)
+
+    for (int v : adj[u]) {
+        if (v != parent) {
+            dfs(v, u);
+        }
+    }
+
+    // Or process here (post-order)
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5), text(weight: "bold")[DFS Traversal Order])
+
+    circle((4, 4), radius: 0.35, fill: rgb(255, 215, 0), stroke: 1pt)
+    content((4, 4), [1])
+    content((4.6, 4), text(size: 8pt, fill: red)[1st])
+
+    circle((2.5, 2.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.8), [2])
+    content((3.1, 2.8), text(size: 8pt, fill: red)[2nd])
+
+    circle((5.5, 2.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 2.8), [3])
+    content((6.1, 2.8), text(size: 8pt, fill: red)[5th])
+
+    circle((1.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 1.6), [4])
+    content((2.1, 1.6), text(size: 8pt, fill: red)[3rd])
+
+    circle((3.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 1.6), [5])
+    content((4.1, 1.6), text(size: 8pt, fill: red)[4th])
+
+    circle((5.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((5.5, 1.6), [6])
+    content((6.1, 1.6), text(size: 8pt, fill: red)[6th])
+
+    line((4, 3.65), (2.5, 3.15), stroke: 1pt)
+    line((4, 3.65), (5.5, 3.15), stroke: 1pt)
+    line((2.5, 2.5), (1.5, 1.95), stroke: 1pt)
+    line((2.5, 2.5), (3.5, 1.95), stroke: 1pt)
+    line((5.5, 2.5), (5.5, 1.95), stroke: 1pt)
+
+    content((4, 0.5), text(size: 9pt)[DFS visits: 1 -> 2 -> 4 -> 5 -> 3 -> 6])
+  })
+]
+
+*Breadth-First Search (BFS)* explores level by level. It's useful for finding shortest paths in unweighted trees.
+
+```cpp
+void bfs(int start) {
+    queue<int> q;
+    vector<int> dist(n + 1, -1);
+
+    q.push(start);
+    dist[start] = 0;
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (int v : adj[u]) {
+            if (dist[v] == -1) {  // not visited
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+}
+```
+
+=== Subtree Size and Basic Tree DP
+
+One of the most fundamental tree computations is finding the size of each subtree. This is done with a simple DFS:
+
+```cpp
+vector<int> subtree_size(n + 1);
+
+int compute_size(int u, int parent) {
+    subtree_size[u] = 1;  // count self
+    for (int v : adj[u]) {
+        if (v != parent) {
+            subtree_size[u] += compute_size(v, u);
+        }
+    }
+    return subtree_size[u];
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5), text(weight: "bold")[Subtree Sizes])
+
+    circle((4, 4), radius: 0.4, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 4), text(weight: "bold")[1])
+    content((5, 4), text(size: 8pt)[size = 6])
+
+    circle((2.5, 2.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.8), [2])
+    content((1.3, 2.8), text(size: 8pt)[size = 3])
+
+    circle((5.5, 2.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 2.8), [3])
+    content((6.7, 2.8), text(size: 8pt)[size = 2])
+
+    circle((1.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 1.6), [4])
+    content((0.5, 1.6), text(size: 8pt)[size = 1])
+
+    circle((3.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 1.6), [5])
+    content((4.3, 1.6), text(size: 8pt)[size = 1])
+
+    circle((5.5, 1.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((5.5, 1.6), [6])
+    content((6.5, 1.6), text(size: 8pt)[size = 1])
+
+    line((4, 3.6), (2.5, 3.15), stroke: 1pt)
+    line((4, 3.6), (5.5, 3.15), stroke: 1pt)
+    line((2.5, 2.45), (1.5, 1.95), stroke: 1pt)
+    line((2.5, 2.45), (3.5, 1.95), stroke: 1pt)
+    line((5.5, 2.45), (5.5, 1.95), stroke: 1pt)
+
+    content((4, 0.5), text(size: 9pt)[size\[u\] = 1 + sum of children's sizes])
+  })
+]
+
+This pattern of computing values bottom-up (from leaves to root) is the foundation of *Tree DP*.
+
+=== Tree Diameter
+
+The *diameter* of a tree is the longest path between any two nodes. There are two classic approaches:
+
+*Approach 1: Two BFS/DFS*
+1. Start from any node, find the farthest node $u$
+2. From $u$, find the farthest node $v$
+3. The distance from $u$ to $v$ is the diameter
+
+This works because the farthest node from any node must be an endpoint of some diameter.
+
+*Approach 2: Tree DP (Single DFS)*
+For each node, track the two longest paths going down. The diameter passing through that node is their sum.
+
+```cpp
+int diameter = 0;
+
+int dfs(int u, int parent) {
+    int max1 = 0, max2 = 0;  // two longest paths down
+
+    for (int v : adj[u]) {
+        if (v == parent) continue;
+        int d = dfs(v, u) + 1;
+
+        if (d > max1) { max2 = max1; max1 = d; }
+        else if (d > max2) { max2 = d; }
+    }
+
+    diameter = max(diameter, max1 + max2);
+    return max1;
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Tree Diameter Example])
+
+    circle((4, 4.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((4, 4.5), [1])
+
+    circle((2, 3.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 3.5), [2])
+
+    circle((6, 3.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 3.5), [3])
+
+    circle((1, 2.5), radius: 0.35, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1, 2.5), [4])
+
+    circle((3, 2.5), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((3, 2.5), [5])
+
+    circle((6, 2.5), radius: 0.35, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((6, 2.5), [6])
+
+    circle((1, 1.5), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((1, 1.5), [7])
+
+    // Regular edges
+    line((4, 4.15), (2, 3.85), stroke: 1pt)
+    line((4, 4.15), (6, 3.85), stroke: 1pt)
+    line((2, 3.15), (1, 2.85), stroke: 1pt)
+    line((2, 3.15), (3, 2.85), stroke: 1pt)
+    line((6, 3.15), (6, 2.85), stroke: 1pt)
+    line((1, 2.15), (1, 1.85), stroke: 1pt)
+
+    // Diameter path highlighted
+    line((1, 1.85), (1, 2.15), stroke: (paint: red, thickness: 3pt))
+    line((1, 2.85), (2, 3.15), stroke: (paint: red, thickness: 3pt))
+    line((2, 3.85), (4, 4.15), stroke: (paint: red, thickness: 3pt))
+    line((4, 4.15), (6, 3.85), stroke: (paint: red, thickness: 3pt))
+    line((6, 3.15), (6, 2.85), stroke: (paint: red, thickness: 3pt))
+
+    content((4, 0.7), text(fill: red, weight: "bold")[Diameter = 5 edges])
+    content((4, 0.2), text(size: 9pt)[Path: 7 - 4 - 2 - 1 - 3 - 6])
+  })
+]
+
+#pagebreak()
+
+=== Euler Tour (Tree Flattening)
+
+The *Euler Tour* technique converts a tree into an array by recording when we enter and exit each node during DFS. This is incredibly powerful because it transforms *subtree queries* into *range queries*.
+
+```cpp
+int timer = 0;
+vector<int> tin(n + 1), tout(n + 1);
+
+void euler_tour(int u, int parent) {
+    tin[u] = ++timer;  // entry time
+
+    for (int v : adj[u]) {
+        if (v != parent) {
+            euler_tour(v, u);
+        }
+    }
+
+    tout[u] = timer;  // exit time
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Euler Tour: Flattening the Tree])
+
+    // Tree
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5), [1])
+    content((4.7, 5), text(size: 7pt)[tin=1])
+
+    circle((2.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.8), [2])
+    content((1.7, 3.8), text(size: 7pt)[tin=2])
+
+    circle((5.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+    content((6.3, 3.8), text(size: 7pt)[tin=5])
+
+    circle((1.5, 2.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((1.5, 2.6), [4])
+    content((0.7, 2.6), text(size: 7pt)[tin=3])
+
+    circle((3.5, 2.6), radius: 0.3, fill: rgb(180, 255, 180), stroke: 1pt)
+    content((3.5, 2.6), [5])
+    content((4.3, 2.6), text(size: 7pt)[tin=4])
+
+    line((4, 4.65), (2.5, 4.15), stroke: 1pt)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((2.5, 3.5), (1.5, 2.95), stroke: 1pt)
+    line((2.5, 3.5), (3.5, 2.95), stroke: 1pt)
+
+    // Flattened array
+    content((4, 1.6), text(weight: "bold", size: 9pt)[Flattened Array (DFS order):])
+
+    for (i, val) in ((0, "1"), (1, "2"), (2, "4"), (3, "5"), (4, "3")) {
+      rect((1.0 + i * 1.2, 0.6), (2.0 + i * 1.2, 1.2), stroke: 1pt, fill: rgb(230, 245, 255))
+      content((1.5 + i * 1.2, 0.9), text(size: 10pt)[#val])
+      content((1.5 + i * 1.2, 0.3), text(size: 7pt, fill: gray)[#(i + 1)])
+    }
+
+    // Subtree range highlight
+    rect((2.2, 0.5), (5.6, 1.3), stroke: (paint: red, thickness: 2pt, dash: "dashed"))
+    content((3.9, -0.1), text(size: 8pt, fill: red)[Subtree of 2: indices 2-4])
+  })
+]
+
+*Key property*: The subtree of node $u$ corresponds to the range $["tin"[u], "tout"[u]]$ in the flattened array.
+
+This means:
+- *Subtree sum query* → Range sum query on the array
+- *Update node value* → Point update on the array
+- We can use Segment Trees or Fenwick Trees!
+
+=== Binary Lifting
+
+*Binary Lifting* is a technique to answer *k-th ancestor* queries efficiently. The naive approach climbs one step at a time (O(k)), but binary lifting precomputes ancestors at powers of 2, allowing O(log k) queries.
+
+The key insight: any number $k$ can be expressed as a sum of powers of 2. So we can "jump" to the k-th ancestor by making at most $log(k)$ jumps.
+
+```cpp
+const int MAXLOG = 20;  // log2(n) rounded up
+vector<vector<int>> up(n + 1, vector<int>(MAXLOG, 0));
+// up[v][j] = the 2^j-th ancestor of v
+
+void precompute(int u, int parent) {
+    up[u][0] = parent;  // 2^0 = 1st ancestor = parent
+    for (int j = 1; j < MAXLOG; j++) {
+        if (up[u][j-1] != 0) {
+            up[u][j] = up[up[u][j-1]][j-1];  // 2^j = 2^(j-1) + 2^(j-1)
+        }
+    }
+    for (int v : adj[u]) {
+        if (v != parent) precompute(v, u);
+    }
+}
+
+int kth_ancestor(int v, int k) {
+    for (int j = 0; j < MAXLOG && v != 0; j++) {
+        if (k & (1 << j)) {  // if j-th bit of k is set
+            v = up[v][j];    // jump 2^j steps
+        }
+    }
+    return v;  // 0 if k > depth of v
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6.5), text(weight: "bold")[Binary Lifting: Jumping in Powers of 2])
+
+    // Tree structure
+    circle((4, 5.5), radius: 0.3, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5.5), [1])
+
+    circle((3, 4.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((3, 4.5), [2])
+
+    circle((2.5, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.5), [3])
+
+    circle((2, 2.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 2.5), [4])
+
+    circle((1.5, 1.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((1.5, 1.5), [5])
+
+    line((4, 5.2), (3, 4.8), stroke: 1pt)
+    line((3, 4.2), (2.5, 3.8), stroke: 1pt)
+    line((2.5, 3.2), (2, 2.8), stroke: 1pt)
+    line((2, 2.2), (1.5, 1.8), stroke: 1pt)
+
+    // Jump arrows
+    line((1.8, 1.5), (2.3, 2.2), stroke: (paint: blue, thickness: 2pt), mark: (end: ">"))
+    content((2.5, 1.7), text(size: 7pt, fill: blue)[$2^0$])
+
+    line((1.7, 1.7), (2.3, 3.2), stroke: (paint: green.darken(20%), thickness: 2pt), mark: (end: ">"))
+    content((2.8, 2.4), text(size: 7pt, fill: green.darken(20%))[$2^1$])
+
+    line((1.6, 1.8), (2.8, 4.2), stroke: (paint: red, thickness: 2pt), mark: (end: ">"))
+    content((3.2, 3.0), text(size: 7pt, fill: red)[$2^2$])
+
+    // Table
+    content((6.5, 5), text(size: 8pt, weight: "bold")[Binary Lifting Table:])
+    content((6.5, 4.5), text(size: 8pt)[up\[5\]\[0\] = 4  (1st)])
+    content((6.5, 4.0), text(size: 8pt)[up\[5\]\[1\] = 3  (2nd)])
+    content((6.5, 3.5), text(size: 8pt)[up\[5\]\[2\] = 2  (4th)])
+    content((6.5, 3.0), text(size: 8pt)[up\[5\]\[3\] = 1  (8th)])
+
+    content((4, 0.5), text(size: 9pt)[Query: 3rd ancestor of 5?])
+    content((4, 0.0), text(size: 9pt)[3 = 2 + 1 = $2^1$ + $2^0$, so jump to 3, then to 2])
+  })
+]
+
+=== Lowest Common Ancestor (LCA)
+
+The *Lowest Common Ancestor* of two nodes $a$ and $b$ is the deepest node that is an ancestor of both. LCA is fundamental for many tree problems.
+
+Using binary lifting, we can find LCA in O(log n):
+
+1. Bring both nodes to the same depth (lift the deeper one)
+2. If they're the same, we found the LCA
+3. Otherwise, binary search: lift both until just below LCA
+
+```cpp
+vector<int> depth(n + 1);
+
+int lca(int a, int b) {
+    // Step 1: Make a the shallower node
+    if (depth[a] > depth[b]) swap(a, b);
+
+    // Step 2: Lift b to same depth as a
+    int diff = depth[b] - depth[a];
+    for (int j = 0; j < MAXLOG; j++) {
+        if (diff & (1 << j)) {
+            b = up[b][j];
+        }
+    }
+
+    // Step 3: If same, found LCA
+    if (a == b) return a;
+
+    // Step 4: Binary search for LCA
+    for (int j = MAXLOG - 1; j >= 0; j--) {
+        if (up[a][j] != up[b][j]) {
+            a = up[a][j];
+            b = up[b][j];
+        }
+    }
+    return up[a][0];  // parent of where they met
+}
+```
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Finding LCA(5, 6)])
+
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 1pt)
+    content((4, 5), [1])
+
+    circle((2.5, 3.8), radius: 0.4, fill: rgb(180, 255, 180), stroke: 3pt)
+    content((2.5, 3.8), text(weight: "bold")[2])
+    content((1.3, 3.8), text(size: 8pt, fill: green.darken(20%), weight: "bold")[LCA])
+
+    circle((5.5, 3.8), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+
+    circle((1.5, 2.6), radius: 0.35, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((1.5, 2.6), [4])
+
+    circle((3.5, 2.6), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((3.5, 2.6), [5])
+
+    circle((5.5, 2.6), radius: 0.35, fill: rgb(255, 200, 200), stroke: 2pt)
+    content((5.5, 2.6), [6])
+
+    line((4, 4.65), (2.5, 4.15), stroke: 1pt)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((2.5, 3.45), (1.5, 2.95), stroke: 1pt)
+    line((2.5, 3.45), (3.5, 2.95), stroke: 1pt)
+    line((5.5, 3.45), (5.5, 2.95), stroke: 1pt)
+
+    // Depth labels
+    content((6.8, 5), text(size: 8pt)[depth 0])
+    content((6.8, 3.8), text(size: 8pt)[depth 1])
+    content((6.8, 2.6), text(size: 8pt)[depth 2])
+
+    content((4, 1.5), text(size: 9pt)[Step 1: Both at depth 2, no lifting needed])
+    content((4, 1.0), text(size: 9pt)[Step 2: 5 != 6, lift both -> both go to 2])
+    content((4, 0.5), text(size: 9pt, weight: "bold")[LCA(5, 6) = 2])
+  })
+]
+
+*Key application - Distance formula*:
+$
+"dist"(a, b) = "depth"[a] + "depth"[b] - 2 dot "depth"["LCA"(a, b)]
+$
+
+#pagebreak()
+
+=== Rerooting Technique
+
+The *rerooting technique* (also called *tree DP with rerooting*) is used when we need to compute a value for each node *as if it were the root*. The naive approach would run a full DFS from each node (O(n²)), but rerooting does it in O(n) with two passes.
+
+*Idea*: First compute values with node 1 as root. Then propagate: when moving from parent to child, update values using what we know.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Rerooting: Two-Pass Technique])
+
+    // Pass 1
+    content((1.5, 4.5), text(size: 9pt, fill: blue, weight: "bold")[Pass 1: Down])
+
+    circle((1.5, 3.5), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((1.5, 3.5), [1])
+
+    circle((0.8, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((0.8, 2.5), [2])
+
+    circle((2.2, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.2, 2.5), [3])
+
+    line((1.5, 3.2), (0.8, 2.75), stroke: 1pt)
+    line((1.5, 3.2), (2.2, 2.75), stroke: 1pt)
+
+    line((0.8, 2.75), (1.3, 3.2), stroke: (paint: blue, thickness: 1.5pt), mark: (end: ">"))
+    line((2.2, 2.75), (1.7, 3.2), stroke: (paint: blue, thickness: 1.5pt), mark: (end: ">"))
+
+    content((1.5, 1.8), text(size: 8pt)[Compute dp\[u\]])
+    content((1.5, 1.4), text(size: 8pt)[from children])
+
+    // Pass 2
+    content((6.5, 4.5), text(size: 9pt, fill: red, weight: "bold")[Pass 2: Up])
+
+    circle((6.5, 3.5), radius: 0.3, fill: rgb(255, 200, 200), stroke: 1pt)
+    content((6.5, 3.5), [1])
+
+    circle((5.8, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.8, 2.5), [2])
+
+    circle((7.2, 2.5), radius: 0.25, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((7.2, 2.5), [3])
+
+    line((6.5, 3.2), (5.8, 2.75), stroke: 1pt)
+    line((6.5, 3.2), (7.2, 2.75), stroke: 1pt)
+
+    line((6.3, 3.2), (5.9, 2.75), stroke: (paint: red, thickness: 1.5pt), mark: (end: ">"))
+    line((6.7, 3.2), (7.1, 2.75), stroke: (paint: red, thickness: 1.5pt), mark: (end: ">"))
+
+    content((6.5, 1.8), text(size: 8pt)[Propagate info])
+    content((6.5, 1.4), text(size: 8pt)[from parent])
+
+    content((4, 0.5), text(size: 9pt)[Total: O(n) instead of O(n²)])
+  })
+]
+
+*Common applications*:
+- Tree Distances I: Maximum distance from each node
+- Tree Distances II: Sum of distances from each node
+- Many "compute X for each node as root" problems
+
+=== Heavy-Light Decomposition (HLD)
+
+*Heavy-Light Decomposition* breaks a tree into chains so that any path crosses at most O(log n) chains. Combined with a segment tree, this allows O(log² n) path queries with updates.
+
+*Definitions*:
+- *Heavy child*: The child with the largest subtree
+- *Heavy edge*: Edge to the heavy child
+- *Light edge*: All other edges
+- *Heavy path*: Maximal path of heavy edges
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 6), text(weight: "bold")[Heavy-Light Decomposition])
+
+    circle((4, 5), radius: 0.35, fill: rgb(255, 215, 0), stroke: 2pt)
+    content((4, 5), [1])
+
+    circle((2.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 3.8), [2])
+
+    circle((5.5, 3.8), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5.5, 3.8), [3])
+
+    circle((2.5, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 2.6), [4])
+
+    circle((5, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((5, 2.6), [5])
+
+    circle((6, 2.6), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 2.6), [6])
+
+    circle((2.5, 1.4), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2.5, 1.4), [7])
+
+    // Heavy edges (thick red)
+    line((4, 4.65), (2.5, 4.15), stroke: (paint: red, thickness: 3pt))
+    line((2.5, 3.5), (2.5, 2.95), stroke: (paint: red, thickness: 3pt))
+    line((2.5, 2.3), (2.5, 1.75), stroke: (paint: red, thickness: 3pt))
+
+    // Light edges (thin black)
+    line((4, 4.65), (5.5, 4.15), stroke: 1pt)
+    line((5.5, 3.5), (5, 2.95), stroke: 1pt)
+    line((5.5, 3.5), (6, 2.95), stroke: 1pt)
+
+    // Legend
+    content((7.5, 4), text(size: 8pt, fill: red, weight: "bold")[Heavy edge])
+    content((7.5, 3.5), text(size: 8pt)[Light edge])
+
+    content((4, 0.5), text(size: 9pt)[Heavy chain: 1-2-4-7])
+    content((4, 0.0), text(size: 9pt)[Any path crosses O(log n) light edges])
+  })
+]
+
+*Key insight*: Any root-to-leaf path has at most O(log n) light edges. So any path between two nodes crosses at most O(log n) chains.
+
+=== Centroid and Centroid Decomposition
+
+A *centroid* of a tree is a node whose removal leaves no subtree with more than n/2 nodes. Every tree has at least one centroid.
+
+```cpp
+int find_centroid(int u, int parent, int tree_size) {
+    for (int v : adj[u]) {
+        if (v != parent && !removed[v]) {
+            if (subtree[v] > tree_size / 2) {
+                return find_centroid(v, u, tree_size);
+            }
+        }
+    }
+    return u;
+}
+```
+
+*Centroid Decomposition*: Recursively find centroids, building a "centroid tree" of height O(log n). This is powerful for path-related queries.
+
+#align(center)[
+  #cetz.canvas({
+    import cetz.draw: *
+
+    content((4, 5.5), text(weight: "bold")[Centroid Property])
+
+    circle((4, 4.5), radius: 0.45, fill: rgb(255, 215, 0), stroke: 3pt)
+    content((4, 4.5), text(weight: "bold")[C])
+
+    circle((2, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((2, 3.3), [2])
+
+    circle((4, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((4, 3.3), [3])
+
+    circle((6, 3.3), radius: 0.3, fill: rgb(200, 225, 255), stroke: 1pt)
+    content((6, 3.3), [4])
+
+    circle((1.5, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+    circle((2.5, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+    circle((4, 2.1), radius: 0.25, fill: rgb(220, 220, 220), stroke: 1pt)
+
+    line((4, 4.05), (2, 3.65), stroke: 1pt)
+    line((4, 4.05), (4, 3.65), stroke: 1pt)
+    line((4, 4.05), (6, 3.65), stroke: 1pt)
+    line((2, 3.0), (1.5, 2.35), stroke: 1pt)
+    line((2, 3.0), (2.5, 2.35), stroke: 1pt)
+    line((4, 3.0), (4, 2.35), stroke: 1pt)
+
+    content((4, 1.3), text(size: 9pt)[Removing C: no subtree has > n/2 nodes])
+    content((4, 0.8), text(size: 9pt)[Centroid tree has height O(log n)])
+  })
+]
+
+=== Small-to-Large Merging
+
+When merging data structures from children to parent, *always merge the smaller into the larger*. This ensures each element is moved at most O(log n) times total.
+
+```cpp
+void dfs(int u, int parent) {
+    for (int v : adj[u]) {
+        if (v == parent) continue;
+        dfs(v, u);
+
+        // Merge smaller into larger
+        if (data[v].size() > data[u].size()) {
+            swap(data[u], data[v]);
+        }
+        for (auto& x : data[v]) {
+            data[u].insert(x);
+        }
+        data[v].clear();
+    }
+
+    data[u].insert(value[u]);
+    answer[u] = data[u].size();  // e.g., distinct count
+}
+```
+
+*Why O(n log n) total?* Each time an element is moved, the set size at least doubles. So each element moves at most O(log n) times.
+
+=== Summary of Tree Techniques
+
+#align(center)[
+#table(
+  columns: (auto, auto, auto),
+  stroke: 0.5pt,
+  fill: (col, row) => if row == 0 { rgb(200, 225, 255) } else { none },
+  [*Technique*], [*Complexity*], [*Use Case*],
+  [DFS/BFS Traversal], [$O(n)$], [Basic tree exploration],
+  [Subtree Size], [$O(n)$], [Foundation for tree DP],
+  [Tree Diameter], [$O(n)$], [Longest path in tree],
+  [Euler Tour], [$O(n)$ build, $O(log n)$ query], [Subtree queries as range queries],
+  [Binary Lifting], [$O(n log n)$ build, $O(log n)$ query], [k-th ancestor queries],
+  [LCA], [$O(n log n)$ build, $O(log n)$ query], [Lowest common ancestor, distances],
+  [Rerooting], [$O(n)$], [Compute answer for each node as root],
+  [Heavy-Light Decomposition], [$O(n log n)$ build, $O(log^2 n)$ query], [Path queries with updates],
+  [Centroid Decomposition], [$O(n log n)$], [Path counting, distance queries],
+  [Small-to-Large], [$O(n log n)$], [Merging subtree data (distinct colors)],
+)
+]

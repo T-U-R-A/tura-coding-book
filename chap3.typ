@@ -24,6 +24,8 @@
 
 = Dynamic Programming
 
+_This chapter covers Dynamic Programming (DP) problems. For a comprehensive introduction to DP concepts, memoization, and tabulation, see the *Dynamic Programming* section in Concepts._
+
 \
 == Dice Combinations
 

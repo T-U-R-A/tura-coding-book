@@ -1340,8 +1340,7 @@ int main(){
 
 Accept all the numbers and insert them into a set. Then report the size of the set. This works due to the fact that a set only stores unique elements and removes duplicates.
 
-//TODO: Add link to more about sets in the context part
-More about sets can be found here.
+More about sets can be found in the *Sets* section of Concepts.
 
 *Solution*
 
@@ -2827,7 +2826,7 @@ int main() {
 ```
 #pagebreak()
 
-=== Factory Machines
+=== Factory Machines <chap2-bsearch>
 
 \
 #link("https://cses.fi/problemset/task/1620")[Question - Factory Machines]
