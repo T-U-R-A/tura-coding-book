@@ -2802,24 +2802,25 @@ For the `std::deque` documentation, click #link("https://en.cppreference.com/w/c
 
 == Dynamic Programming <dp> //chap3
 
-=== When to Use Dynamic Programming
-
-Use DP when a problem has these two properties:
-1. *Optimal Substructure*: The optimal solution can be built from optimal solutions to subproblems
-2. *Overlapping Subproblems*: The same subproblems are solved multiple times
-
-Common DP problem patterns:
-- *Counting*: "How many ways to reach state X?" → Add up ways from all predecessor states
-- *Optimization*: "What's the minimum cost to reach state X?" → Take min/max over predecessor states
-- *Decision problems*: "Is it possible to reach state X?" → OR over predecessor states
-- *Subsequences*: LCS, LIS, edit distance
-- *Knapsack variants*: Subset sum, coin change, bounded/unbounded selection
-
-Key questions to ask yourself:
-- What are my *states*? (What information do I need to track?)
-- What are my *transitions*? (How do I go from one state to another?)
-- What is my *base case*? (What are the trivial cases I know immediately?)
-- What is my *answer*? (Which state(s) contain the final answer?)
+//Redundent information.
+// === When to Use Dynamic Programming
+//
+// Use DP when a problem has these two properties:
+// 1. *Optimal Substructure*: The optimal solution can be built from optimal solutions to subproblems
+// 2. *Overlapping Subproblems*: The same subproblems are solved multiple times
+//
+// Common DP problem patterns:
+// - *Counting*: "How many ways to reach state X?" → Add up ways from all predecessor states
+// - *Optimization*: "What's the minimum cost to reach state X?" → Take min/max over predecessor states
+// - *Decision problems*: "Is it possible to reach state X?" → OR over predecessor states
+// - *Subsequences*: LCS, LIS, edit distance
+// - *Knapsack variants*: Subset sum, coin change, bounded/unbounded selection
+//
+// Key questions to ask yourself:
+// - What are my *states*? (What information do I need to track?)
+// - What are my *transitions*? (How do I go from one state to another?)
+// - What is my *base case*? (What are the trivial cases I know immediately?)
+// - What is my *answer*? (Which state(s) contain the final answer?)
 
 #let fibNode(n, repeated: false) = {
   let fillColor = if repeated {
@@ -3609,24 +3610,26 @@ This uses a technique called *breadth-first search(BFS)*, which is explained in 
 
 == Breadth-First Search (BFS) <bfs> //chap2
 
-=== When to Use BFS
+// The following seems to be redundant
 
-Use BFS when you need:
-- *Shortest path in unweighted graphs*: BFS guarantees the first path found is shortest
-- *Level-order traversal*: Process nodes by their distance from source
-- *Multi-source shortest path*: Start BFS from multiple sources simultaneously
-- *Bipartite checking*: 2-color a graph using BFS levels
-
-Common BFS problem patterns:
-- "Find shortest path from A to B" (unweighted)
-- "Find minimum number of moves/steps"
-- "Find all nodes within distance K"
-- "Can we divide nodes into two groups?"
-- Grid problems: "Shortest path in a maze"
-
-BFS vs DFS:
-- Use BFS for *shortest paths* in unweighted graphs
-- Use DFS for *connectivity*, *cycle detection*, or when you need to explore all paths
+// === When to Use BFS
+//
+// Use BFS when you need:
+// - *Shortest path in unweighted graphs*: BFS guarantees the first path found is shortest
+// - *Level-order traversal*: Process nodes by their distance from source
+// - *Multi-source shortest path*: Start BFS from multiple sources simultaneously
+// - *Bipartite checking*: 2-color a graph using BFS levels
+//
+// Common BFS problem patterns:
+// - "Find shortest path from A to B" (unweighted)
+// - "Find minimum number of moves/steps"
+// - "Find all nodes within distance K"
+// - "Can we divide nodes into two groups?"
+// - Grid problems: "Shortest path in a maze"
+//
+// BFS vs DFS:
+// - Use BFS for *shortest paths* in unweighted graphs
+// - Use DFS for *connectivity*, *cycle detection*, or when you need to explore all paths
 
 #v(0.5em)
 
@@ -4206,21 +4209,21 @@ Here are some typical problems where BFS is the right tool:
 
 == Depth-First Search (DFS) <dfs> //chap3
 
-=== When to Use DFS
-
-Use DFS when you need:
-- *Cycle detection*: Find back edges during traversal
-- *Connected components*: Count or label groups of connected nodes
-- *Topological sorting*: Order nodes in a DAG
-- *Path finding*: Find any path between two nodes (not necessarily shortest)
-- *Tree traversals*: Pre-order, in-order, post-order
-
-Common DFS problem patterns:
-- "Count the number of connected components"
-- "Find a cycle in the graph"
-- "Check if path exists from A to B"
-- "Explore all possible states" (backtracking)
-- "Process nodes in dependency order" (topological sort)
+// === When to Use DFS
+//
+// Use DFS when you need:
+// - *Cycle detection*: Find back edges during traversal
+// - *Connected components*: Count or label groups of connected nodes
+// - *Topological sorting*: Order nodes in a DAG
+// - *Path finding*: Find any path between two nodes (not necessarily shortest)
+// - *Tree traversals*: Pre-order, in-order, post-order
+//
+// Common DFS problem patterns:
+// - "Count the number of connected components"
+// - "Find a cycle in the graph"
+// - "Check if path exists from A to B"
+// - "Explore all possible states" (backtracking)
+// - "Process nodes in dependency order" (topological sort)
 
 #v(0.5em)
 
@@ -4577,7 +4580,7 @@ The key advantage of DFS over other traversal methods like BFS is that it uses l
 
 For more information on graph algorithms, you can refer to standard resources on competitive programming and algorithm design.
 
-=== BFS vs DFS
+== BFS vs DFS
 
 You might wonder when to use BFS versus depth-first search (DFS). Here's a quick comparison:
 
@@ -7933,13 +7936,13 @@ Let's look at some examples to understand the concept better:
       content("5", [5])
       
       // Draw edges
-      line("1.center", "2.center", stroke: 2pt)
-      line("2.center", "3.center", stroke: 2pt)
-      line("1.center", "4.center", stroke: 2pt)
-      line("2.center", "4.center", stroke: 2pt)
-      line("2.center", "5.center", stroke: 2pt)
-      line("3.center", "5.center", stroke: 2pt)
-      line("4.center", "5.center", stroke: 2pt)
+      line("1", "2", stroke: 2pt)
+      line("2", "3", stroke: 2pt)
+      line("1", "4", stroke: 2pt)
+      line("2", "4", stroke: 2pt)
+      line("2", "5", stroke: 2pt)
+      line("3", "5", stroke: 2pt)
+      line("4", "5", stroke: 2pt)
     })
     
     Hamiltonian Path: 1 → 4 → 2 → 5 → 3
@@ -7969,11 +7972,11 @@ Let's look at some examples to understand the concept better:
       content("4", [4])
       
       // Draw edges
-      line("1.center", "2.center", stroke: 2pt)
-      line("2.center", "3.center", stroke: 2pt)
-      line("3.center", "4.center", stroke: 2pt)
-      line("4.center", "1.center", stroke: 2pt)
-      line("1.center", "3.center", stroke: 2pt)
+      line("1", "2", stroke: 2pt)
+      line("2", "3", stroke: 2pt)
+      line("3", "4", stroke: 2pt)
+      line("4", "1", stroke: 2pt)
+      line("1", "3", stroke: 2pt)
     })
     
     Hamiltonian Cycle: 1 → 2 → 3 → 4 → 1
@@ -8003,9 +8006,9 @@ Let's look at some examples to understand the concept better:
       content("4", [4])
       
       // Draw edges - only connecting to vertex 1
-      line("1.center", "2.center", stroke: 2pt)
-      line("1.center", "3.center", stroke: 2pt)
-      line("1.center", "4.center", stroke: 2pt)
+      line("1", "2", stroke: 2pt)
+      line("1", "3", stroke: 2pt)
+      line("1", "4", stroke: 2pt)
     })
     
     No Hamiltonian Path exists!
@@ -8338,24 +8341,24 @@ Here's a visual representation:
     content("D", [D])
     
     // Draw edges with weights
-    line("A.center", "B.center", stroke: 2pt)
+    line("A", "B", stroke: 2pt)
     content((1.5, -0.5), [10])
     
-    line("B.center", "C.center", stroke: 2pt)
+    line("B", "C", stroke: 2pt)
     content((3.5, 1.5), [15])
     
-    line("C.center", "D.center", stroke: 2pt)
+    line("C", "D", stroke: 2pt)
     content((1.5, 3.5), [20])
     
-    line("D.center", "A.center", stroke: 2pt)
+    line("D", "A", stroke: 2pt)
     content((-0.5, 1.5), [25])
     
     // Diagonal edges (dashed)
-    line("A.center", "C.center", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
-    content((2, 2), text(fill: gray)[35])
+    line("A", "C", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
+    content((2.5, 2), text(fill: gray)[35])
     
-    line("B.center", "D.center", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
-    content((1, 2), text(fill: gray)[30])
+    line("B", "D", stroke: (paint: gray, dash: "dashed", thickness: 2pt))
+    content((0.5, 2), text(fill: gray)[30])
   })
   
   Shortest cycle: A → B → C → D → A (cost = 70)
