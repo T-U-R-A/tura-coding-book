@@ -102,7 +102,7 @@
           #v(1em)
         ]
         #text(white, 1.5em, font: "LED Counter 7", tracking: 4pt)[
-          Data Structures and Solutions \ to problems in c++
+          Data Structures and Solutions \ to problems in C++
           #v(1em)
         ]
         #text(white, 1em, font: "LED Counter 7", tracking: 4pt)[
@@ -157,7 +157,7 @@ We acknowledge the use of AI tools in the creation of this book and for the cove
 
 We are grateful to our mentor Mr. Vinit Ajgaonkar who started us in our competitive programming journey. His inputs were valuable in the creation of this book.
 
-Lastly, the algorithms in this book can be implemented in any programming language. However, we use C++ because the International Olympiad in Informatics has switched to using only C++ (since 2021), and C++ is the most commonly used language for contests such as the International Collegiate Programming Contest.
+Lastly, the algorithms in this book can be implemented in any programming language. However, we use `C++` because the International Olympiad in Informatics has switched to using only `C++` (since 2021), and `C++` is the most commonly used language for contests such as the International Collegiate Programming Contest.
 
 Happy coding, and welcome to the journey!
 
@@ -169,13 +169,13 @@ Happy coding, and welcome to the journey!
 
 == Concepts
 
-=== Basic `C++` Syntax //chap1
+=== Basic ``C++`` Syntax //chap1
 
-This section will go over the basic `c++` syntax with a simple question and the implementation to solve the question. The code will cover the main elements required to write basic `c++` programs.
+This section will go over the basic `C++` syntax with a simple question and the implementation to solve the question. The code will cover the main elements required to write basic `C++` programs.
 
 ==== Question
 
-Write a C++ program that processes student performance data. First, accept the total number of students from the user. Subsequently, collect each student's name along with their corresponding marks.
+Write a `C++` program that processes student performance data. First, accept the total number of students from the user. Subsequently, collect each student's name along with their corresponding marks.
 
 The program should then analyze this data to identify and display the name or names of all students who achieved the highest percentage among their peers. In cases where multiple students share the top score, all their names should be printed.
 
@@ -248,7 +248,7 @@ int main() {
 }
 ```
 
-While this isn't the only way to solve the question, the code should cover the most basic C++ syntax.
+While this isn't the only way to solve the question, the code should cover the most basic `C++` syntax.
 
 ==== Data Types
 
@@ -261,7 +261,7 @@ This code contained the following data types:
 
 ==== Variables
 
-Variables are fundamental building blocks in programming that serve as named storage locations in a computer's memory where you can store data that your program needs to work with. Variables are strongly typed in C++, which means you must specify their data type and then their name.
+Variables are fundamental building blocks in programming that serve as named storage locations in a computer's memory where you can store data that your program needs to work with. Variables are strongly typed in `C++`, which means you must specify their data type and then their name.
 
 ==== Input/Output
 
@@ -289,13 +289,13 @@ A function is something that accepts parameters and returns a value. This includ
 
 ==== Summary
 
-These basic concepts are meant to serve as a revision or as an introduction to C++ syntax for those of you recently switching to C++. This is just the tip of the iceberg, and there is much more to learn about C++ as you go along.#footnote[More about C++ syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
+These basic concepts are meant to serve as a revision or as an introduction to `C++` syntax for those of you recently switching to `C++`. This is just the tip of the iceberg, and there is much more to learn about `C++` as you go along.#footnote[More about `C++` syntax can be learned #link("https://www.w3schools.com/cpp/")[here].]
 
 === Input Output Optimization //chap1
 
 ==== `ios_base::sync_with_stdio(false)`
 #v(0.5em)
-By default, C++ streams (cin, cout) are synchronized with C's stdio (scanf, printf) to allow interleaved use. This synchronization adds overhead. Calling `ios_base::sync_with_stdio(false)` disables this synchronization, making C++ streams significantly faster—often 2-3x faster for large inputs. However, once disabled, you cannot mix C++ streams with C-style I/O in the same program. This is particularly useful in competitive programming where performance matters and you only use cin/cout.
+By default, `C++` streams (cin, cout) are synchronized with C's stdio (scanf, printf) to allow interleaved use. This synchronization adds overhead. Calling `ios_base::sync_with_stdio(false)` disables this synchronization, making `C++` streams significantly faster—often 2-3x faster for large inputs. However, once disabled, you cannot mix `C++` streams with C-style I/O in the same program. This is particularly useful in competitive programming where performance matters and you only use cin/cout.
 
 `std::cin` is also tied to `std::cout`, which means that whenever input is accpeted, the output is first flushed(displayed) before acccepting input, which is useful for interactive programs but not needed for competitive programming. We usually untie these with `cin.tie(nullptr)`.
 
@@ -338,7 +338,7 @@ The time complexity for the CSES Questions which will you see throughout the boo
 
 === Pointers <pointers> //chap1
 
-Unlike in other higher-level programming languages which you may be familiar with, C++ allows you to have full control over how to allocate memory. This is achieved by using pointers.
+Unlike in other higher-level programming languages which you may be familiar with, `C++` allows you to have full control over how to allocate memory. This is achieved by using pointers.
 
 A pointer is a variable that stores a memory location instead of the value. Here's an example of code which uses pointers, and we'll explain what it does:
 
@@ -443,7 +443,7 @@ Fun fact: It's proven that any recursive function can be written with a loop! Lo
 
 === Sorting //chap1
 
-To sort a data structure like an array or vector, C++ has its own sort function for this:
+To sort a data structure like an array or vector, `C++` has its own sort function for this:
 
 ```cpp
 #include <bits/stdc++.h>
@@ -487,25 +487,25 @@ $
   {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, 18, 21, 30}
 $
 
-And let the target number we are looking for be 18. Let there be the variables $#text(fill: blue)[l e f t] = 0$, $#text(fill: red)[r i g h t] = 13$, and $#text(fill: green)[m i d d l e] = (#text(fill: blue)[l e f t] + #text(fill: red)[r i g h t])/2 = (0 + 13)/2 = 6$, which is the average of #text(fill: blue)[left] and #text(fill: red)[right].
+And let the target number we are looking for be 18. Let there be the variables $#text(fill: blue)[left] = 0$, $#text(fill: red)[right] = 13$, and $#text(fill: green)[middle] = (#text(fill: blue)[left] + #text(fill: red)[right])/2 = (0 + 13)/2 = 6$, which is the average of #text(fill: blue)[left] and #text(fill: red)[right].
 
 $
   {#text(fill: blue)[1], 4, 4, 5, 6, 6, #text(fill: green)[7], 9, 13, 15, 16, 18, 21, #text(fill: red)[30]}
 $
 
-Now we can compare the value of #text(fill: green)[middle] with our target, 18. As you can see, #text(fill: green)[middle] < 18. This tells us that our target value lies to the right of #text(fill: green)[middle]. We can now update #text(fill: green)[middle] by first making #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 6 + 1 = 7, then make $#text(fill: green)[m i d d l e] = (#text(fill: blue)[l e f t] + #text(fill: red)[r i g h t])/2 = (7 + 13)/2 = 10$.
+Now we can compare the value of #text(fill: green)[middle] with our target, 18. As you can see, #text(fill: green)[middle] < 18. This tells us that our target value lies to the right of #text(fill: green)[middle]. We can now update #text(fill: green)[middle] by first making #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 6 + 1 = 7, then make $#text(fill: green)[middle] = (#text(fill: blue)[left] + #text(fill: red)[right])/2 = (7 + 13)/2 = 10$.
 
 $
   {1, 4, 4, 5, 6, 6, 7, #text(fill: blue)[9], 13, 15, #text(fill: green)[16], 18, 21, #text(fill: red)[30]}
 $
 
-Once again we are too low, so we set #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill: green)[m i d d l e] = (#text(fill: blue)[l e f t] + #text(fill: red)[r i g h t])/2 = (11 + 13)/2 = 12$.
+Once again we are too low, so we set #text(fill: blue)[left] = #text(fill: green)[middle] + 1 = 10 + 1 = 11, and then $#text(fill: green)[middle] = (#text(fill: blue)[left] + #text(fill: red)[right])/2 = (11 + 13)/2 = 12$.
 
 $
   {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: blue)[18], #text(fill: green)[21], #text(fill: red)[30]}
 $
 
-This time we're too high, so now we set #text(fill: red)[right] = #text(fill: green)[middle] - 1 = 12 - 1 = 11, and then $#text(fill: green)[m i d d l e] = (#text(fill: blue)[l e f t] + #text(fill: red)[r i g h t])/2 = (11 + 11)/2 = 11$.
+This time we're too high, so now we set #text(fill: red)[right] = #text(fill: green)[middle] - 1 = 12 - 1 = 11, and then $#text(fill: green)[middle] = (#text(fill: blue)[left] + #text(fill: red)[right])/2 = (11 + 11)/2 = 11$.
 
 $
   {1, 4, 4, 5, 6, 6, 7, 9, 13, 15, 16, #text(fill: green)[18], 21, 30}
@@ -593,7 +593,7 @@ cout << ub << endl;
 
 You can try the algorithm for lower bound and upper bound on an array with a target value and see how this works.
 
-Now, luckily for you, `C++` comes with its own upper bound and lower bound functions! Here are their use cases:
+Now, luckily for you, ``C++`` comes with its own upper bound and lower bound functions! Here are their use cases:
 
 *Note that `upper_bound()` and `lower_bound()` only work properly on sorted lists in ascending order. They will output the wrong value otherwise.*
 
@@ -729,7 +729,7 @@ int main(){
 
 ==== `next_permutation()`
 
-Fortunately for you, C++ already has a function that generates the next permutation!
+Fortunately for you, `C++` already has a function that generates the next permutation!
 
 #v(0.5em)
 
@@ -1005,9 +1005,9 @@ The complexity of this code is $O(n!)$, which grows very quickly. Solving the pr
 
 A *queue* behaves very similarly to a queue in real life. Say you wish to buy tickets for a movie. You must first join the back of the queue, then the people who joined before you must all receive their tickets before you can buy your own ticket and leave the front of the queue.
 
-In C++, joining the queue is called *pushing* an element into the queue. Leaving the front of the queue is called being *popped* from the queue.
+In `C++`, joining the queue is called *pushing* an element into the queue. Leaving the front of the queue is called being *popped* from the queue.
 
-The data structure of a *queue* has already been implemented in C++ as `std::queue`.
+The data structure of a *queue* has already been implemented in `C++` as `std::queue`.
 
 Some of the operations a `queue` supports are:
 
@@ -2109,7 +2109,7 @@ As an extra challenge to the reader, try writing a solution with a loop instead 
 
 *Solution:* 
 
-In `c++` there is a very useful function called `next_permutation()`#footnote[See @permute] which helps us tackle this exact question. This function can be used to generate the next lexicographical#footnote[Meaning in alphabetical order.] sequence for a string or a vector.
+In `C++` there is a very useful function called `next_permutation()`#footnote[See @permute] which helps us tackle this exact question. This function can be used to generate the next lexicographical#footnote[Meaning in alphabetical order.] sequence for a string or a vector.
 
 It returns false when no other greater permutations exists, otherwise it rearranges the string or the vector.
 
@@ -2363,7 +2363,7 @@ void solve(){
 int main() {
     int t;
     cin >> t;
-  //because ints and bools are loosely typed in c++, when t = 0 the while loops ends.
+  //because ints and bools are loosely typed in C++, when t = 0 the while loops ends.
   //The loop runs t cycles by running from t to 1.
     while (t--)
       solve();
@@ -3000,7 +3000,7 @@ int main() {
 
 === Bit Operations //chap2
 
-In C++, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
+In `C++`, you can perform binary operations on individual bits. This may sound confusing, so let's look at some examples.
 
 ==== AND (`&`)
 
@@ -3854,11 +3854,11 @@ struct List{
 };
 ```
 
-Of course, this is a very poor implementation with not much memory safety, leading to memory leaks. Fortunately, C++ has its own implementation of a linked list.
+Of course, this is a very poor implementation with not much memory safety, leading to memory leaks. Fortunately, `C++` has its own implementation of a linked list.
 
 ==== `std::list`
 
-Here's a code example of how the C++ implementation of a linked list is used:
+Here's a code example of how the `C++` implementation of a linked list is used:
 
 ```cpp
 #include <bits/stdc++.h>
@@ -3961,7 +3961,7 @@ There are many other questions where you can use a greedy approach, and you'll u
 
 === Sets <set> //chap 2
 
-A `set` in a data structure in `c++`, which has the following properties:
+A `set` in a data structure in `C++`, which has the following properties:
 
 + A new element can be added to a `set` in $O(log n)$ time.
 + An element can be found in $O(log n)$ time.
@@ -4044,7 +4044,7 @@ Again, it's the same as an `unordered_set` except that it can store multiple of 
 
 === Maps <map> //chap2
 
-A map is a data structure in C++ which has the following properties:
+A map is a data structure in `C++` which has the following properties:
 
 + A new key-value pair can be added to a map in $O(log n)$ time.
 + A value can be accessed using its key in $O(log n)$ time.
@@ -4171,7 +4171,7 @@ This also has $O(1)$ operations with the caveat that its worst case is $O(n)$. S
 
 === Stacks <stack> //chap2
 
-A stack is a data structure in C++ which has the following properties:
+A stack is a data structure in `C++` which has the following properties:
 
 + A new element can be added to the top of a stack in $O(1)$ time.
 + The top element can be accessed in $O(1)$ time.
@@ -5478,7 +5478,7 @@ int main() {
     }
 
     // Subtract 1 to exclude the empty subsequence
-    // The reason for adding MOD before taking the modulo is because in c++, a number less than 0 can give a negative remainder which is bad for future calculation. Hence you make sure it's possible by adding MOD.
+    // The reason for adding MOD before taking the modulo is because in C++, a number less than 0 can give a negative remainder which is bad for future calculation. Hence you make sure it's possible by adding MOD.
     ans = (ans - 1 + MOD) % MOD;
     cout << ans << "\n";
 
