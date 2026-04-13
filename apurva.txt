@@ -2,8 +2,6 @@ Mex Grid Construction xor approach step1
 Counting rooms step4
 Dice Combinations step2
 Visualization of Tower of Hanoi + Loop Solution.
-dfs concept step 2
-bfs concept step 2
 bellman ford concept step 2
 dijkstara concept step 2
 intro to graph concept step 2

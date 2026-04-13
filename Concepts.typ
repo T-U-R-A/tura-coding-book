@@ -4597,6 +4597,260 @@ You might wonder when to use BFS versus depth-first search (DFS). Here's a quick
 
 Both have the same time complexity $O(V + E)$, but BFS uses more memory due to the queue potentially storing an entire level of the graph.
 
+== Dijkstra's Algorithm <dijkstra> //chap3
+
+#v(0.5em)
+
+Dijkstra's algorithm is used to find the shortest path from a source node to all other nodes in a weighted graph. It works on graphs where all edge weights are non-negative. If there are negative weights, you'll need to use the Bellman-Ford algorithm instead.
+
+The algorithm maintains a distance array where `dist[i]` represents the shortest known distance from the source to node `i`. Initially, all distances are set to infinity except for the source node, which is set to 0.
+
+The core idea is to repeatedly select the unvisited node with the smallest distance, then update the distances to all of its neighbors. This process is called *relaxation*. If we find a shorter path to a neighbor, we update its distance.
+
+Here's how the algorithm works step by step:
+
+1. Set the distance to the source node as 0 and all other distances to infinity.
+2. Create a priority queue to store nodes with their current distances.
+3. While the priority queue is not empty:
+   - Extract the node with the minimum distance.
+   - For each neighbor of this node, check if going through the current node gives a shorter path.
+   - If it does, update the distance and add the neighbor to the priority queue.
+
+The time complexity of Dijkstra's algorithm is $O((n + m) log n)$ where $n$ is the number of nodes and $m$ is the number of edges, assuming we use a priority queue for implementation.
+
+Let's look at a sample graph to understand this better:
+
+Consider a graph with 5 nodes (1 through 5) and weighted edges. We want to find the shortest path from node 1 to all other nodes.
+
+Here's the code for Dijkstra's algorithm:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main(){
+  int n, m; // n = number of nodes, m = number of edges
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1); // adjacency list: adj[u] = {v, weight}
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    adj[u].push_back({v, w}); // directed edge from u to v with weight w
+    // For undirected graphs, also add: adj[v].push_back({u, w});
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF); // distance array
+  dist[source] = 0;
+  
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  // min-heap: stores {distance, node}
+  pq.push({0, source});
+  
+  while(!pq.empty()){
+    int d = pq.top().first; // current distance
+    int u = pq.top().second; // current node
+    pq.pop();
+    
+    if(d > dist[u]) // if this is an outdated entry, skip it
+      continue;
+    
+    for(auto& edge : adj[u]){
+      int v = edge.first; // neighbor
+      int w = edge.second; // edge weight
+      
+      if(dist[u] + w < dist[v]){ // relaxation step
+        dist[v] = dist[u] + w;
+        pq.push({dist[v], v});
+      }
+    }
+  }
+  
+  // Output the shortest distances
+  for(int i = 1; i <= n; i++){
+    if(dist[i] == INF)
+      cout << "INF ";
+    else
+      cout << dist[i] << " ";
+  }
+  cout << endl;
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2 4
+1 3 2
+2 3 1
+2 4 5
+3 4 8
+3 5 10
+4 5 2
+1
+```
+
+This represents a directed graph with 5 nodes and 7 edges. The edges are:
+- 1 → 2 with weight 4
+- 1 → 3 with weight 2
+- 2 → 3 with weight 1
+- 2 → 4 with weight 5
+- 3 → 4 with weight 8
+- 3 → 5 with weight 10
+- 4 → 5 with weight 2
+
+We want to find the shortest path from node 1 to all other nodes.
+
+Output:
+
+```
+0 4 2 9 11
+```
+
+This means:
+- Distance to node 1: 0 (it's the source)
+- Distance to node 2: 4 (path: 1 → 2)
+- Distance to node 3: 2 (path: 1 → 3)
+- Distance to node 4: 9 (path: 1 → 2 → 4)
+- Distance to node 5: 11 (path: 1 → 2 → 4 → 5)
+
+Note that even though there's a direct edge from 1 to 2 with weight 4, and an edge from 2 to 3 with weight 1, the shortest path to node 3 is directly from 1 to 3 with weight 2.
+
+=== Understanding the Priority Queue
+
+The priority queue in Dijkstra's algorithm is crucial. We use a min-heap (achieved with `greater<pair<int, int>>`) so that we always process the node with the smallest known distance first. This ensures we find the optimal path.
+
+The priority queue stores pairs of `{distance, node}`. We put distance first because C++ compares pairs lexicographically (first element first), so the pair with the smallest distance will be at the top of the min-heap.
+
+One important optimization is the check `if(d > dist[u]) continue;`. This handles the case where we've already found a shorter path to node `u`. Since we can't efficiently remove elements from the middle of a priority queue, we simply ignore outdated entries when we pop them.
+
+=== Reconstructing the Path
+
+If you want to not only find the shortest distance but also reconstruct the actual path, you need to keep track of the parent of each node. Here's how:
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+const int INF = 1e9;
+
+int main(){
+  int n, m;
+  cin >> n >> m;
+  
+  vector<vector<pair<int, int>>> adj(n + 1);
+  
+  for(int i = 0; i < m; i++){
+    int u, v, w;
+    cin >> u >> v >> w;
+    adj[u].push_back({v, w});
+  }
+  
+  int source;
+  cin >> source;
+  
+  vector<int> dist(n + 1, INF);
+  vector<int> parent(n + 1, -1); // parent[i] stores the previous node in the shortest path to i
+  dist[source] = 0;
+  
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  pq.push({0, source});
+  
+  while(!pq.empty()){
+    int d = pq.top().first;
+    int u = pq.top().second;
+    pq.pop();
+    
+    if(d > dist[u])
+      continue;
+    
+    for(auto& edge : adj[u]){
+      int v = edge.first;
+      int w = edge.second;
+      
+      if(dist[u] + w < dist[v]){
+        dist[v] = dist[u] + w;
+        parent[v] = u; // update parent
+        pq.push({dist[v], v});
+      }
+    }
+  }
+  
+  // Reconstruct path from source to a target node
+  int target;
+  cin >> target;
+  
+  if(dist[target] == INF){
+    cout << "No path exists" << endl;
+  }
+  else{
+    vector<int> path;
+    int cur = target;
+    while(cur != -1){
+      path.push_back(cur);
+      cur = parent[cur];
+    }
+    reverse(path.begin(), path.end());
+    
+    cout << "Shortest path from " << source << " to " << target << ": ";
+    for(int i = 0; i < path.size(); i++){
+      cout << path[i];
+      if(i != path.size() - 1)
+        cout << " -> ";
+    }
+    cout << endl;
+    cout << "Distance: " << dist[target] << endl;
+  }
+  
+  return 0;
+}
+```
+
+Sample input:
+
+```
+5 7
+1 2 4
+1 3 2
+2 3 1
+2 4 5
+3 4 8
+3 5 10
+4 5 2
+1
+5
+```
+
+Output:
+
+```
+Shortest path from 1 to 5: 1 -> 2 -> 4 -> 5
+Distance: 11
+```
+
+The `parent` array stores which node we came from to reach each node along the shortest path. By following the parent pointers backwards from the target to the source, we can reconstruct the complete path.
+
+=== Common Mistakes
+
+1. *Using Dijkstra with negative weights*: Dijkstra's algorithm does not work correctly with negative edge weights. If your graph has negative weights, use Bellman-Ford instead.
+
+2. *Forgetting the outdated check*: Without `if(d > dist[u]) continue;`, the algorithm might process the same node multiple times with outdated distances, leading to inefficiency or incorrect results.
+
+3. *Wrong priority queue comparator*: Remember to use `greater<pair<int, int>>` for a min-heap. The default is a max-heap, which will give incorrect results.
+
+4. *Not initializing distances to infinity*: If you don't initialize all distances to `INF` except the source, the algorithm won't work correctly.
+
+For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
+
 == Bellman-Ford Algorithm <bellman-ford> //chap3
 
 #v(0.5em)
@@ -4624,16 +4878,16 @@ Consider the following graph:
     set-style(mark: (end: ">"))
     
     line((0.3, 0.1), (1.7, 0.9))
-    content((1, 0.7), [5])
+    content((1, 0.8), [5])
     
     line((0.3, -0.1), (1.7, -0.9))
-    content((1, -0.7), [-3])
+    content((1, -0.8), [-3])
     
     line((2.3, 0.9), (3.7, 0.1))
-    content((3, 0.7), [2])
+    content((3, 0.8), [2])
     
     line((2.3, -0.9), (3.7, -0.1))
-    content((3, -0.7), [4])
+    content((3, -0.8), [4])
     
     line((2, 0.7), (2, -0.7))
     content((2.3, 0), [1])
@@ -5012,286 +5266,6 @@ int main() {
 SPFA can also detect negative cycles by counting how many times each node is added to the queue. If any node is added more than $n - 1$ times, a negative cycle exists.
 
 The average case complexity of SPFA is often $O(m)$, making it much faster than standard Bellman-Ford for most graphs, though it can still degrade to $O(n m)$ in worst cases (particularly on specially constructed adversarial graphs).
-
-== Dijkstra's Algorithm <dijkstra> //chap3
-
-=== When to Use Dijkstra vs Other Algorithms
-
-*Use Dijkstra when:*
-- All edge weights are *non-negative*
-- You need shortest path from one source to all nodes
-- Graph is sparse or medium-sized
-
-*Use Bellman-Ford when:*
-- There are *negative edge weights*
-- You need to *detect negative cycles*
-- Graph is small enough for $O(V dot E)$
-
-*Use Floyd-Warshall when:*
-- You need shortest paths between *all pairs* of nodes
-- Graph is small (up to ~500 nodes for $O(n^3)$)
-
-*Use BFS when:*
-- Graph is *unweighted* (all edges cost 1)
-
-Algorithm Comparison:
-- *Dijkstra*: $O((V + E) log V)$ - single source, no negative edges
-- *Bellman-Ford*: $O(V dot E)$ - single source, handles negative edges
-- *Floyd-Warshall*: $O(V^3)$ - all pairs
-- *BFS*: $O(V + E)$ - unweighted graphs only
-
-#v(0.5em)
-
-Dijkstra's algorithm is used to find the shortest path from a source node to all other nodes in a weighted graph. It works on graphs where all edge weights are non-negative. If there are negative weights, you'll need to use the Bellman-Ford algorithm instead.
-
-The algorithm maintains a distance array where `dist[i]` represents the shortest known distance from the source to node `i`. Initially, all distances are set to infinity except for the source node, which is set to 0.
-
-The core idea is to repeatedly select the unvisited node with the smallest distance, then update the distances to all of its neighbors. This process is called *relaxation*. If we find a shorter path to a neighbor, we update its distance.
-
-Here's how the algorithm works step by step:
-
-1. Set the distance to the source node as 0 and all other distances to infinity.
-2. Create a priority queue to store nodes with their current distances.
-3. While the priority queue is not empty:
-   - Extract the node with the minimum distance.
-   - For each neighbor of this node, check if going through the current node gives a shorter path.
-   - If it does, update the distance and add the neighbor to the priority queue.
-
-The time complexity of Dijkstra's algorithm is $O((n + m) log n)$ where $n$ is the number of nodes and $m$ is the number of edges, assuming we use a priority queue for implementation.
-
-Let's look at a sample graph to understand this better:
-
-Consider a graph with 5 nodes (1 through 5) and weighted edges. We want to find the shortest path from node 1 to all other nodes.
-
-Here's the code for Dijkstra's algorithm:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-const int INF = 1e9;
-
-int main(){
-  int n, m; // n = number of nodes, m = number of edges
-  cin >> n >> m;
-  
-  vector<vector<pair<int, int>>> adj(n + 1); // adjacency list: adj[u] = {v, weight}
-  
-  for(int i = 0; i < m; i++){
-    int u, v, w;
-    cin >> u >> v >> w;
-    adj[u].push_back({v, w}); // directed edge from u to v with weight w
-    // For undirected graphs, also add: adj[v].push_back({u, w});
-  }
-  
-  int source;
-  cin >> source;
-  
-  vector<int> dist(n + 1, INF); // distance array
-  dist[source] = 0;
-  
-  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-  // min-heap: stores {distance, node}
-  pq.push({0, source});
-  
-  while(!pq.empty()){
-    int d = pq.top().first; // current distance
-    int u = pq.top().second; // current node
-    pq.pop();
-    
-    if(d > dist[u]) // if this is an outdated entry, skip it
-      continue;
-    
-    for(auto& edge : adj[u]){
-      int v = edge.first; // neighbor
-      int w = edge.second; // edge weight
-      
-      if(dist[u] + w < dist[v]){ // relaxation step
-        dist[v] = dist[u] + w;
-        pq.push({dist[v], v});
-      }
-    }
-  }
-  
-  // Output the shortest distances
-  for(int i = 1; i <= n; i++){
-    if(dist[i] == INF)
-      cout << "INF ";
-    else
-      cout << dist[i] << " ";
-  }
-  cout << endl;
-  
-  return 0;
-}
-```
-
-Sample input:
-
-```
-5 7
-1 2 4
-1 3 2
-2 3 1
-2 4 5
-3 4 8
-3 5 10
-4 5 2
-1
-```
-
-This represents a directed graph with 5 nodes and 7 edges. The edges are:
-- 1 → 2 with weight 4
-- 1 → 3 with weight 2
-- 2 → 3 with weight 1
-- 2 → 4 with weight 5
-- 3 → 4 with weight 8
-- 3 → 5 with weight 10
-- 4 → 5 with weight 2
-
-We want to find the shortest path from node 1 to all other nodes.
-
-Output:
-
-```
-0 4 2 9 11
-```
-
-This means:
-- Distance to node 1: 0 (it's the source)
-- Distance to node 2: 4 (path: 1 → 2)
-- Distance to node 3: 2 (path: 1 → 3)
-- Distance to node 4: 9 (path: 1 → 2 → 4)
-- Distance to node 5: 11 (path: 1 → 2 → 4 → 5)
-
-Note that even though there's a direct edge from 1 to 2 with weight 4, and an edge from 2 to 3 with weight 1, the shortest path to node 3 is directly from 1 to 3 with weight 2.
-
-=== Understanding the Priority Queue
-
-The priority queue in Dijkstra's algorithm is crucial. We use a min-heap (achieved with `greater<pair<int, int>>`) so that we always process the node with the smallest known distance first. This ensures we find the optimal path.
-
-The priority queue stores pairs of `{distance, node}`. We put distance first because C++ compares pairs lexicographically (first element first), so the pair with the smallest distance will be at the top of the min-heap.
-
-One important optimization is the check `if(d > dist[u]) continue;`. This handles the case where we've already found a shorter path to node `u`. Since we can't efficiently remove elements from the middle of a priority queue, we simply ignore outdated entries when we pop them.
-
-=== Reconstructing the Path
-
-If you want to not only find the shortest distance but also reconstruct the actual path, you need to keep track of the parent of each node. Here's how:
-
-```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
-const int INF = 1e9;
-
-int main(){
-  int n, m;
-  cin >> n >> m;
-  
-  vector<vector<pair<int, int>>> adj(n + 1);
-  
-  for(int i = 0; i < m; i++){
-    int u, v, w;
-    cin >> u >> v >> w;
-    adj[u].push_back({v, w});
-  }
-  
-  int source;
-  cin >> source;
-  
-  vector<int> dist(n + 1, INF);
-  vector<int> parent(n + 1, -1); // parent[i] stores the previous node in the shortest path to i
-  dist[source] = 0;
-  
-  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-  pq.push({0, source});
-  
-  while(!pq.empty()){
-    int d = pq.top().first;
-    int u = pq.top().second;
-    pq.pop();
-    
-    if(d > dist[u])
-      continue;
-    
-    for(auto& edge : adj[u]){
-      int v = edge.first;
-      int w = edge.second;
-      
-      if(dist[u] + w < dist[v]){
-        dist[v] = dist[u] + w;
-        parent[v] = u; // update parent
-        pq.push({dist[v], v});
-      }
-    }
-  }
-  
-  // Reconstruct path from source to a target node
-  int target;
-  cin >> target;
-  
-  if(dist[target] == INF){
-    cout << "No path exists" << endl;
-  }
-  else{
-    vector<int> path;
-    int cur = target;
-    while(cur != -1){
-      path.push_back(cur);
-      cur = parent[cur];
-    }
-    reverse(path.begin(), path.end());
-    
-    cout << "Shortest path from " << source << " to " << target << ": ";
-    for(int i = 0; i < path.size(); i++){
-      cout << path[i];
-      if(i != path.size() - 1)
-        cout << " -> ";
-    }
-    cout << endl;
-    cout << "Distance: " << dist[target] << endl;
-  }
-  
-  return 0;
-}
-```
-
-Sample input:
-
-```
-5 7
-1 2 4
-1 3 2
-2 3 1
-2 4 5
-3 4 8
-3 5 10
-4 5 2
-1
-5
-```
-
-Output:
-
-```
-Shortest path from 1 to 5: 1 -> 2 -> 4 -> 5
-Distance: 11
-```
-
-The `parent` array stores which node we came from to reach each node along the shortest path. By following the parent pointers backwards from the target to the source, we can reconstruct the complete path.
-
-=== Common Mistakes
-
-1. *Using Dijkstra with negative weights*: Dijkstra's algorithm does not work correctly with negative edge weights. If your graph has negative weights, use Bellman-Ford instead.
-
-2. *Forgetting the outdated check*: Without `if(d > dist[u]) continue;`, the algorithm might process the same node multiple times with outdated distances, leading to inefficiency or incorrect results.
-
-3. *Wrong priority queue comparator*: Remember to use `greater<pair<int, int>>` for a min-heap. The default is a max-heap, which will give incorrect results.
-
-4. *Not initializing distances to infinity*: If you don't initialize all distances to `INF` except the source, the algorithm won't work correctly.
-
-For graphs with unweighted edges (all edges have weight 1), you can simply use BFS instead of Dijkstra's algorithm, which is more efficient for this special case.
-
 == Floyd-Warshall Algorithm <floyd-warshall> //chap3
 
 #v(0.5em)
@@ -5600,6 +5574,31 @@ Don't use Floyd-Warshall when:
 - You only need shortest paths from a single source (use Dijkstra's or Bellman-Ford instead)
 - The graph is very large ($n > 1000$) as $O(n^3)$ will be too slow
 - You're working with an unweighted graph (use BFS instead)
+
+== Which shortest path algorithm to use?
+
+*Use Dijkstra when:*
+- All edge weights are *non-negative*
+- You need shortest path from one source to all nodes
+- Graph is sparse or medium-sized
+
+*Use Bellman-Ford when:*
+- There are *negative edge weights*
+- You need to *detect negative cycles*
+- Graph is small enough for $O(V dot E)$
+
+*Use Floyd-Warshall when:*
+- You need shortest paths between *all pairs* of nodes
+- Graph is small (up to ~500 nodes for $O(n^3)$)
+
+*Use BFS when:*
+- Graph is *unweighted* (all edges cost 1)
+
+Algorithm Comparison:
+- *Dijkstra*: $O((V + E) log V)$ - single source, no negative edges
+- *Bellman-Ford*: $O(V dot E)$ - single source, handles negative edges
+- *Floyd-Warshall*: $O(V^3)$ - all pairs
+- *BFS*: $O(V + E)$ - unweighted graphs only
 
 == Disjoint Set Union (DSU) <dsu> //chap2
 
