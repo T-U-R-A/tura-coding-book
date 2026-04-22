@@ -5,8 +5,13 @@
 #import "@preview/codly-languages:0.1.1": *
 
 #show: codly-init.with()
-#codly(languages: codly-languages)
-#codly(display-icon: false)
+#codly(
+  fill: luma(240),
+  zebra-fill: luma(230),
+  languages: codly-languages,
+  display-icon: false
+)
+#codly()
 
 #set text(
   font: "New Computer Modern"
@@ -30,7 +35,8 @@
   numbering: "1.",
 )
 
-#show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
+#show raw: set text(font: "JetBrainsMono NF")
+// #show raw.where(block: true): block.with(fill: luma(240), inset: 8pt, radius: 4pt)
 #show link: underline
 
 #let arrayToMath(arr) = { // This function should be used only inside math blocks for it's intended effect.
