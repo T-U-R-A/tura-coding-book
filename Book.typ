@@ -1464,7 +1464,7 @@ Here's the approach step by step:
 
 + It is important to keep it mind that we are on an odd layer (as 5 is odd).
 
-+ And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer is $ 21 - 2 = #(25 - (5 - 1))$.
++ And as we have to go two cells to the left from our anchor point we subtract our leftward distance. Thus, answer is $ 21 - 2 = #(25 - (5 - 1) - 2)$.
 
 *Code:*
 
